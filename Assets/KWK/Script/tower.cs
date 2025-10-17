@@ -14,7 +14,7 @@ public class tower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -22,12 +22,14 @@ public class tower : MonoBehaviour
     {
         interval -= Time.deltaTime;
 
-        if(enemiesInRange.Count > 0)
+        if (enemiesInRange.Count > 0)
         {
 
         }
-
+    }
     void Shoot()
     {
         Instantiate(bulletPrefab, transform.position, transform.rotation);
     }
+
+}
