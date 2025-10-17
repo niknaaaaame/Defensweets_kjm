@@ -36,25 +36,36 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Ready);
         // 준비가 끝나면 StartNextWave()를 버튼/타이머로 호출
     }
+    /*
+    public Transform spawnTransform;  // 스폰 지점(월드 좌표)
+    public Transform goalTransform;   // 목표 지점(월드 좌표)
+    public TileSystem tileSystem;
 
     public void StartNextWave()
     {
         if (CurrentState != GameState.Ready) return;
 
-        currentWaveIndex++;
-        if (currentWaveIndex >= stage.waves.Length)
+        // 1) 현재 연결된 타일 상태로 최단경로 계산 + 잠금
+        var startCell = PathSystem.Instance.WorldToCell(spawnTransform.position);
+        var goalCell = PathSystem.Instance.WorldToCell(goalTransform.position);
+        var ok = PathSystem.Instance.ComputeAndLockPath(
+            tileSystem.GetWalkableCells(), startCell, goalCell);
+
+        if (!ok)
         {
-            // 모든 웨이브 완료 → 클리어
-            OnAllWavesCleared();
+            // 경로가 없으면 웨이브 시작 불가(경고/가이드)
+            Debug.LogWarning("경로가 없어 웨이브를 시작할 수 없습니다.");
             return;
         }
 
+        // 2) 웨이브 진행
         SetState(GameState.Wave);
-        StartCoroutine(WaveSystem.Instance.RunWave(stage.waves[currentWaveIndex],
+        StartCoroutine(WaveSystem.Instance.RunWave(
+            stage.waves[++currentWaveIndex],
             onSpawned: () => aliveMonsters++,
             onOneDied: () => { aliveMonsters--; CheckWaveEnd(); }));
     }
-
+    */
     private void CheckWaveEnd()
     {
         // 스폰 완료 & 필드 몬스터 0 → 웨이브 종료
@@ -68,6 +79,16 @@ public class GameManager : MonoBehaviour
             EventBus.Publish(Events.OnWaveCleared, currentWaveIndex);
             SetState(GameState.Ready);
         }
+    }
+
+    private void OnWaveEnded()
+    {
+        // 내부 전환 + 경로 해제
+        PathSystem.Instance.Unlock();
+        SetState(GameState.Ready);
+
+        // UI/사운드용 이벤트 브로드캐스트
+        OnWaveCleared(currentWaveIndex);
     }
 
     public void OnMonsterReachGoal()
