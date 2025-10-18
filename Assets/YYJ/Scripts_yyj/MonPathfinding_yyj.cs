@@ -51,6 +51,28 @@ public static class Pathfinding
 
             foreach (PathNode neighbourNode in GetNeighbours(currentNode))
             {
+                if (closedList.Contains(neighbourNode.position)) continue;
+
+                // 생각해보니까 이거 타일 관리하는게 있어야하네 일단 보류
+                // if (타일이 이동할수 없을 경우)
+                // {
+                //  closedList.Add(neighbourNode.position);
+                //  continue;
+                // }
+
+                int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode.position, neighbourNode.position);
+                if (tentativeGCost < neighbourNode.gCost || !openList.Contains(neighbourNode))
+                {
+                    neighbourNode.parent = currentNode;
+                    neighbourNode.gCost = tentativeGCost;
+                    neighbourNode.hCost = CalculateDistanceCost(neighbourNode.position, endPos);
+                    neighbourNode.CalculateFCost();
+
+                    if (!openList.Contains(neighbourNode))
+                    {
+                        openList.Add(neighbourNode);
+                    }
+                }
 
             }
         }
