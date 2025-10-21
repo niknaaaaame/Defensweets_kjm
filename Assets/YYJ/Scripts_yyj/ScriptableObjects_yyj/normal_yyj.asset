@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a7ca2d646656d248aa9264a1890d975, type: 3}
+  m_Name: normal_yyj
+  m_EditorClassIdentifier: 
+  monsterName: 
+  monsterType: 0
+  prefab: {fileID: 0}
+  hp: 0
+  speed: 0
+  rewardSugar: 0
+  slowResist: 0
+  splitsOnDeath: 0
