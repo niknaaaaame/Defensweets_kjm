@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// 웨이브 하나의 라이프사이클을 책임지는 시스템.
 /// - 준비시간 대기 → 그룹별 스폰 → 스폰 종료 감시 → 필드 클리어 감시 → 보상 지급
-/// - Monster는 팀원이 구현. 여기서는 스폰 직후 프리팹에 WaveAgent를 붙여서
+/// - 스폰 직후 프리팹에 WaveAgent를 붙여서
 ///   파괴(사망/목표 도달) 시점에 자동으로 WaveSystem에 보고되게 한다.
 /// </summary>
 public class WaveSystem : MonoBehaviour
