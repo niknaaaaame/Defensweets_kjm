@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public static class Pathfinding
 {
     private class PathNode      // A* 알고리즘에 사용할 노드 클래스
@@ -130,3 +131,4 @@ public static class Pathfinding
     }
 
 }
+*/
