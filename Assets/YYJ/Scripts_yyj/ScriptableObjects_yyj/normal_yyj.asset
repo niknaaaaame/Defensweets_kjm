@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a7ca2d646656d248aa9264a1890d975, type: 3}
   m_Name: normal_yyj
   m_EditorClassIdentifier: 
-  monsterName: 
+  monsterName: test
   monsterType: 0
-  prefab: {fileID: 0}
-  hp: 0
-  speed: 0
-  rewardSugar: 0
-  slowResist: 0
+  prefab: {fileID: 2831650168577738344, guid: 4369512ac33adc14d9e35d28369e79f4, type: 3}
+  hp: 100
+  speed: 20
+  rewardSugar: 20
+  slowResist: 2
   splitsOnDeath: 0

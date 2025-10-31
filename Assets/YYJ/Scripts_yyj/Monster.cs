@@ -8,7 +8,7 @@ public class Monster : MonoBehaviour, IDamageable
     public MonsterSO monsterData;
 
     private int currentHp;
-    private List<Vector3> path;
+    private IReadOnlyList<Vector3> path;
     private int currentWaypointIndex = 0;
     private Transform goal;     // 도착지점
     private bool isDying = false;
@@ -23,15 +23,16 @@ public class Monster : MonoBehaviour, IDamageable
     void Start()
     {
         currentHp = monsterData.hp;
+        currentSpeed = monsterData.speed;;
 
-        currentSpeed = monsterData.speed;
+        goal = GameObject.FindWithTag("Goal").transform;
 
-        goal = GameObject.FindWithTag("Goal").transform;    // 도착지점 Goal 태그 가진 오브젝트 태그는 임시
-        path = Pathfinding.FindPath(transform.position, goal.position);
+        path = BFS.FindPath(transform.position, goal.position);
 
-        if (path == null)
+        if (path == null || path.Count == 0)
         {
             Debug.LogError("경로가 없습니다.", gameObject);
+            return;
         }
     }
 
@@ -64,6 +65,8 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void OnReachGoal()      // 도착 시 몬스터에게 발생할 사항 이후 추가
     {
+        GameManager.Instance.OnMonsterReachGoal();
+
         Destroy(gameObject);        
     }
 
@@ -80,6 +83,8 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (isDying) return;
         isDying = true;
+
+        EventBus.Publish(Events.OnMonsterKilled, monsterData.rewardSugar);
 
         HandleSplit();
 
