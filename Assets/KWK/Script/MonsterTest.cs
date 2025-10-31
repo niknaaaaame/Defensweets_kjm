@@ -5,6 +5,8 @@ using UnityEngine;
 public class MonsterTest : MonoBehaviour
 {
     [SerializeField] private float speed = 2f;
+    [SerializeField] private int health = 10;
+
     private Rigidbody2D rb;
 
     // Start is called before the first frame update
@@ -21,4 +23,19 @@ public class MonsterTest : MonoBehaviour
             rb.velocity = Vector2.right * speed;
         }
     }
-}
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.Log("Remaining health: " + health);
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Destroy(gameObject);
+    }
+    }
