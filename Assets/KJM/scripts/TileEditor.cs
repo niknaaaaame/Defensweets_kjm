@@ -76,7 +76,7 @@ public class Tile : MonoBehaviour
 
         if (place)
         {
-            if (CanPlaceTile(arrayX, arrayY))
+            if (CanRestorationTile(arrayX, arrayY))
             {
                 tilemap.SetTile(cellPos, groundTile);
                 tileData[arrayX, arrayY] = 1;
@@ -84,7 +84,7 @@ public class Tile : MonoBehaviour
         }
         else
         {
-            if(CanRemoveTile(arrayX, arrayY))
+            if(CanExploitationTile(arrayX, arrayY))
             {
                 tilemap.SetTile(cellPos, null);
                 tileData[arrayX, arrayY] = 0;
@@ -94,7 +94,7 @@ public class Tile : MonoBehaviour
         
     }
 
-    bool CanRemoveTile(int x, int y)
+    bool CanExploitationTile(int x, int y)
     {
         if (x == mapData.startPos.x && y == mapData.startPos.y && tileData[x, y] == 1)
             return true;
@@ -117,7 +117,7 @@ public class Tile : MonoBehaviour
         return false;
     }
 
-    bool CanPlaceTile(int x, int y)
+    bool CanRestorationTile(int x, int y)
     {
         if (x == mapData.startPos.x && y == mapData.startPos.y)
         {
