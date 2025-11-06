@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour, IDamageable
 {
-    public MonsterSO monsterData;
+    public MonsterSO_YYJ monsterData;
 
     private int currentHp;
-    private IReadOnlyList<Vector3> path;
+    private List<Vector3> path;
     private int currentWaypointIndex = 0;
     private Transform goal;     // 도착지점
     private bool isDying = false;
@@ -23,15 +23,23 @@ public class Monster : MonoBehaviour, IDamageable
     void Start()
     {
         currentHp = monsterData.hp;
-        currentSpeed = monsterData.speed;;
+        currentSpeed = monsterData.speed;
 
-        goal = GameObject.FindWithTag("Goal").transform;
+        //goal = GameObject.FindWithTag("Goal").transform;
+        goal = GameObject.Find("Goal").transform;
+        if ( goal == null )
+        {
+            Debug.LogError("Goal이 존재하지 않습니다.");
+            Destroy(gameObject);
+            return;
+        }
 
         path = BFS.FindPath(transform.position, goal.position);
 
         if (path == null || path.Count == 0)
         {
             Debug.LogError("경로가 없습니다.", gameObject);
+            Destroy(gameObject);
             return;
         }
     }
@@ -65,7 +73,9 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void OnReachGoal()      // 도착 시 몬스터에게 발생할 사항 이후 추가
     {
-        GameManager.Instance.OnMonsterReachGoal();
+        // GameManager.Instance.OnMonsterReachGoal();
+
+        Debug.Log("Goal!");
 
         Destroy(gameObject);        
     }
@@ -84,7 +94,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (isDying) return;
         isDying = true;
 
-        EventBus.Publish(Events.OnMonsterKilled, monsterData.rewardSugar);
+        //EventBus.Publish(Events.OnMonsterKilled, monsterData.rewardSugar);
 
         HandleSplit();
 
@@ -138,9 +148,14 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void HandleSplit()
     {
-        // 만약 몬스터가 분열하지 않는 몬스터라면 return
+        if (!monsterData.splitsOnDeath || monsterData.splitMonsterSO == null || monsterData.splitCount <= 0)
+            { return; }
 
-        // for (int i = 0; i < 분열 수; i++)
-        //  분열 몬스터 프리펩 생성
+        for (int i = 0; i < monsterData.splitCount; i++)    // 분열 수 만큼 몬스터 생성
+        {
+            Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), 0); // 위치 랜덤 조정
+
+            Instantiate(monsterData.splitMonsterSO.prefab, spawnPos, Quaternion.identity);
+        }
     }
 }
