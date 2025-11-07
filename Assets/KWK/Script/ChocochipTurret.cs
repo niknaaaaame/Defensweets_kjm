@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChocochipTurret : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class ChocochipTurret : MonoBehaviour
     [SerializeField] private Transform shootPoint;
     [SerializeField] private int damage = 4;
     [SerializeField] private float interval = 1f;
+    [SerializeField] private float energy = 100f;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -70,6 +72,8 @@ public class ChocochipTurret : MonoBehaviour
                 bullet.SetTarget(targets[0].transform);
                 bullet.SetDamage(damage);
             }
+
+            energy -= 2;
 
             yield return new WaitForSeconds(interval);
         }

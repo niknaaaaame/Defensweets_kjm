@@ -9,22 +9,38 @@ public class Tile : MonoBehaviour
 
     public Tilemap tilemap;
     public TileBase groundTile;
+    public TileBase specialTile; 
+    public SpecialTilesSO specialTilesSO; 
 
     private int[,] tileData;
+    private bool[,] isSpecialTile; 
 
     private int arrayX;
     private int arrayY;
 
-    // Start is called before the first frame update
     void Start()
     {
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
+        isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
 
         for (int x = 0; x < mapData.mapWidth; x++)
         {
             for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = 1;
+                isSpecialTile[x, y] = false;
+            }
+        }
+
+        if (specialTilesSO != null)
+        {
+            var stage = specialTilesSO.stages.Find(s => s.stageNumber == 1); 
+            if (stage != null)
+            {
+                foreach (var pos in stage.positions)
+                {
+                    isSpecialTile[pos.x, pos.y] = true;
+                }
             }
         }
     }
@@ -47,9 +63,8 @@ public class Tile : MonoBehaviour
                 for (int y = 0; y < mapData.mapHeight; y++)
                 {
                     tileData[x, y] = 1;
-
                     Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-                    tilemap.SetTile(tilePos, groundTile);
+                    tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
                 }
             }
         }
@@ -58,18 +73,17 @@ public class Tile : MonoBehaviour
         {
             Debug.Log("연결 완료");
         }
-
     }
 
     void HandleTile(bool place)
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //화면 좌표를 월드 좌표로
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = 0;
-        Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos); //월드 좌표를 셀 좌표로 (화면 가운데가 0, 0)
+        Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos);
 
         Vector3Int tilemapOrigin = tilemap.cellBounds.min;
 
-        arrayX = cellPos.x - tilemapOrigin.x; //실제 타일맵 위치와 오프셋 빼기
+        arrayX = cellPos.x - tilemapOrigin.x;
         arrayY = cellPos.y - tilemapOrigin.y;
 
         if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight) return;
@@ -78,20 +92,18 @@ public class Tile : MonoBehaviour
         {
             if (CanRestorationTile(arrayX, arrayY))
             {
-                tilemap.SetTile(cellPos, groundTile);
+                tilemap.SetTile(cellPos, isSpecialTile[arrayX, arrayY] ? specialTile : groundTile);
                 tileData[arrayX, arrayY] = 1;
             }
         }
         else
         {
-            if(CanExploitationTile(arrayX, arrayY))
+            if (CanExploitationTile(arrayX, arrayY))
             {
                 tilemap.SetTile(cellPos, null);
                 tileData[arrayX, arrayY] = 0;
             }
-            
         }
-        
     }
 
     bool CanExploitationTile(int x, int y)
@@ -113,7 +125,6 @@ public class Tile : MonoBehaviour
                     return true;
             }
         }
-
         return false;
     }
 
@@ -156,7 +167,6 @@ public class Tile : MonoBehaviour
 
     bool CheckComplete()
     {
-        if (tileData[mapData.goalPos.x, mapData.goalPos.y] == 0) return true;
-        else return false;
+        return tileData[mapData.goalPos.x, mapData.goalPos.y] == 0;
     }
 }

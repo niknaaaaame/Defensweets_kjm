@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,6 +9,9 @@ public class TilemapReader_YYJ : MonoBehaviour
     public static TilemapReader_YYJ Instance { get; private set; }
 
     private Tilemap walkableTilemap;
+
+    //private Vector3Int minCellBounds;
+    //private Vector3Int maxCellBounds;
 
     void Awake()
     {
@@ -30,7 +34,29 @@ public class TilemapReader_YYJ : MonoBehaviour
             Debug.LogError("tilemap이 연결되지 않았습니다");
         }
 
+        /*
+        MapSO mapData = tileEditorScript.mapData;
+        if (mapData == null)
+        {
+            return;
+        }
+
+        // 타일맵 원점 가져옴
+        Vector3Int tilemapOrigin = walkableTilemap.cellBounds.min;
+
+        // 경계 계산
+        minCellBounds = new Vector3Int(tilemapOrigin.x, tilemapOrigin.y, 0);
+        maxCellBounds = new Vector3Int(tilemapOrigin.x + mapData.mapWidth - 1, tilemapOrigin.y + mapData.mapHeight - 1, 0);
+        */
     }
+
+    /*
+    public bool IsWithinBounds(Vector3Int cellPos)
+    {
+        return cellPos.x >= minCellBounds.x && cellPos.x <= maxCellBounds.x &&
+               cellPos.y >= minCellBounds.y && cellPos.y <= maxCellBounds.y;
+    }
+    */
 
     public bool IsWalkable(Vector3Int cellPos)
     {
