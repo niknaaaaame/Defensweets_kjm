@@ -1,7 +1,7 @@
-/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class SpaklingLaser : MonoBehaviour
 {
@@ -39,7 +39,7 @@ public class SpaklingLaser : MonoBehaviour
 
         if(shootCoroutine == null)
         {
-            shootCoroutine = StartCoroutine(shoot(other));
+            shootCoroutine = StartCoroutine(shoot());
         }
 
     }
@@ -60,32 +60,26 @@ public class SpaklingLaser : MonoBehaviour
         }
     }
 
-    private IEnumerator shoot(Collider2D other)
+    private IEnumerator shoot()
     {
         while (targets.Count > 0)
         {
-            for(int i = targets.Count - 1; i >= 0; i--)
+            GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
+            
+            for (int i = targets.Count - 1; i >= 0; i--)
             {
-                Collider2D colider = targets[i];
-
-                if(Collider == null || colider.gameObject == null || colider.gameObject.activeSelf)
+                var target = targets[i];
+                if (target == null)
                 {
                     targets.RemoveAt(i);
                     continue;
                 }
 
-                MonsterTest monster = colider.GetComponent<MonsterTest>();
-                if(monster != null)
+                MonsterTest monster = target.GetComponent<MonsterTest>();
+                if (monster != null)
                 {
                     monster.TakeDamage(damage);
                 }
-
-                GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
-            }
-
-            if(targets.Count == 0)
-            {
-                break;
             }
 
             yield return new WaitForSeconds(interval);
@@ -93,15 +87,4 @@ public class SpaklingLaser : MonoBehaviour
 
         shootCoroutine = null;
     }
-
-    private void OnDisable()
-    {
-        if (shootCoroutine != null)
-        {
-            StopCoroutine(shootCoroutine);
-            shootCoroutine = null;
-        }
-        targets.Clear();
-    }
 }
-*/
