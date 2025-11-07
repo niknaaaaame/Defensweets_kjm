@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 20f;
-    public int damage = 4;
+    [SerializeField] private float speed = 5f;
 
+    private int damage = 0;
+    private float lifetime = 3f;
     private Transform target;
     private Rigidbody2D rb;
 
@@ -14,12 +15,19 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        ChocochipTurret chocochipTurret = GetComponent<ChocochipTurret>();
+        Destroy(gameObject, lifetime);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void SetDamage(int damageAmount)
+    {
+        damage = damageAmount;
     }
 
     public void SetTarget(Transform newTarget)
@@ -34,21 +42,18 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        Vector2 direction = (target.position - transform.position).normalized;
+
+        Vector2 direction = (Vector2)(target.position - transform.position).normalized;
+
         rb.MovePosition(rb.position + direction * speed * Time.fixedDeltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Monster"))
+        if (other.CompareTag("Monster"))
         {
-            Monster monster = other.GetComponent<Monster>();
-            if (monster != null)
-            {
-                monster.TakeDamage(damage);
-            }
-            
+            MonsterTest monster = other.GetComponent<MonsterTest>();
+            monster.TakeDamage(damage);
             Destroy(gameObject);
         }
     }

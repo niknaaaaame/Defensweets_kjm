@@ -5,12 +5,10 @@ using UnityEngine.Tilemaps;
 
 public class Tile : MonoBehaviour
 {
+    public MapSO mapData;
+
     public Tilemap tilemap;
     public TileBase groundTile;
-
-    public int mapWidth = 29;
-    public int mapHeight = 12;
-    public int tileSize = 60;
 
     private int[,] tileData;
 
@@ -20,23 +18,17 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tileData = new int[mapWidth, mapHeight];
+        tileData = new int[mapData.mapWidth, mapData.mapHeight];
 
-        for (int x = 0; x < mapWidth; x++)
+        for (int x = 0; x < mapData.mapWidth; x++)
         {
-            for (int y = 0; y < mapHeight; y++)
+            for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = 1;
-
-                //Vector3Int tilePos = new Vector3Int(x, y, 0);
-                //tilemap.SetTile(tilePos, groundTile);
             }
         }
-        //tilemap.SetTile(new Vector3Int(30, 0, 0), groundTile);
-        //tilemap.SetTile(new Vector3Int(-1, 0, 0), groundTile);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetMouseButton(0))
@@ -50,9 +42,9 @@ public class Tile : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < mapData.mapWidth; x++)
             {
-                for (int y = 0; y < mapHeight; y++)
+                for (int y = 0; y < mapData.mapHeight; y++)
                 {
                     tileData[x, y] = 1;
 
@@ -71,21 +63,20 @@ public class Tile : MonoBehaviour
 
     void HandleTile(bool place)
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //화면 좌표를 월드 좌표로
         mouseWorldPos.z = 0;
-        //메인 카메라가 보고 있는 화면의 마우스 위치를 월드 위치로 바꿔줌
-        Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos);
+        Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos); //월드 좌표를 셀 좌표로 (화면 가운데가 0, 0)
 
         Vector3Int tilemapOrigin = tilemap.cellBounds.min;
 
-        arrayX = cellPos.x - tilemapOrigin.x;
+        arrayX = cellPos.x - tilemapOrigin.x; //실제 타일맵 위치와 오프셋 빼기
         arrayY = cellPos.y - tilemapOrigin.y;
 
-        if (arrayX < 0 || arrayX >= mapWidth || arrayY < 0 || arrayY >= mapHeight) return;
+        if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight) return;
 
         if (place)
         {
-            if (CanPlaceTile(arrayX, arrayY))
+            if (CanRestorationTile(arrayX, arrayY))
             {
                 tilemap.SetTile(cellPos, groundTile);
                 tileData[arrayX, arrayY] = 1;
@@ -93,7 +84,7 @@ public class Tile : MonoBehaviour
         }
         else
         {
-            if(CanRemoveTile(arrayX, arrayY))
+            if(CanExploitationTile(arrayX, arrayY))
             {
                 tilemap.SetTile(cellPos, null);
                 tileData[arrayX, arrayY] = 0;
@@ -103,109 +94,69 @@ public class Tile : MonoBehaviour
         
     }
 
-    bool CanRemoveTile(int x, int y)
+    bool CanExploitationTile(int x, int y)
     {
-        if ((x == 0 && y == 4) && tileData[x, y] == 1) return true;
+        if (x == mapData.startPos.x && y == mapData.startPos.y && tileData[x, y] == 1)
+            return true;
 
         if (tileData[x, y] == 0)
-        {
             return false;
-        }
 
-        if (x > 0 && tileData[x - 1, y] == 0) return true;
-        if (x < mapWidth - 1 && tileData[x + 1, y] == 0) return true;
-        if (y > 0 && tileData[x, y-1] == 0) return true;
-        if (y < mapHeight - 1 && tileData[x, y + 1] == 0) return true;
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        foreach (var dir in directions)
+        {
+            int nx = x + dir.x;
+            int ny = y + dir.y;
+            if (nx >= 0 && nx < mapData.mapWidth && ny >= 0 && ny < mapData.mapHeight)
+            {
+                if (tileData[nx, ny] == 0)
+                    return true;
+            }
+        }
 
         return false;
     }
 
-    bool CanPlaceTile(int x, int y)
+    bool CanRestorationTile(int x, int y)
     {
-        if (x == 0 && y == 4)
+        if (x == mapData.startPos.x && y == mapData.startPos.y)
         {
-            if (tileData[x, y + 1] == 1 && tileData[x, y - 1] == 1 && tileData[x + 1, y] == 1) return true;
-            else return false;
+            Vector2Int[] mustBeFilled = { Vector2Int.up, Vector2Int.down, Vector2Int.right };
+            foreach (var dir in mustBeFilled)
+            {
+                int nx = x + dir.x;
+                int ny = y + dir.y;
+                if (nx < 0 || nx >= mapData.mapWidth || ny < 0 || ny >= mapData.mapHeight || tileData[nx, ny] != 1)
+                    return false;
+            }
+            return true;
         }
+
         if (tileData[x, y] == 1) return false;
 
-        //위or아래&&오른or왼 오른or왼&&위or아래 둘 다 0이고, 그 방향에 따라 위오른대각선, 위왼대각선... 대각선 칸이 0인지 체크
-        //맵 끝일 경우 예외처리
-        if (y + 1 < mapHeight && x > 0) // 위, 왼
-        {
-            if (tileData[x, y + 1] == 0 && tileData[x - 1, y] == 0)
-            {
-                if ((x + 1 < mapWidth && tileData[x + 1, y] == 0) || (y > 0 && tileData[x, y - 1] == 0))
-                {
-
-                }
-                else if (y + 1 < mapHeight && x > 0 && tileData[x - 1, y + 1] == 0) return true;
-            }
-        }
-
-        if (y + 1 < mapHeight && x + 1 < mapWidth) // 위, 오른
-        {
-            if (tileData[x, y + 1] == 0 && tileData[x + 1, y] == 0)
-            {
-                if ((x > 0 && tileData[x - 1, y] == 0) || (y > 0 && tileData[x, y - 1] == 0))
-                {
-
-                }
-                else if (y + 1 < mapHeight && x + 1 < mapWidth && tileData[x + 1, y + 1] == 0) return true;
-            }
-        }
-
-        if (y > 0 && x + 1 < mapWidth) // 아래, 오른
-        {
-            if (tileData[x, y - 1] == 0 && tileData[x + 1, y] == 0)
-            {
-                if ((x > 0 && tileData[x - 1, y] == 0) || (y + 1 < mapHeight && tileData[x, y + 1] == 0))
-                {
-
-                }
-                else if (y > 0 && x + 1 < mapWidth && tileData[x + 1, y - 1] == 0) return true;
-            }
-        }
-
-        if (y > 0 && x > 0) // 아래, 왼
-        {
-            if (tileData[x, y - 1] == 0 && tileData[x - 1, y] == 0)
-            {
-                if ((x + 1 < mapWidth && tileData[x + 1, y] == 0) || (y + 1 < mapHeight && tileData[x, y + 1] == 0))
-                {
-
-                }
-                else if (y > 0 && x > 0 && tileData[x - 1, y - 1] == 0) return true;
-            }
-        }
-
-        //if (x > 0 && x < mapWidth - 1 && y > 0 && y < mapHeight - 1)
-        //{
-        //    if (tileData[x, y + 1] == 0 && tileData[x, y - 1] == 0 &&
-        //        tileData[x - 1, y] == 0 && tileData[x + 1, y] == 0)
-        //    {
-        //        if (tileData[x - 1, y + 1] == 0 && tileData[x + 1, y + 1] == 0 &&
-        //            tileData[x - 1, y - 1] == 0 && tileData[x + 1, y - 1] == 0)
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //}
-
-
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         int emptyCount = 0;
 
-        if (x == 0 || tileData[x - 1, y] == 1) emptyCount++;
-        if (x == mapWidth - 1 || tileData[x + 1, y] == 1) emptyCount++;
-        if (y == 0 || tileData[x, y-1] == 1) emptyCount++;
-        if (y == mapHeight - 1 || tileData[x, y+1] == 1) emptyCount++;
+        foreach (var dir in directions)
+        {
+            int nx = x + dir.x;
+            int ny = y + dir.y;
+
+            if (nx < 0 || nx >= mapData.mapWidth || ny < 0 || ny >= mapData.mapHeight)
+            {
+                emptyCount++;
+                continue;
+            }
+
+            if (tileData[nx, ny] == 1) emptyCount++;
+        }
 
         return emptyCount >= 3;
     }
 
     bool CheckComplete()
     {
-        if (tileData[mapWidth - 1, 4] == 0) return true;
+        if (tileData[mapData.goalPos.x, mapData.goalPos.y] == 0) return true;
         else return false;
     }
 }
