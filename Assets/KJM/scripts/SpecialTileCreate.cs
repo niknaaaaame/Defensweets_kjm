@@ -6,30 +6,33 @@ using UnityEngine.Tilemaps;
 public class SpecialTileCreate : MonoBehaviour
 {
     public SpecialTilesSO special;
-
     public Tilemap tilemap;
     public TileBase specialTile;
 
-    //private string stageName = "stage1";
+    public int currentStage = 1; //임시 현재 스테이지 번호
+    //타워 설치 시 특수 타일 판단은 TileBase 에셋으로 확인
 
-    //맵 크기와 똑같은 크기의 배열에 특수 타일 위치가 저장되어 있음 0이면 없는거고 만약 1이면 특수타일이 있다는 뜻
-    //그 다음 여기서 그 배열을 읽어서 특수 타일 위치에 특수 타일을 설치하고 싶은 것.
-    //배열에만 추가하는 게 아니라 거기에 설치해야 함
-
-    
-
-    // Start is called before the first frame update
     void Start()
     {
-       
-        
+        if (special == null || tilemap == null || specialTile == null)
+        {
+            Debug.LogWarning("SpecialTileCreate: 필요한 값이 비어 있음!");
+            return;
+        }
 
+        var stage = special.stages.Find(s => s.stageNumber == currentStage);
+        if (stage == null)
+        {
+            Debug.LogWarning($"스테이지 {currentStage} 데이터 없음!");
+            return;
+        }
 
-    }
+        foreach (var pos in stage.positions)
+        {
+            Vector3Int tilePos = new Vector3Int(pos.x + tilemap.origin.x, pos.y + tilemap.origin.y, 0);
+            tilemap.SetTile(tilePos, specialTile);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //Debug.Log($"스테이지 {currentStage}의 특수 타일 {stage.positions.Count}개 설치 완료!");
     }
 }
