@@ -50,6 +50,13 @@ public static class BFS
             // ÀÌ¿ô Å½»ö
             foreach (Vector3Int neighbourPos in GetNeighbourPositions(currentNode.position))
             {
+                /*
+                // °æ°è ¹þ¾î³µ´ÂÁö È®ÀÎ
+                if (!TilemapReader_YYJ.Instance.IsWithinBounds(neighbourPos))
+                {
+                    continue;
+                }
+                */
                 if (visited.Contains(neighbourPos))
                 {
                     continue;

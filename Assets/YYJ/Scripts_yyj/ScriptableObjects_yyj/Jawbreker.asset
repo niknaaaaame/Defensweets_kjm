@@ -9,14 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a7ca2d646656d248aa9264a1890d975, type: 3}
-  m_Name: CubeCastella
+  m_Script: {fileID: 11500000, guid: 03dbb1360f5eda4498af63fde5b7546f, type: 3}
+  m_Name: Jawbreker
   m_EditorClassIdentifier: 
-  monsterName: CubeCastella
-  monsterType: 1
-  prefab: {fileID: 1652357375002235112, guid: 3598f848aa093e744b3ba58e7dcbd82a, type: 3}
-  hp: 60
-  speed: 6
-  rewardSugar: 4
+  monsterName: Jawbreaker
+  monsterType: 2
+  prefab: {fileID: 4098039936591621521, guid: ee7bc33b1a38f614e97f1b785ba0dccd, type: 3}
+  hp: 200
+  speed: 2
+  rewardSugar: 12
   slowResist: 0
   splitsOnDeath: 0
+  splitMonsterSO: {fileID: 0}
+  splitCount: 0
