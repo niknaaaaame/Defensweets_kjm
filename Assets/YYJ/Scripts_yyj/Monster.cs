@@ -26,13 +26,14 @@ public class Monster : MonoBehaviour, IDamageable
         currentSpeed = monsterData.speed;
 
         //goal = GameObject.FindWithTag("Goal").transform;
-        goal = GameObject.Find("Goal").transform;
-        if ( goal == null )
+        GameObject goalObject = GameObject.Find("Goal");
+        if ( goalObject == null )
         {
             Debug.LogError("Goal이 존재하지 않습니다.");
             Destroy(gameObject);
             return;
         }
+        goal = goalObject.transform;
 
         path = BFS.FindPath(transform.position, goal.position);
 
