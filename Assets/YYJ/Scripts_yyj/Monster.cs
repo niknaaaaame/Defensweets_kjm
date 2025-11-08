@@ -149,6 +149,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void HandleSplit()
     {
+        /*
         if (!monsterData.splitsOnDeath || monsterData.splitMonsterSO == null || monsterData.splitCount <= 0)
             { return; }
 
@@ -158,5 +159,6 @@ public class Monster : MonoBehaviour, IDamageable
 
             Instantiate(monsterData.splitMonsterSO.prefab, spawnPos, Quaternion.identity);
         }
+        */
     }
 }
