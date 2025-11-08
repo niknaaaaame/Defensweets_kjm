@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
             // 보상 지급
             var reward = stage.waves[currentWaveIndex].reward;
             if (reward.sugar > 0) ResourceSystem.Instance.AddSugar(reward.sugar);
-            // (옵션) 크리스탈 보너스도 여기서
 
             EventBus.Publish(Events.OnWaveCleared, currentWaveIndex);
             SetState(GameState.Ready);
@@ -99,7 +98,8 @@ public class GameManager : MonoBehaviour
 
     private void OnMonsterKilled()
     {
-        // 필요 시 글로벌 카운트/콤보 등 처리
+        var reward = stage.waves[currentWaveIndex].reward;
+        if (reward.sugar > 0) ResourceSystem.Instance.AddSugar(reward.sugar);
     }
 
     private void OnWaveCleared(int waveIndex)

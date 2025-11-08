@@ -24,7 +24,7 @@ public static class EventBus
     }
 }
 
-// 추천: 공용 키를 상수로 관리
+// 공용 키를 상수로 관리
 public static class Events
 {
     public const string OnMonsterKilled = "OnMonsterKilled";   // arg: int rewardSugar

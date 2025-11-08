@@ -54,6 +54,12 @@ public class ResourceSystem : MonoBehaviour
         EventBus.Publish(Events.OnResourcePing, null);
     }
 
+    public void AddCrystal(int amount)
+    {
+        crystal += amount;
+        EventBus.Publish(Events.OnResourcePing, null);
+    }
+
     public int Sugar => sugar;
     public int Crystal => crystal;
 }
