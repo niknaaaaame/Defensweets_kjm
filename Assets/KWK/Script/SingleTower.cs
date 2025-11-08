@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
-public class ChocochipTurret : MonoBehaviour
+public class SingleTower : MonoBehaviour
 {
-    [SerializeField] private GameObject prefab;
+    public TowerSO towerData;
+
+    [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
-    [SerializeField] private int damage = 4;
-    [SerializeField] private float interval = 1f;
-    [SerializeField] private float energy = 100f;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -28,17 +27,17 @@ public class ChocochipTurret : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
 
-        if(!targets.Contains(other))
+        if (!targets.Contains(other))
         {
             targets.Add(other);
         }
 
-        if(shootCoroutine == null)
+        if (shootCoroutine == null)
         {
             shootCoroutine = StartCoroutine(shoot());
         }
@@ -46,14 +45,14 @@ public class ChocochipTurret : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
 
         targets.Remove(other);
 
-        if(targets.Count == 0 && shootCoroutine != null)
+        if (targets.Count == 0 && shootCoroutine != null)
         {
             StopCoroutine(shootCoroutine);
             shootCoroutine = null;
@@ -64,18 +63,12 @@ public class ChocochipTurret : MonoBehaviour
     {
         while (targets.Count > 0)
         {
-            GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
-            Bullet bullet = instance.GetComponent<Bullet>();
-            
-            if (bullet != null)
-            {
-                bullet.SetTarget(targets[0].transform);
-                bullet.SetDamage(damage);
-            }
+            GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            energy -= 2;
+            MonsterTest monster = targets[0].GetComponent<MonsterTest>();
+            monster.TakeDamage(towerData.levels[0].damage);
 
-            yield return new WaitForSeconds(interval);
+            yield return new WaitForSeconds(towerData.levels[0].attackSpeed);
         }
 
         shootCoroutine = null;
