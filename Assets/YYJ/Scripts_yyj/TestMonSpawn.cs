@@ -4,23 +4,37 @@ using UnityEngine;
 
 public class TestMonSpawn : MonoBehaviour
 {
-    public GameObject monsterPrefab;
-    // MapSO에 시작점이 (0, 4)로 되어있네요
+    public GameObject monsterPrefab1_Normal;
+    public GameObject monsterPrefab2_Tank;
+    public GameObject monsterPrefab3_Fast;
+
     public Vector3 spawnPosition = new Vector3(0, 4, 0);
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            if (monsterPrefab != null && TilemapReader_YYJ.Instance != null)
-            {
-                Instantiate(monsterPrefab, spawnPosition, Quaternion.identity);
-                Debug.Log("YYJ 테스트 몬스터 스폰!");
-            }
-            else
-            {
-                Debug.LogError("Monster Prefab이 없거나, YYJ_TilemapReader가 씬에 없습니다!");
-            }
+            SpawnMonster(monsterPrefab1_Normal);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SpawnMonster(monsterPrefab2_Tank);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SpawnMonster(monsterPrefab3_Fast);
+        }
+    }
+
+    void SpawnMonster(GameObject prefab)
+    {
+        if (prefab != null && TilemapReader_YYJ.Instance != null)
+        {
+            Instantiate(prefab, spawnPosition, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("몬스터 소환에 실패했습니다.");
         }
     }
 }

@@ -9,14 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a7ca2d646656d248aa9264a1890d975, type: 3}
-  m_Name: InfectedCake
+  m_Script: {fileID: 11500000, guid: 03dbb1360f5eda4498af63fde5b7546f, type: 3}
+  m_Name: InfectedCake 1
   m_EditorClassIdentifier: 
   monsterName: InfectedCake
   monsterType: 0
-  prefab: {fileID: 3854582069506610360, guid: 2518088f402147e4ea230a64a74c5ec4, type: 3}
+  prefab: {fileID: 4383021236019794076, guid: 2518088f402147e4ea230a64a74c5ec4, type: 3}
   hp: 100
   speed: 3
   rewardSugar: 6
   slowResist: 0
   splitsOnDeath: 0
+  splitMonsterSO: {fileID: 0}
+  splitCount: 0
