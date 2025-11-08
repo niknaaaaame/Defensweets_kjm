@@ -16,12 +16,17 @@ public class ResourceSystem : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
 
-        // 이벤트 구독: 몬스터 처치 → 설탕가루 추가
-        EventBus.Subscribe(Events.OnMonsterKilled, (obj) =>
-        {
-            AddSugar((int)obj);
-            EventBus.Publish(Events.OnResourcePing, null);
-        });
+        EventBus.Subscribe(Events.OnMonsterKilled, OnMonsterKilledObj);
+    }
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe(Events.OnMonsterKilled, OnMonsterKilledObj);
+    }
+
+    private void OnMonsterKilledObj(object obj)
+    {
+        if (obj is int sugar) AddSugar(sugar);
+        EventBus.Publish(Events.OnResourcePing, null);
     }
 
     // 초기화 (스테이지 시작 시 GameManager가 호출)
