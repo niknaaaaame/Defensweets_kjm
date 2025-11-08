@@ -8,7 +8,17 @@ public class TestMonSpawn : MonoBehaviour
     public GameObject monsterPrefab2_Tank;
     public GameObject monsterPrefab3_Fast;
 
-    public Vector3 spawnPosition = new Vector3(0, 4, 0);
+    public Transform departPoint;
+
+    void Start()
+    {
+        GameObject departObject = GameObject.Find("Depart");
+
+        if (departObject != null)
+        {
+            departPoint = departPoint.transform;
+        }
+    }
 
     void Update()
     {
@@ -28,13 +38,16 @@ public class TestMonSpawn : MonoBehaviour
 
     void SpawnMonster(GameObject prefab)
     {
-        if (prefab != null && TilemapReader_YYJ.Instance != null)
+        if (prefab != null && TilemapReader_YYJ.Instance != null && departPoint != null)
         {
-            Instantiate(prefab, spawnPosition, Quaternion.identity);
+            Instantiate(prefab, departPoint.position, Quaternion.identity);
         }
         else
         {
-            Debug.LogError("몬스터 소환에 실패했습니다.");
+            if (departPoint == null)
+            {
+                Debug.LogError("소환에 실패");
+            }
         }
     }
 }

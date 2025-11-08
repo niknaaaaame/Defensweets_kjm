@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MonsterTest : MonoBehaviour
 {
-    [SerializeField] private float speed = 2f;
-    [SerializeField] private int health = 10;
+    [SerializeField] private float speed;
+    [SerializeField] private int health;
 
     private Rigidbody2D rb;
 
@@ -13,15 +13,14 @@ public class MonsterTest : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        rb.velocity = Vector2.right * speed;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (rb != null)
-        {
-            rb.velocity = Vector2.right * speed;
-        }
+
     }
 
     public void TakeDamage(int damage)
