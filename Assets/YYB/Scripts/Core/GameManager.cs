@@ -36,47 +36,40 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Ready);
         // 준비가 끝나면 StartNextWave()를 버튼/타이머로 호출
     }
-    /*
-    public Transform spawnTransform;  // 스폰 지점(월드 좌표)
-    public Transform goalTransform;   // 목표 지점(월드 좌표)
-    public TileSystem tileSystem;
+    public Transform spawnTransform;  // 스폰 지점(월드)
+    public Transform goalTransform;   // 목표 지점(월드)
 
     public void StartNextWave()
     {
         if (CurrentState != GameState.Ready) return;
 
-        // 1) 현재 연결된 타일 상태로 최단경로 계산 + 잠금
-        var startCell = PathSystem.Instance.WorldToCell(spawnTransform.position);
-        var goalCell = PathSystem.Instance.WorldToCell(goalTransform.position);
-        var ok = PathSystem.Instance.ComputeAndLockPath(
-            tileSystem.GetWalkableCells(), startCell, goalCell);
-
+        // 1) 경로 계산 & 잠금
+        bool ok = PathSystem.Instance.ComputeAndLockPath(spawnTransform.position, goalTransform.position);
         if (!ok)
         {
-            // 경로가 없으면 웨이브 시작 불가(경고/가이드)
-            Debug.LogWarning("경로가 없어 웨이브를 시작할 수 없습니다.");
+            Debug.LogWarning("[GameManager] 경로가 없어 웨이브를 시작할 수 없습니다.");
             return;
         }
 
         // 2) 웨이브 진행
+        currentWaveIndex++;
         SetState(GameState.Wave);
+
         StartCoroutine(WaveSystem.Instance.RunWave(
-            stage.waves[++currentWaveIndex],
-            onSpawned: () => aliveMonsters++,
-            onOneDied: () => { aliveMonsters--; CheckWaveEnd(); }));
+            stage.waves[currentWaveIndex],
+            onSpawned: () => { aliveMonsters++; },
+            onOneRemoved: () => { aliveMonsters = Mathf.Max(0, aliveMonsters - 1); CheckWaveEnd(); }
+        ));
     }
-    */
+
     private void CheckWaveEnd()
     {
-        // 스폰 완료 & 필드 몬스터 0 → 웨이브 종료
         if (aliveMonsters <= 0 && WaveSystem.Instance.IsSpawnFinished)
         {
-            // 보상 지급
-            var reward = stage.waves[currentWaveIndex].reward;
-            if (reward.sugar > 0) ResourceSystem.Instance.AddSugar(reward.sugar);
-
+            // 보상은 WaveSystem 쪽에서
             EventBus.Publish(Events.OnWaveCleared, currentWaveIndex);
             SetState(GameState.Ready);
+            PathSystem.Instance.Unlock();
         }
     }
 
@@ -95,13 +88,13 @@ public class GameManager : MonoBehaviour
         gateHp--;
         if (gateHp <= 0) OnFailed();
     }
-
+    
     private void OnMonsterKilled()
     {
         var reward = stage.waves[currentWaveIndex].reward;
         if (reward.sugar > 0) ResourceSystem.Instance.AddSugar(reward.sugar);
     }
-
+    
     private void OnWaveCleared(int waveIndex)
     {
         // UI 연출/사운드 등
@@ -121,8 +114,8 @@ public class GameManager : MonoBehaviour
 
     private void SetState(GameState next)
     {
+        if (CurrentState == next) return; // 중복 전이 방지
         CurrentState = next;
         EventBus.Publish(Events.OnStateChanged, next);
-        // Ready: 길/타워 조작 허용, Wave: 일부 제한, Result: UI 표시
     }
 }
