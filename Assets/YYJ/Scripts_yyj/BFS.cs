@@ -6,10 +6,10 @@ public static class BFS
 {
     private class PathNode
     {
-        public Vector3Int position;
+        public Vector2Int position;
         public PathNode parent;
 
-        public PathNode(Vector3Int position, PathNode parent = null)
+        public PathNode(Vector2Int position, PathNode parent = null)
         {
             this.position = position;
             this.parent = parent;
@@ -25,11 +25,11 @@ public static class BFS
         }
 
         // 월드 좌표 -> 셀 좌표
-        Vector3Int startPos = TilemapReader_YYJ.Instance.WorldToCell(startWorldPos);
-        Vector3Int endPos = TilemapReader_YYJ.Instance.WorldToCell(endWorldPos);
+        Vector2Int startPos = TilemapReader_YYJ.Instance.WorldToArray(startWorldPos);
+        Vector2Int endPos = TilemapReader_YYJ.Instance.WorldToArray(endWorldPos);
 
         Queue<PathNode> queue = new Queue<PathNode>();
-        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
         PathNode startNode = new PathNode(startPos);
         queue.Enqueue(startNode);
@@ -48,10 +48,9 @@ public static class BFS
             }
 
             // 이웃 탐색
-            foreach (Vector3Int neighbourPos in GetNeighbourPositions(currentNode.position))
+            foreach (Vector2Int neighbourPos in GetNeighbourPositions(currentNode.position))
             {
                 /*
-                // 경계 벗어났는지 확인
                 if (!TilemapReader_YYJ.Instance.IsWithinBounds(neighbourPos))
                 {
                     continue;
@@ -66,7 +65,7 @@ public static class BFS
                 if (!TilemapReader_YYJ.Instance.IsWalkable(neighbourPos))
                 {
                     visited.Add(neighbourPos);  // 이동 불가능한 곳 방문 처리
-                    continue;   // 이동 불가능이면 무시
+                    continue;
                 }
 
                 // 새 경로 큐에 추가
@@ -80,13 +79,13 @@ public static class BFS
     }
 
     // 상하좌우 이웃
-    private static List<Vector3Int> GetNeighbourPositions(Vector3Int currentPos)
+    private static List<Vector2Int> GetNeighbourPositions(Vector2Int currentPos)
     {
-        List<Vector3Int> neighbours = new List<Vector3Int>();
-        neighbours.Add(currentPos + new Vector3Int(0, 1, 0));
-        neighbours.Add(currentPos + new Vector3Int(0, -1, 0));
-        neighbours.Add(currentPos + new Vector3Int(1, 0, 0));
-        neighbours.Add(currentPos + new Vector3Int(-1, 0, 0));
+        List<Vector2Int> neighbours = new List<Vector2Int>();
+        neighbours.Add(currentPos + new Vector2Int(0, 1));
+        neighbours.Add(currentPos + new Vector2Int(0, -1));
+        neighbours.Add(currentPos + new Vector2Int(1, 0));
+        neighbours.Add(currentPos + new Vector2Int(-1, 0));
         return neighbours;
     }
 
@@ -106,7 +105,7 @@ public static class BFS
         foreach (var node in path)
         {
             // 셀 좌표 -> 월드 좌표
-            worldPath.Add(TilemapReader_YYJ.Instance.CellToWorld(node.position));
+            worldPath.Add(TilemapReader_YYJ.Instance.ArrayToWorld(node.position));
         }
         return worldPath;
     }
