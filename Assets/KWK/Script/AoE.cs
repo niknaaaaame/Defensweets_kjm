@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class SpaklingLaser : MonoBehaviour
+public class AoE : MonoBehaviour
 {
+    public TowerSO towerData;
+
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform shootPoint;
-    [SerializeField] private int damage = 4;
-    [SerializeField] private float interval = 1f;
+    [SerializeField] private float prefabDestroyTime;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -65,7 +66,9 @@ public class SpaklingLaser : MonoBehaviour
         while (targets.Count > 0)
         {
             GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
-            
+
+            Destroy(instance, prefabDestroyTime);
+
             for (int i = targets.Count - 1; i >= 0; i--)
             {
                 var target = targets[i];
@@ -78,11 +81,11 @@ public class SpaklingLaser : MonoBehaviour
                 MonsterTest monster = target.GetComponent<MonsterTest>();
                 if (monster != null)
                 {
-                    monster.TakeDamage(damage);
+                    monster.TakeDamage(towerData.levels[0].damage);
                 }
             }
 
-            yield return new WaitForSeconds(interval);
+            yield return new WaitForSeconds(towerData.levels[0].attackSpeed);
         }
 
         shootCoroutine = null;

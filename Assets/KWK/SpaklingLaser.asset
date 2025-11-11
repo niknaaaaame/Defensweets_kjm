@@ -17,8 +17,9 @@ MonoBehaviour:
   icon: {fileID: 0}
   prefab: {fileID: 0}
   levels:
-  - damage: 0
-    attackSpeed: 0
+  - damage: 10
+    attackSpeed: 2
     range: 0
     upgradeCostSugar: 0
     specialCostCrystal: 0
+    energy: 0
