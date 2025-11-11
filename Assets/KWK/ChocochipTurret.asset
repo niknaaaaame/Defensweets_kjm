@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   prefab: {fileID: 0}
   levels:
-  - damage: 3
+  - damage: 6
     attackSpeed: 0.6
     range: 3
     upgradeCostSugar: 0
