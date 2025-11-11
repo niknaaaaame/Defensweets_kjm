@@ -8,9 +8,13 @@ public class TilemapReader_YYJ : MonoBehaviour
     public static TilemapReader_YYJ Instance { get; private set; }
 
     private Tilemap walkableTilemap;
-    private TileEditor tileEditorScript;
-    private MapSO mapData;
-    private Vector3Int tilemapOrigin;
+
+    // 이동 가능 구역 오브젝트 위치로 고정 (스크립트로만 처리하려 했으나 도저히 오류가 해결이 안되서 방식 변경)
+    public Transform boundCorner1;
+    public Transform boundCorner2;
+
+    private Vector3Int minCellBounds;
+    private Vector3Int maxCellBounds;
 
     void Awake()
     {
@@ -20,7 +24,7 @@ public class TilemapReader_YYJ : MonoBehaviour
         }
         Instance = this;
 
-        tileEditorScript = FindObjectOfType<TileEditor>();
+        TileEditor tileEditorScript = FindObjectOfType<TileEditor>();
         if (tileEditorScript == null)
         {
             Debug.LogError("TileEditor 스크립트를 찾을수 없습니다");
@@ -31,55 +35,46 @@ public class TilemapReader_YYJ : MonoBehaviour
         if (walkableTilemap == null)
         {
             Debug.LogError("tilemap이 연결되지 않았습니다");
-        }
-
-        mapData = tileEditorScript.mapData;
-        if (mapData == null)
-        {
-            Debug.LogError("MapSO가 연결되지 않았습니다");
             return;
         }
 
-        walkableTilemap.CompressBounds();
-        tilemapOrigin = walkableTilemap.cellBounds.min;
+        if (boundCorner1 == null || boundCorner2 == null)
+        {
+            Debug.LogError("boundCorner가 없습니다");
+            return;
+        }
 
-        Debug.Log($"맵 원점 : {tilemapOrigin} | 맵 데이터 : W:{mapData.mapWidth}, H:{mapData.mapHeight}");
+        Vector3Int cell1 = walkableTilemap.WorldToCell(boundCorner1.position);
+        Vector3Int cell2 = walkableTilemap.WorldToCell(boundCorner2.position);
+
+        minCellBounds = Vector3Int.Min(cell1, cell2);
+        maxCellBounds = Vector3Int.Max(cell1, cell2);
+
+        Debug.Log($"Min : {minCellBounds}, Max : {maxCellBounds}");
     }
 
-    /*
-    public bool IsWithinBounds(Vector2Int arrayPos)
+    public bool IsWithinBounds(Vector3Int cellPos)
     {
-        if (mapData == null) return false;
-        return arrayPos.x >= 0 && arrayPos.x < mapData.mapWidth &&
-               arrayPos.y >= 0 && arrayPos.y < mapData.mapHeight;
+        return cellPos.x >= minCellBounds.x && cellPos.x <= maxCellBounds.x &&
+               cellPos.y >= minCellBounds.y && cellPos.y <= maxCellBounds.y;
     }
-    */
-    public bool IsWalkable(Vector2Int arrayPos)
+
+    public bool IsWalkable(Vector3Int cellPos)
     {
         if (walkableTilemap == null) return false;
-
-        Vector3Int cellPos = new Vector3Int(arrayPos.x + tilemapOrigin.x, arrayPos.y + tilemapOrigin.y, 0);
 
         return walkableTilemap.GetTile(cellPos) == null;
     }
 
-    public Vector2Int WorldToArray(Vector3 worldPos)
+    public Vector3Int WorldToCell(Vector3 worldPos)
     {
-        if (walkableTilemap == null) return Vector2Int.zero;
-        Vector3Int cellPos = walkableTilemap.WorldToCell(worldPos);
-
-        int arrayX = cellPos.x - tilemapOrigin.x;
-        int arrayY = cellPos.y - tilemapOrigin.y;
-
-        return new Vector2Int(arrayX, arrayY);
+        if (walkableTilemap == null) return Vector3Int.zero;
+        return walkableTilemap.WorldToCell(worldPos);
     }
 
-    public Vector3 ArrayToWorld(Vector2Int arrayPos)
+    public Vector3 CellToWorld(Vector3Int cellPos)
     {
-        if (walkableTilemap == null) return Vector3.zero;
-
-        Vector3Int cellPos = new Vector3Int(arrayPos.x + tilemapOrigin.x, arrayPos.y + tilemapOrigin.y, 0);
-
+        if (walkableTilemap == null) return Vector3.zero;      
         return walkableTilemap.GetCellCenterWorld(cellPos);
     }
 }
