@@ -24,6 +24,28 @@ public static class EventBus
     }
 }
 
+public static class EventBusTyped
+{
+    public static void Subscribe<T>(string key, Action<T> cb)
+    {
+        EventBus.Subscribe(key, (obj) => {
+            if (obj is T t) cb(t);
+            else if (obj == null && default(T) == null) cb(default);
+            else Debug.LogWarning($"[EventBus] Payload type mismatch. key={key}, got={obj?.GetType().Name}, want={typeof(T).Name}");
+        });
+    }
+
+    public static void Unsubscribe<T>(string key, Action<T> cb)
+    {
+    }
+
+    public static void Publish<T>(string key, T payload)
+    {
+        EventBus.Publish(key, payload);
+    }
+}
+
+
 // 공용 키를 상수로 관리
 public static class Events
 {
