@@ -92,14 +92,14 @@ public class WaveSystem : MonoBehaviour
             ResourceSystem.Instance.AddSugar(rw.sugar);
 
         if (rw.crystalBonus > 0)
-            ResourceSystem.Instance.TryUseCrystal(-rw.crystalBonus);
+            ResourceSystem.Instance.AddCrystal(rw.crystalBonus);
 
         // 상태 정리
         IsWaveActive = false;
         onSpawnedCb = null;
         onOneRemovedCb = null;
 
-        // (선택) 웨이브 종료 이벤트 방송
+        // 웨이브 종료 이벤트 방송
         // EventBus.Publish(Events.OnWaveCleared, null);
     }
 
@@ -147,7 +147,6 @@ public class WaveSystem : MonoBehaviour
 
         RegisterMonster(go);
 
-        // (팀원이 Monster.cs에서 Initialize를 제공하면, 여기서 주입)
         // var monster = go.GetComponent<Monster>();
         // if (monster != null) monster.Initialize(monsterData /*, PathSystem 등 필요시*/);
     }
