@@ -10,10 +10,15 @@ public class TileEditor : MonoBehaviour
     public Tilemap tilemap;
     public TileBase groundTile;
     public TileBase specialTile; 
-    public SpecialTilesSO specialTilesSO; 
+    public StageTilesSO specialTilesSO;
+
+    private int crystalSpent = 2;
+    private int crystalRefunded = 1;
+    private int crystalGain_FromTile = 12; 
 
     private int[,] tileData;
-    private bool[,] isSpecialTile; 
+    private bool[,] isSpecialTile;
+    private bool[,] isResourceTile;
 
     private int arrayX;
     private int arrayY;
@@ -25,6 +30,7 @@ public class TileEditor : MonoBehaviour
     {
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
+        isResourceTile = new bool[mapData.mapWidth, mapData.mapHeight];
 
         for (int x = 0; x < mapData.mapWidth; x++)
         {
@@ -35,15 +41,14 @@ public class TileEditor : MonoBehaviour
             }
         }
 
-        if (specialTilesSO != null)
+        foreach (var stage in specialTilesSO.stages.FindAll(s => s.stageNumber == 1))
         {
-            var stage = specialTilesSO.stages.Find(s => s.stageNumber == 1); 
-            if (stage != null)
+            foreach (var pos in stage.positions)
             {
-                foreach (var pos in stage.positions)
-                {
+                if (stage.type == StageTilesSO.TileType.Special)
                     isSpecialTile[pos.x, pos.y] = true;
-                }
+                else if (stage.type == StageTilesSO.TileType.Currency)
+                    isResourceTile[pos.x, pos.y] = true;
             }
         }
     }
@@ -74,7 +79,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            Debug.Log("연결 완료");
+            //Debug.Log("연결 완료");
         }
     }
 
@@ -93,24 +98,35 @@ public class TileEditor : MonoBehaviour
 
         if (place)
         {
-            tilemap.SetTile(cellPos, isSpecialTile[arrayX, arrayY] ? specialTile : groundTile);
-            tileData[arrayX, arrayY] = BLOCK;
-            //ResourceSystem.Instance.AddCrystal(1);
-            
+            if (CanRestorationTile(arrayX, arrayY))
+            {
+                tilemap.SetTile(cellPos, isSpecialTile[arrayX, arrayY] ? specialTile : groundTile);
+                tileData[arrayX, arrayY] = BLOCK;
+                ResourceSystem.Instance.AddCrystal(crystalRefunded);
+                Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
+            }
         }
         else
         {
             if (CanExploitationTile(arrayX, arrayY))
             {
-                tilemap.SetTile(cellPos, null);
-                tileData[arrayX, arrayY] = PATH;
-                ResourceSystem.Instance.TryUseCrystal(2);
-                Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
+                if (ResourceSystem.Instance.TryUseCrystal(crystalSpent))
+                {
+                    tilemap.SetTile(cellPos, null);
+                    tileData[arrayX, arrayY] = PATH;
+                    Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
+                    if (isResourceTile[arrayX, arrayY])
+                    {
+                        ResourceSystem.Instance.AddCrystal(crystalGain_FromTile);
+                        Debug.Log($"Resource Tile Exploited! +{crystalGain_FromTile} Crystals");
+                        isResourceTile[arrayX, arrayY] = false;
+                    }
+                }
             }
         }
     }
 
-    bool CanExploitationTile(int x, int y)
+    bool CanExploitationTile(int x, int y) //개척 가능 조건
     {
         if (x == mapData.startPos.x && y == mapData.startPos.y && tileData[x, y] == BLOCK)
             return true;
@@ -132,42 +148,14 @@ public class TileEditor : MonoBehaviour
         return false;
     }
 
-    //bool CanRestorationTile(int x, int y)
-    //{
-    //    if (x == mapData.startPos.x && y == mapData.startPos.y)
-    //    {
-    //        Vector2Int[] mustBeFilled = { Vector2Int.up, Vector2Int.down, Vector2Int.right };
-    //        foreach (var dir in mustBeFilled)
-    //        {
-    //            int nx = x + dir.x;
-    //            int ny = y + dir.y;
-    //            if (nx < 0 || nx >= mapData.mapWidth || ny < 0 || ny >= mapData.mapHeight || tileData[nx, ny] != 1)
-    //                return false;
-    //        }
-    //        return true;
-    //    }
+    bool CanRestorationTile(int x, int y) //복구 가능 조건 = 잘못된 재화 회수 방지
+    {
+        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //맵 바깥 검사
+        if (tileData[x, y] == BLOCK) return false;
 
-    //    if (tileData[x, y] == 1) return false;
-
-    //    Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-    //    int emptyCount = 0;
-
-    //    foreach (var dir in directions)
-    //    {
-    //        int nx = x + dir.x;
-    //        int ny = y + dir.y;
-
-    //        if (nx < 0 || nx >= mapData.mapWidth || ny < 0 || ny >= mapData.mapHeight)
-    //        {
-    //            emptyCount++;
-    //            continue;
-    //        }
-
-    //        if (tileData[nx, ny] == 1) emptyCount++;
-    //    }
-
-    //    return emptyCount >= 3;
-    //}
+        tileData[x, y] = BLOCK;
+        return true;
+    }
 
     bool CheckComplete()
     {
