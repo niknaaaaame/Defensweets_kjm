@@ -7,6 +7,7 @@ public class MonsterSO_YYJ : ScriptableObject
 {
     public string monsterName;
     public MonsterType monsterType;
+    public TargetType targetType;
     public GameObject prefab;  // Monster.cs가 붙은 프리팹
     public int hp;
     public float speed;

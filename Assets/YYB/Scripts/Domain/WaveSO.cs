@@ -13,7 +13,8 @@ public class WaveSO : ScriptableObject
 [System.Serializable]
 public struct SpawnGroup
 {
-    public MonsterSO monster;
+    //public MonsterSO monster;
+    public MonsterSO_YYJ monster;
     public int count;
     public float interval;
     public float startDelay;

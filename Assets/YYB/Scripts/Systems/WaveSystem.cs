@@ -129,7 +129,7 @@ public class WaveSystem : MonoBehaviour
     /// <summary>
     /// 몬스터 1기 소환 + WaveAgent 부착해서 생애주기 관리
     /// </summary>
-    private void SpawnOne(MonsterSO monsterData)
+    private void SpawnOne(MonsterSO_YYJ monsterData)
     {
         var prefab = monsterData.prefab;
         if (prefab == null)
