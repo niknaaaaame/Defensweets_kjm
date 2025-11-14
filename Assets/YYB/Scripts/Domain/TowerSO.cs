@@ -20,4 +20,6 @@ public struct TowerLevel
     public float range;         // 유닛 거리 단위(타일 기준 환산)
     public int upgradeCostSugar;
     public int specialCostCrystal; // 특수 강화 없으면 0
+
+    public int energy;
 }

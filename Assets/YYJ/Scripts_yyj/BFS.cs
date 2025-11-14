@@ -6,10 +6,10 @@ public static class BFS
 {
     private class PathNode
     {
-        public Vector2Int position;
+        public Vector3Int position;
         public PathNode parent;
 
-        public PathNode(Vector2Int position, PathNode parent = null)
+        public PathNode(Vector3Int position, PathNode parent = null)
         {
             this.position = position;
             this.parent = parent;
@@ -25,11 +25,11 @@ public static class BFS
         }
 
         // ¿ùµå ÁÂÇ¥ -> ¼¿ ÁÂÇ¥
-        Vector2Int startPos = TilemapReader_YYJ.Instance.WorldToArray(startWorldPos);
-        Vector2Int endPos = TilemapReader_YYJ.Instance.WorldToArray(endWorldPos);
+        Vector3Int startPos = TilemapReader_YYJ.Instance.WorldToCell(startWorldPos);
+        Vector3Int endPos = TilemapReader_YYJ.Instance.WorldToCell(endWorldPos);
 
         Queue<PathNode> queue = new Queue<PathNode>();
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
 
         PathNode startNode = new PathNode(startPos);
         queue.Enqueue(startNode);
@@ -48,14 +48,13 @@ public static class BFS
             }
 
             // ÀÌ¿ô Å½»ö
-            foreach (Vector2Int neighbourPos in GetNeighbourPositions(currentNode.position))
+            foreach (Vector3Int neighbourPos in GetNeighbourPositions(currentNode.position))
             {
-                /*
                 if (!TilemapReader_YYJ.Instance.IsWithinBounds(neighbourPos))
                 {
                     continue;
                 }
-                */
+                
                 if (visited.Contains(neighbourPos))
                 {
                     continue;
@@ -79,13 +78,13 @@ public static class BFS
     }
 
     // »óÇÏÁÂ¿ì ÀÌ¿ô
-    private static List<Vector2Int> GetNeighbourPositions(Vector2Int currentPos)
+    private static List<Vector3Int> GetNeighbourPositions(Vector3Int currentPos)
     {
-        List<Vector2Int> neighbours = new List<Vector2Int>();
-        neighbours.Add(currentPos + new Vector2Int(0, 1));
-        neighbours.Add(currentPos + new Vector2Int(0, -1));
-        neighbours.Add(currentPos + new Vector2Int(1, 0));
-        neighbours.Add(currentPos + new Vector2Int(-1, 0));
+        List<Vector3Int> neighbours = new List<Vector3Int>();
+        neighbours.Add(currentPos + new Vector3Int(0, 1, 0));
+        neighbours.Add(currentPos + new Vector3Int(0, -1, 0));
+        neighbours.Add(currentPos + new Vector3Int(1, 0, 0));
+        neighbours.Add(currentPos + new Vector3Int(-1, 0, 0));
         return neighbours;
     }
 
@@ -105,7 +104,7 @@ public static class BFS
         foreach (var node in path)
         {
             // ¼¿ ÁÂÇ¥ -> ¿ùµå ÁÂÇ¥
-            worldPath.Add(TilemapReader_YYJ.Instance.ArrayToWorld(node.position));
+            worldPath.Add(TilemapReader_YYJ.Instance.CellToWorld(node.position));
         }
         return worldPath;
     }
