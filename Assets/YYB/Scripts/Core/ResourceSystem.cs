@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class ResourceSystem : MonoBehaviour
     [SerializeField] private int sugar;
     [SerializeField] private int crystal;
 
+    [SerializeField] TextMeshProUGUI sugarText;
+    [SerializeField] TextMeshProUGUI crystalText;
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -18,6 +22,15 @@ public class ResourceSystem : MonoBehaviour
 
         EventBus.Subscribe(Events.OnMonsterKilled, OnMonsterKilledObj);
     }
+
+    /*
+    void Update()
+    {
+        sugarText.text = $"Sugar: {Sugar}";
+        crystalText.text = $"Crystal: {Crystal}";
+    }
+    */
+
     private void OnDestroy()
     {
         EventBus.Unsubscribe(Events.OnMonsterKilled, OnMonsterKilledObj);

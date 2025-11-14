@@ -13,4 +13,8 @@ public class MonsterSO : ScriptableObject
     public int rewardSugar;
     public float slowResist;   // 0~1 (슬로우 저항), 필요 없으면 0
     public bool splitsOnDeath; // 젤리 큐브 같은 분열형
+
+    [Header("Split Ability")]
+    public MonsterSO_YYJ splitMonsterSO;
+    public int splitCount;
 }
