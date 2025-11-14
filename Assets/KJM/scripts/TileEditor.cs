@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
     public MapSO mapData;
+    public Toggle ExploitationState;
 
     public Tilemap tilemap;
     public TileBase groundTile;
@@ -55,31 +57,34 @@ public class TileEditor : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (ExploitationState.isOn)
         {
-            HandleTile(false);
-        }
-        else if (Input.GetMouseButton(1))
-        {
-            HandleTile(true);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            for (int x = 0; x < mapData.mapWidth; x++)
+            if (Input.GetMouseButton(0))
             {
-                for (int y = 0; y < mapData.mapHeight; y++)
+                HandleTile(false);
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                HandleTile(true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                for (int x = 0; x < mapData.mapWidth; x++)
                 {
-                    tileData[x, y] = BLOCK;
-                    Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-                    tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
+                    for (int y = 0; y < mapData.mapHeight; y++)
+                    {
+                        tileData[x, y] = BLOCK;
+                        Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
+                        tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
+                    }
                 }
             }
         }
 
         if (CheckComplete())
         {
-            //Debug.Log("연결 완료");
+            Debug.Log("연결 완료");
         }
     }
 
@@ -118,7 +123,7 @@ public class TileEditor : MonoBehaviour
                     if (isResourceTile[arrayX, arrayY])
                     {
                         ResourceSystem.Instance.AddCrystal(crystalGain_FromTile);
-                        Debug.Log($"Resource Tile Exploited! +{crystalGain_FromTile} Crystals");
+                        Debug.Log($"자원 타일 개척 +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
                 }
@@ -159,11 +164,38 @@ public class TileEditor : MonoBehaviour
 
     bool CheckComplete()
     {
-        Vector3 startWorldPos = tilemap.GetCellCenterWorld(new Vector3Int(mapData.startPos.x, mapData.startPos.y, 0));
-        Vector3 goalWorldPos = tilemap.GetCellCenterWorld(new Vector3Int(mapData.goalPos.x, mapData.goalPos.y, 0));
+        Vector3Int startCell = new Vector3Int(
+            mapData.startPos.x + tilemap.cellBounds.min.x,
+            mapData.startPos.y + tilemap.cellBounds.min.y,
+            0
+        );
+        Vector3Int goalCell = new Vector3Int(
+            mapData.goalPos.x + tilemap.cellBounds.min.x,
+            mapData.goalPos.y + tilemap.cellBounds.min.y,
+            0
+        );
+
+        Vector3 startWorldPos = tilemap.GetCellCenterWorld(startCell);
+        Vector3 goalWorldPos = tilemap.GetCellCenterWorld(goalCell);
 
         List<Vector3> path = BFS.FindPath(startWorldPos, goalWorldPos);
 
-        return path != null && path.Count > 0;
+        if (path == null || path.Count == 0)
+            return false;
+
+        foreach (var worldPos in path)
+        {
+            Vector3Int cellPos = tilemap.WorldToCell(worldPos);
+            int arrayX = cellPos.x - tilemap.cellBounds.min.x;
+            int arrayY = cellPos.y - tilemap.cellBounds.min.y;
+
+            if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight)
+                return false;
+
+            if (tileData[arrayX, arrayY] != PATH)
+                return false;
+        }
+
+        return true;
     }
 }
