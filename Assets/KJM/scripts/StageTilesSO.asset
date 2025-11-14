@@ -10,11 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9cd4ca0115645b48bfc9ce2d2d55394, type: 3}
-  m_Name: New Special Tiles SO
+  m_Name: StageTilesSO
   m_EditorClassIdentifier: 
   stages:
   - stageNumber: 1
+    type: 0
+    tileAsset: {fileID: 11400000, guid: db5fd48adecfe49458b536e80f542dbb, type: 2}
     positions:
     - {x: 2, y: 3}
     - {x: 2, y: 4}
     - {x: 2, y: 5}
+  - stageNumber: 1
+    type: 1
+    tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
+    positions:
+    - {x: 3, y: 3}
+    - {x: 3, y: 4}
+    - {x: 3, y: 5}
