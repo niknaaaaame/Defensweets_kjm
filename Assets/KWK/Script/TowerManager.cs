@@ -1,0 +1,85 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+public class TowerManager : MonoBehaviour
+{
+    public static TowerManager Instance { get; private set; }
+
+    public Tilemap tilemap;
+
+    private GameObject selectedTower;
+    private GameObject ghostTower;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(ghostTower != null)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
+
+            Vector3Int cellPos = tilemap.WorldToCell(mousePos);
+            Vector3 snappedPos = tilemap.GetCellCenterWorld(cellPos);
+
+            ghostTower.transform.position = snappedPos;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Instantiate(selectedTower, snappedPos, Quaternion.identity);
+                Destroy(ghostTower);
+                ghostTower = null;
+                selectedTower = null;
+            }
+
+            else if (Input.GetMouseButtonDown(1))
+            {
+                Destroy(ghostTower);
+                ghostTower = null;
+                selectedTower = null;
+            }
+        }
+    }
+
+    public void SelectTower(GameObject towerPrefab)
+    {
+        if (ghostTower != null)
+        {
+            Destroy(ghostTower);
+        }
+
+        selectedTower = towerPrefab;
+
+        ghostTower = Instantiate(towerPrefab);
+
+        SetLayerAlpha(ghostTower, 0.5f);
+
+    }
+
+    void SetLayerAlpha(GameObject obj, float alpha)
+    {
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+        
+        Color color = sr.color;
+        color.a = alpha;
+        sr.color = color;
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerAlpha(child.gameObject, alpha);
+        }
+    }
+}
