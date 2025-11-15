@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ResourceUI : MonoBehaviour
 {
     public Text CrystalCandy;
-    //public Text Sugar;
+    public Text Sugar;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +17,6 @@ public class ResourceUI : MonoBehaviour
     void Update()
     {
         CrystalCandy.text = $"{ResourceSystem.Instance.Crystal}";
-        //Sugar.text = $"{ResourceSystem.Instance.Sugar}";
+        Sugar.text = $"{ResourceSystem.Instance.Sugar}";
     }
 }
