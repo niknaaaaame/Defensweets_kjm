@@ -7,6 +7,7 @@ public class TestMonSpawn : MonoBehaviour
     public GameObject monsterPrefab1_Normal;
     public GameObject monsterPrefab2_Tank;
     public GameObject monsterPrefab3_Fast;
+    public GameObject monsterPrefab4_Split;
 
     public Transform departPoint;
 
@@ -33,6 +34,10 @@ public class TestMonSpawn : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             SpawnMonster(monsterPrefab3_Fast);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SpawnMonster(monsterPrefab4_Split);
         }
     }
 
