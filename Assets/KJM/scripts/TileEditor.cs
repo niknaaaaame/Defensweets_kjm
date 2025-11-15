@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
+    //public AudioClip Nomal;
+    //public AudioClip Special;
+    //public AudioClip Restore;
     public MapSO mapData;
     public Toggle ExploitationState;
 
@@ -14,9 +17,9 @@ public class TileEditor : MonoBehaviour
     public TileBase specialTile; 
     public StageTilesSO specialTilesSO;
 
-    private int crystalSpent = 2;
-    private int crystalRefunded = 1;
-    private int crystalGain_FromTile = 12; 
+    public int crystalSpent = 2;
+    public int crystalRefunded = 1;
+    public int crystalGain_FromTile = 12; 
 
     private int[,] tileData;
     private bool[,] isSpecialTile;
@@ -26,10 +29,17 @@ public class TileEditor : MonoBehaviour
     private int arrayY;
 
     private const int PATH = 0; 
-    private const int BLOCK = 1; 
+    private const int BLOCK = 1;
+
+    private AudioSource audioSource;
+
+    private float soundMinInterval = 0.1f; 
+    private bool canPlaySound = true;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
         isResourceTile = new bool[mapData.mapWidth, mapData.mapHeight];
@@ -126,6 +136,7 @@ public class TileEditor : MonoBehaviour
                         Debug.Log($"자원 타일 개척 +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
+                    PlayTileSound();
                 }
             }
         }
@@ -197,5 +208,20 @@ public class TileEditor : MonoBehaviour
         }
 
         return true;
+    }
+    void PlayTileSound()
+    {
+        if (canPlaySound)
+        {
+            audioSource.Play();
+            StartCoroutine(SoundCooldown());
+        }
+    }
+
+    IEnumerator SoundCooldown()
+    {
+        canPlaySound = false;
+        yield return new WaitForSeconds(soundMinInterval);
+        canPlaySound = true;
     }
 }
