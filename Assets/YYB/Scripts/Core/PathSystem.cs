@@ -29,12 +29,14 @@ public class PathSystem : MonoBehaviour
     /// <returns>경로 계산 및 잠금 성공 여부</returns>
     public bool ComputeAndLockPath(Vector3 startWorld, Vector3 goalWorld)
     {
+        Debug.Log("[Path] ComputeAndLockPath 호출");
         if (isLocked) return lockedPathWorld.Count > 0;
 
         List<Vector3> path = BFS.FindPath(startWorld, goalWorld);
 
         if (path == null || path.Count == 0)
         {
+            Debug.LogWarning("[Path] 유효한 경로를 찾지 못했습니다.");
             lockedPathWorld.Clear();
             isLocked = false;
             return false;

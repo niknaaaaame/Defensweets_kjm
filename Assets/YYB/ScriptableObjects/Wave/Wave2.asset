@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prepareTime: 0
   spawns:
-  - monster: {fileID: 11400000, guid: f7aedafbc122e504c9494f50ee70c230, type: 2}
+  - monster: {fileID: 11400000, guid: 3b64487093e1ee144a2e87a8d3056420, type: 2}
     count: 5
     interval: 0.7
     startDelay: 0
