@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a7ca2d646656d248aa9264a1890d975, type: 3}
+  m_Name: Mon2
+  m_EditorClassIdentifier: 
+  monsterName: Test2
+  monsterType: 1
+  prefab: {fileID: 4383021236019794076, guid: 2518088f402147e4ea230a64a74c5ec4, type: 3}
+  hp: 30
+  speed: 10
+  rewardSugar: 10
+  slowResist: 0
+  splitsOnDeath: 0
+  splitMonsterSO: {fileID: 0}
+  splitCount: 0
