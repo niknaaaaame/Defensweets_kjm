@@ -1,16 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class TowerManager : MonoBehaviour
 {
-    public static TowerManager Instance;
+    public static TowerManager Instance { get; private set; }
+
+    public Tilemap tilemap;
 
     private GameObject selectedTower;
     private GameObject ghostTower;
 
-    private void Awake()
+    void Awake()
     {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
     }
 
@@ -27,11 +31,15 @@ public class TowerManager : MonoBehaviour
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            ghostTower.transform.position = mousePos;
+
+            Vector3Int cellPos = tilemap.WorldToCell(mousePos);
+            Vector3 snappedPos = tilemap.GetCellCenterWorld(cellPos);
+
+            ghostTower.transform.position = snappedPos;
 
             if (Input.GetMouseButtonDown(0))
             {
-                Instantiate(selectedTower, mousePos, Quaternion.identity);
+                Instantiate(selectedTower, snappedPos, Quaternion.identity);
                 Destroy(ghostTower);
                 ghostTower = null;
                 selectedTower = null;
