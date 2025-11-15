@@ -48,7 +48,28 @@ public class Monster : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        CheckTileEffect();
+
         HandleMovement();
+    }
+
+    private void CheckTileEffect()
+    {
+        if (TilemapReader_YYJ.Instance == null) return;
+        
+        // 위치의 타일 효과 확인
+        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
+
+        switch (effect)
+        {
+            case TileEffectType.Sticky:
+                currentSpeed = monsterData.speed * 0.5f;
+                break;
+
+            case TileEffectType.Explosive:
+                // 나중에 추가
+                break;
+        }
     }
 
     private void HandleMovement()
@@ -74,7 +95,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void OnReachGoal()      // 도착 시 몬스터에게 발생할 사항 이후 추가
     {
-        // GameManager.Instance.OnMonsterReachGoal();
+        GameManager.Instance.OnMonsterReachGoal();
 
         Debug.Log("Goal!");
 
@@ -95,7 +116,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (isDying) return;
         isDying = true;
 
-        //EventBus.Publish(Events.OnMonsterKilled, monsterData.rewardSugar);
+        EventBus.Publish(Events.OnMonsterKilled, monsterData.rewardSugar);
 
         HandleSplit();
 
