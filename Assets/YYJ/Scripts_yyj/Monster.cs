@@ -19,11 +19,21 @@ public class Monster : MonoBehaviour, IDamageable
     private Coroutine slowCoroutine;
     private Coroutine stunCoroutine;
 
+    public bool IsStopped { get; set; } = false;
+
+    private SpriteRenderer spriteRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
         currentHp = monsterData.hp;
         currentSpeed = monsterData.speed;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer가 없습니다", gameObject);
+        }
 
         //goal = GameObject.FindWithTag("Goal").transform;
         GameObject goalObject = GameObject.Find("Goal");
@@ -69,17 +79,39 @@ public class Monster : MonoBehaviour, IDamageable
             case TileEffectType.Explosive:
                 // 나중에 추가
                 break;
+
+            case TileEffectType.None:
+            default:
+                currentSpeed = monsterData.speed;
+                break;
         }
     }
 
     private void HandleMovement()
     {
-        if (path == null || currentWaypointIndex >= path.Count || isStunned)
+        if (path == null || currentWaypointIndex >= path.Count || isStunned || IsStopped)
         {
             return;     // 도착 또는 길 없음
         }
 
         Vector3 targetPosition = path[currentWaypointIndex];
+
+        if (spriteRenderer != null) // 좌우 반전
+        {
+            float directionX = targetPosition.x - transform.position.x;
+
+            if (directionX > 0.01f)
+            {
+                spriteRenderer.flipX = false;
+            }
+            else if (directionX < -0.01f)
+            {
+                spriteRenderer.flipX = true;
+            }
+            
+        }
+    
+
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
@@ -144,7 +176,6 @@ public class Monster : MonoBehaviour, IDamageable
 
         yield return new WaitForSeconds(duration);
 
-        currentSpeed = monsterData.speed;
         slowCoroutine = null;
     }
 
@@ -170,16 +201,20 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void HandleSplit()
     {
-        /*
         if (!monsterData.splitsOnDeath || monsterData.splitMonsterSO == null || monsterData.splitCount <= 0)
-            { return; }
-
-        for (int i = 0; i < monsterData.splitCount; i++)    // 분열 수 만큼 몬스터 생성
         {
-            Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), 0); // 위치 랜덤 조정
-
-            Instantiate(monsterData.splitMonsterSO.prefab, spawnPos, Quaternion.identity);
+            return;
         }
-        */
+
+        if (WaveSystem.Instance == null)
+        {
+            Debug.LogError("WaveSystem을 찾을 수 없습니다.");
+            return;
+        }
+
+        for (int i = 0; i < monsterData.splitCount; i++)
+        {
+            Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), 0);
+        }
     }
 }
