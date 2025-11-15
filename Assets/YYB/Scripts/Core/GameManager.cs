@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     private int gateHp;           // 성문 체력(또는 침투 허용치)
     private int aliveMonsters = 0; // 필드에 살아있는 몬스터 수
 
+    [SerializeField] private TMPro.TextMeshProUGUI gateHpText;
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -25,8 +27,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        InitStage();
         // 스테이지 초기 세팅
-        gateHp = stage.gateHp;
         ResourceSystem.Instance.Setup(stage.initialSugar, stage.initialCrystal);
 
         // 이벤트 연결
@@ -39,8 +41,28 @@ public class GameManager : MonoBehaviour
     public Transform spawnTransform;  // 스폰 지점(월드)
     public Transform goalTransform;   // 목표 지점(월드)
 
+    void InitStage()
+    {
+        gateHp = stage.gateHp;
+        currentWaveIndex = -1;
+        UpdateGateHpUI();
+    }
+    void UpdateGateHpUI()
+    {
+        if (gateHpText != null)
+            gateHpText.text = $"Gate : {gateHp}/{stage.gateHp}";
+    }
+
     public void StartNextWave()
     {
+        Debug.Log($"[GM] StartNextWave 호출, 현재 상태 = {CurrentState}");
+
+        if (CurrentState != GameState.Ready)
+        {
+            Debug.LogWarning("[GM] Ready 상태가 아니라 웨이브 시작 불가");
+            return;
+        }
+
         if (CurrentState != GameState.Ready) return;
 
         // 1) 경로 계산 & 잠금
@@ -86,6 +108,8 @@ public class GameManager : MonoBehaviour
     public void OnMonsterReachGoal()
     {
         gateHp--;
+        if (gateHp < 0) gateHp = 0;
+        UpdateGateHpUI();
         if (gateHp <= 0) OnFailed();
     }
     
@@ -108,6 +132,7 @@ public class GameManager : MonoBehaviour
 
     private void OnFailed()
     {
+        Debug.Log("Gate HP 0 → Game Over");
         SetState(GameState.Result);
         // 결과 UI(실패) 호출
     }
