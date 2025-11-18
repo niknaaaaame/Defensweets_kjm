@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterName: Jawbreaker
   monsterType: 2
+  targetType: 0
   prefab: {fileID: 4098039936591621521, guid: ee7bc33b1a38f614e97f1b785ba0dccd, type: 3}
   hp: 200
-  speed: 2
+  speed: 1
   rewardSugar: 12
   slowResist: 0
   splitsOnDeath: 0
