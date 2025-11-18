@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterName: InfectedCake
   monsterType: 0
+  targetType: 0
   prefab: {fileID: 4383021236019794076, guid: 2518088f402147e4ea230a64a74c5ec4, type: 3}
   hp: 100
-  speed: 3
+  speed: 2
   rewardSugar: 6
   slowResist: 0
   splitsOnDeath: 0

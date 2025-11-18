@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterName: CubeCastella
   monsterType: 1
+  targetType: 0
   prefab: {fileID: 2493883949985171047, guid: 3598f848aa093e744b3ba58e7dcbd82a, type: 3}
   hp: 60
-  speed: 6
+  speed: 4
   rewardSugar: 4
   slowResist: 0
   splitsOnDeath: 0
