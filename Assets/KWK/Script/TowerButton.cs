@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class ResourceUI : MonoBehaviour
+public class TowerButton : MonoBehaviour
 {
-    public Text CrystalCandy;
-    public Text Sugar;
+    public GameObject towerPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,7 +15,11 @@ public class ResourceUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CrystalCandy.text = $"{ResourceSystem.Instance.Crystal}";
-        Sugar.text = $"{ResourceSystem.Instance.Sugar}";
+        
+    }
+
+    public void OnClick()
+    {
+        TowerManager.Instance.SelectTower(towerPrefab);
     }
 }
