@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03dbb1360f5eda4498af63fde5b7546f, type: 3}
-  m_Name: SplitJelly
+  m_Name: BigCreamMonster
   m_EditorClassIdentifier: 
-  monsterName: SplitJelly
-  monsterType: 3
+  monsterName: BigCreamMonster
+  monsterType: 2
   targetType: 0
   prefab: {fileID: 0}
-  hp: 100
-  speed: 3
-  rewardSugar: 0
+  hp: 550
+  speed: 0.5
+  rewardSugar: 32
   slowResist: 0
-  splitsOnDeath: 1
-  splitMonsterSO: {fileID: 11400000}
-  splitCount: 2
+  splitsOnDeath: 0
+  splitMonsterSO: {fileID: 0}
+  splitCount: 0
