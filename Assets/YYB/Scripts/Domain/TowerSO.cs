@@ -21,5 +21,6 @@ public struct TowerLevel
     public int upgradeCostSugar;
     public int specialCostCrystal; // 특수 강화 없으면 0
 
+    public int cost;
     public int energy;
 }
