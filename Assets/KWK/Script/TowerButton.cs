@@ -6,6 +6,14 @@ public class TowerButton : MonoBehaviour
 {
     public GameObject towerPrefab;
 
+    private TowerSO data;
+
+    void Awake()
+    {
+        TowerInterface tower = towerPrefab.GetComponent<TowerInterface>();
+        data = tower.GetTowerData();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +28,6 @@ public class TowerButton : MonoBehaviour
 
     public void OnClick()
     {
-        TowerManager.Instance.SelectTower(towerPrefab);
+        TowerManager.Instance.SelectTower(towerPrefab, data.levels[0].cost);
     }
 }
