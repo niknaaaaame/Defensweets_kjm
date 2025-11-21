@@ -87,8 +87,8 @@ public class TileEditor : MonoBehaviour
             return;
         }
         start = startObject.transform;
-        Vector3Int startCell = tilemap.WorldToCell(start.position);
-        Vector2Int startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
+        startCell = tilemap.WorldToCell(start.position);
+        startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
     }
 
     void Update()
