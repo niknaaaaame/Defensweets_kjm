@@ -28,6 +28,17 @@ public class ResourceTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        sugarText.text = $"Sugar: {sugar}";
+        crystalText.text = $"Crystal: {crystal}";
+    }
+
+    public void UseSugar(int amount)
+    {
+        sugar -= amount;
+    }
+
+    public void UseCrystal(int amount)
+    {
+        crystal -= amount;
     }
 }

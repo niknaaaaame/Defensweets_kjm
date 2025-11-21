@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class AoE : MonoBehaviour
+public class AoE : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
+    public TowerSO GetTowerData() => towerData;
 
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform shootPoint;
