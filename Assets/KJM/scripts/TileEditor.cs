@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
-    public int currentStage = 1; //ÀÓ½Ã ÇöÀç ½ºÅ×ÀÌÁö ¹øÈ£
+    public int currentStage = 1; //ì„ì‹œ í˜„ì¬ ìŠ¤í…Œì´ì§€ ë²ˆí˜¸
     //public AudioClip Nomal;
     //public AudioClip Special;
     //public AudioClip Restore;
@@ -73,7 +73,7 @@ public class TileEditor : MonoBehaviour
         GameObject goalObject = GameObject.Find("Goal");
         if (goalObject == null)
         {
-            Debug.LogError("GoalÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Goalì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
@@ -82,7 +82,7 @@ public class TileEditor : MonoBehaviour
         GameObject startObject = GameObject.Find("Start");
         if (startObject == null)
         {
-            Debug.LogError("Start°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Startê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
@@ -118,10 +118,10 @@ public class TileEditor : MonoBehaviour
             }
         }
 
-        /*if (CheckComplete())
+        if (CheckComplete())
         {
-            Debug.Log("¿¬°á ¿Ï·á");
-        }*/
+            Debug.Log("ì—°ê²° ì™„ë£Œ");
+        }
     }
 
     void HandleTile(bool place)
@@ -159,7 +159,7 @@ public class TileEditor : MonoBehaviour
                     if (isResourceTile[arrayX, arrayY])
                     {
                         ResourceSystem.Instance.AddCrystal(crystalGain_FromTile);
-                        Debug.Log($"ÀÚ¿ø Å¸ÀÏ °³Ã´ +{crystalGain_FromTile} Crystals");
+                        Debug.Log($"ìì› íƒ€ì¼ ê°œì²™ +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
                     PlayTileSound();
@@ -168,7 +168,7 @@ public class TileEditor : MonoBehaviour
         }
     }
 
-    bool CanExploitationTile(int x, int y) //°³Ã´ °¡´É Á¶°Ç
+    bool CanExploitationTile(int x, int y) //ê°œì²™ ê°€ëŠ¥ ì¡°ê±´
     {
         if (x == startIndex.x && y == startIndex.y && tileData[x, y] == BLOCK)
             return true;
@@ -190,9 +190,9 @@ public class TileEditor : MonoBehaviour
         return false;
     }
 
-    bool CanRestorationTile(int x, int y) //º¹±¸ °¡´É Á¶°Ç = Àß¸øµÈ ÀçÈ­ È¸¼ö ¹æÁö
+    bool CanRestorationTile(int x, int y) //ë³µêµ¬ ê°€ëŠ¥ ì¡°ê±´ = ì˜ëª»ëœ ì¬í™” íšŒìˆ˜ ë°©ì§€
     {
-        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //¸Ê ¹Ù±ù °Ë»ç
+        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //ë§µ ë°”ê¹¥ ê²€ì‚¬
         if (tileData[x, y] == BLOCK) return false;
 
         tileData[x, y] = BLOCK;
