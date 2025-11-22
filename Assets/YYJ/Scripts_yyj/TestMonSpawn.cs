@@ -7,13 +7,14 @@ public class TestMonSpawn : MonoBehaviour
     public GameObject monsterPrefab1_Normal;
     public GameObject monsterPrefab2_Tank;
     public GameObject monsterPrefab3_Fast;
-    public GameObject monsterPrefab4_Split;
+    public GameObject monsterPrefab4_BigCream;
+    public GameObject monsterPrefab5_FlyBug;
 
     public Transform departPoint;
 
     void Start()
     {
-        GameObject departObject = GameObject.Find("Start");
+        GameObject departObject = GameObject.Find("Goal");
 
         if (departObject != null)
         {
@@ -37,7 +38,11 @@ public class TestMonSpawn : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            SpawnMonster(monsterPrefab4_Split);
+            SpawnMonster(monsterPrefab4_BigCream);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            SpawnMonster(monsterPrefab5_FlyBug);
         }
     }
 
