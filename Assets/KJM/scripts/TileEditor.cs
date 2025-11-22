@@ -118,10 +118,10 @@ public class TileEditor : MonoBehaviour
             }
         }
 
-        /*if (CheckComplete())
+        if (CheckComplete())
         {
             Debug.Log("연결 완료");
-        }*/
+        }
     }
 
     void HandleTile(bool place)
