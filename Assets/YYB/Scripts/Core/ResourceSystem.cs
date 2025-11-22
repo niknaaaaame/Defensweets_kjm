@@ -23,13 +23,11 @@ public class ResourceSystem : MonoBehaviour
         EventBus.Subscribe(Events.OnMonsterKilled, OnMonsterKilledObj);
     }
 
-    /*
     void Update()
     {
         sugarText.text = $"Sugar: {Sugar}";
         crystalText.text = $"Crystal: {Crystal}";
     }
-    */
 
     private void OnDestroy()
     {
