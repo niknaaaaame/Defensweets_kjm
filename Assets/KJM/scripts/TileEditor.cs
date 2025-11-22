@@ -120,8 +120,9 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            Debug.Log("연결 완료");
+            //Debug.Log("연결 완료"); 
         }
+        //Debug.Log($"{CheckComplete()}");
     }
 
     void HandleTile(bool place)
@@ -134,6 +135,7 @@ public class TileEditor : MonoBehaviour
 
         arrayX = cellPos.x - tilemapOrigin.x;
         arrayY = cellPos.y - tilemapOrigin.y;
+        //Debug.Log($"HandleTile -> MouseWorld: {mouseWorldPos}, Cell: {cellPos}, Index: ({arrayX},{arrayY})");
 
         if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight) return;
 
@@ -213,18 +215,19 @@ public class TileEditor : MonoBehaviour
         foreach (var worldPos in path)
         {
             Vector3Int cellPos = tilemap.WorldToCell(worldPos);
-            int arrayX = cellPos.x - tilemap.cellBounds.min.x;
-            int arrayY = cellPos.y - tilemap.cellBounds.min.y;
+            int x = cellPos.x - tilemap.cellBounds.min.x;
+            int y = cellPos.y - tilemap.cellBounds.min.y;
 
-            if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight)
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight)
                 return false;
 
-            if (tileData[arrayX, arrayY] != PATH)
+            if (tileData[x, y] != PATH)
                 return false;
         }
 
-        return true;
+        return true; 
     }
+
     void PlayTileSound()
     {
         if (canPlaySound)

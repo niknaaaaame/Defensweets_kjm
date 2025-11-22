@@ -44,11 +44,12 @@ public class Basic : MonoBehaviour, TowerInterface
 
             if(hit.collider != null && hit.collider.gameObject == this.gameObject)
             {
-                
-                if(level <= 2)
-                {
-                    level += 1;
-                }
+                TowerInfoPanel.Instance.ToggleTowerInfo(transform);
+
+                //if (level <= 2)
+                //{
+                //    level += 1;
+                //}
             }
         }
 
