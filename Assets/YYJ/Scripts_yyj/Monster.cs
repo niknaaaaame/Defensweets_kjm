@@ -36,7 +36,7 @@ public class Monster : MonoBehaviour, IDamageable
         }
 
         //goal = GameObject.FindWithTag("Goal").transform;
-        GameObject goalObject = GameObject.Find("Goal");
+        GameObject goalObject = GameObject.Find("Start");
         if ( goalObject == null )
         {
             Debug.LogError("Goal이 존재하지 않습니다.");
