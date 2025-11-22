@@ -120,7 +120,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            Debug.Log("연결 완료"); 
+            //Debug.Log("연결 완료"); 
         }
         //Debug.Log($"{CheckComplete()}");
     }
