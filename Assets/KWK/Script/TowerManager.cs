@@ -12,6 +12,8 @@ public class TowerManager : MonoBehaviour
     private GameObject selectedTower;
     private GameObject ghostTower;
 
+    private int installCost;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -43,6 +45,8 @@ public class TowerManager : MonoBehaviour
                 Destroy(ghostTower);
                 ghostTower = null;
                 selectedTower = null;
+
+                ResourceTest.Instance.UseSugar(installCost);
             }
 
             else if (Input.GetMouseButtonDown(1))
@@ -54,7 +58,7 @@ public class TowerManager : MonoBehaviour
         }
     }
 
-    public void SelectTower(GameObject towerPrefab)
+    public void SelectTower(GameObject towerPrefab, int cost)
     {
         if (ghostTower != null)
         {
@@ -67,6 +71,7 @@ public class TowerManager : MonoBehaviour
 
         SetLayerAlpha(ghostTower, 0.5f);
 
+        installCost = cost;
     }
 
     void SetLayerAlpha(GameObject obj, float alpha)

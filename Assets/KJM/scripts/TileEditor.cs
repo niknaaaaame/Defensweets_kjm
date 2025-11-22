@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
+    public int currentStage = 1; //임시 현재 스테이지 번호
     //public AudioClip Nomal;
     //public AudioClip Special;
     //public AudioClip Restore;
@@ -36,6 +37,11 @@ public class TileEditor : MonoBehaviour
     private float soundMinInterval = 0.1f; 
     private bool canPlaySound = true;
 
+    private Transform goal;
+    private Transform start;
+    private Vector3Int startCell;
+    private Vector2Int startIndex;
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -53,7 +59,7 @@ public class TileEditor : MonoBehaviour
             }
         }
 
-        foreach (var stage in specialTilesSO.stages.FindAll(s => s.stageNumber == 1))
+        foreach (var stage in specialTilesSO.stages.FindAll(s => s.stageNumber == currentStage))
         {
             foreach (var pos in stage.positions)
             {
@@ -63,6 +69,26 @@ public class TileEditor : MonoBehaviour
                     isResourceTile[pos.x, pos.y] = true;
             }
         }
+
+        GameObject goalObject = GameObject.Find("Goal");
+        if (goalObject == null)
+        {
+            Debug.LogError("Goal이 존재하지 않습니다.");
+            Destroy(gameObject);
+            return;
+        }
+        goal = goalObject.transform;
+
+        GameObject startObject = GameObject.Find("Start");
+        if (startObject == null)
+        {
+            Debug.LogError("Start가 존재하지 않습니다.");
+            Destroy(gameObject);
+            return;
+        }
+        start = startObject.transform;
+        startCell = tilemap.WorldToCell(start.position);
+        startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
     }
 
     void Update()
@@ -144,7 +170,7 @@ public class TileEditor : MonoBehaviour
 
     bool CanExploitationTile(int x, int y) //개척 가능 조건
     {
-        if (x == mapData.startPos.x && y == mapData.startPos.y && tileData[x, y] == BLOCK)
+        if (x == startIndex.x && y == startIndex.y && tileData[x, y] == BLOCK)
             return true;
 
         if (tileData[x, y] == PATH)
@@ -175,24 +201,14 @@ public class TileEditor : MonoBehaviour
 
     bool CheckComplete()
     {
-        Vector3Int startCell = new Vector3Int(
-            mapData.startPos.x + tilemap.cellBounds.min.x,
-            mapData.startPos.y + tilemap.cellBounds.min.y,
-            0
-        );
-        Vector3Int goalCell = new Vector3Int(
-            mapData.goalPos.x + tilemap.cellBounds.min.x,
-            mapData.goalPos.y + tilemap.cellBounds.min.y,
-            0
-        );
+        if (start == null || goal == null) return false;
 
-        Vector3 startWorldPos = tilemap.GetCellCenterWorld(startCell);
-        Vector3 goalWorldPos = tilemap.GetCellCenterWorld(goalCell);
+        Vector3 startWorldPos = start.position;
+        Vector3 goalWorldPos = goal.position;
 
         List<Vector3> path = BFS.FindPath(startWorldPos, goalWorldPos);
 
-        if (path == null || path.Count == 0)
-            return false;
+        if (path == null || path.Count == 0) return false;
 
         foreach (var worldPos in path)
         {

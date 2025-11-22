@@ -13,7 +13,7 @@ public class TestMonSpawn : MonoBehaviour
 
     void Start()
     {
-        GameObject departObject = GameObject.Find("Depart");
+        GameObject departObject = GameObject.Find("Start");
 
         if (departObject != null)
         {
