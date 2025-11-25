@@ -15,7 +15,7 @@ public class MonsterSO_YYJ : ScriptableObject
     public float slowResist;   // 0~1 (슬로우 저항), 필요 없으면 0
     public bool splitsOnDeath; // 젤리 큐브 같은 분열형
 
-    [Header("Split Ability")]
+    [Header("사망 시 몬스터 소환(split)")]
     public MonsterSO_YYJ splitMonsterSO;
     public int splitCount;
 }
