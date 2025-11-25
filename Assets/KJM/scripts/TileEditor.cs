@@ -120,7 +120,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            //Debug.Log("연결 완료"); 
+            Debug.Log("연결 완료"); 
         }
         //Debug.Log($"{CheckComplete()}");
     }
@@ -197,7 +197,7 @@ public class TileEditor : MonoBehaviour
         if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //맵 바깥 검사
         if (tileData[x, y] == BLOCK) return false;
 
-        tileData[x, y] = BLOCK;
+        //tileData[x, y] = BLOCK;
         return true;
     }
 
@@ -211,18 +211,19 @@ public class TileEditor : MonoBehaviour
         List<Vector3> path = BFS.FindPath(startWorldPos, goalWorldPos);
 
         if (path == null || path.Count == 0) return false;
-
+       
         foreach (var worldPos in path)
         {
             Vector3Int cellPos = tilemap.WorldToCell(worldPos);
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
 
-            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight)
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //맵 끝과 붙어있으면 연결성 검사 안되는 문제
+                // 시작지점 복구해도 연결 완료가 뜸...
                 return false;
-
-            if (tileData[x, y] != PATH)
-                return false;
+            //Debug.Log($"{x}, {y}");
+            //if (tileData[x, y] != PATH)
+                //return false;
         }
 
         return true; 
