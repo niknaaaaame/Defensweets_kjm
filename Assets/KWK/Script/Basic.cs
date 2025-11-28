@@ -8,6 +8,8 @@ public class Basic : MonoBehaviour, TowerInterface
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
+    public int level = 0;
+
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
@@ -16,7 +18,6 @@ public class Basic : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy;
-    private int level = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -40,19 +41,16 @@ public class Basic : MonoBehaviour, TowerInterface
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
 
-            if(hit.collider != null && hit.collider.gameObject == this.gameObject)
+            foreach (RaycastHit2D hit in hits)
             {
-                TowerInfoPanel.Instance.ToggleTowerInfo(transform);
-
-                //if (level <= 2)
-                //{
-                //    level += 1;
-                //}
+                if (hit.collider != null && hit.collider is PolygonCollider2D)
+                {
+                    TowerInfoPanel.Instance.ToggleTowerInfo(this.gameObject, level);
+                }
             }
         }
-
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -89,7 +87,7 @@ public class Basic : MonoBehaviour, TowerInterface
         }
     }
 
-    private IEnumerator shoot()
+    IEnumerator shoot()
     {
         while (targets.Count > 0)
         {
@@ -99,7 +97,7 @@ public class Basic : MonoBehaviour, TowerInterface
             bullet.Setting(targets[0].transform, towerData.levels[level].damage);
             
             energy -= 10;
-            if(energy <= 0)
+            if (energy <= 0)
             {
                 energy = 0;
                 yield break;
@@ -109,5 +107,23 @@ public class Basic : MonoBehaviour, TowerInterface
         }
 
         shootCoroutine = null;
+    }
+
+    public void Upgrade()
+    {
+        if (level < 2)
+        {
+            ResourceTest.Instance.UseSugar(towerData.levels[level].upgradeCostSugar);
+            level += 1;
+        }
+        else
+        {
+            Debug.Log("Max Level");
+        }
+    }
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
     }
 }

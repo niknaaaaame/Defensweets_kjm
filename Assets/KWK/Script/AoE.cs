@@ -91,4 +91,14 @@ public class AoE : MonoBehaviour, TowerInterface
 
         shootCoroutine = null;
     }
+
+    public void Upgrade()
+    {
+        // 업그레이드 로직
+    }
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
 }
