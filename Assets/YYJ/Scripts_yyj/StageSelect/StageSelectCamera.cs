@@ -6,11 +6,23 @@ public class StageSelectCamera : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer mapBackground;
     [SerializeField] private float dragSpeed = 1f;
-
+    [SerializeField] private float zoomSpeed = 5f;
+    
     private Camera cam;
+    // 카메라 드래그
     private Vector3 dragOrigin;
+    private bool isDragging = false;
+    // 줌
+    private bool isFocused = false;
+    private StageNode currentFocusNode;
+    private Vector3 originalPosition;
+    
+    private Vector3 targetPosition;
+    private float targetSize;
 
-    private float minX, maxX;
+    private float maxPossibleSize;
+
+    private Bounds mapBounds;
 
     // Start is called before the first frame update
     void Start()
@@ -18,55 +30,164 @@ public class StageSelectCamera : MonoBehaviour
         cam = GetComponent<Camera>();
         if (cam == null) cam = Camera.main;
 
-        CalculateBounds();
+        mapBounds = mapBackground.bounds;
+        // 초기 카메라 상태 저장
+        CalculateMaxZoomSize();
+
+        float startSize = Mathf.Clamp(cam.orthographicSize, 2f, maxPossibleSize);
+        cam.orthographicSize = startSize;
+
+        targetSize = startSize;
+        originalPosition = targetPosition = ClampPosition(cam.transform.position, startSize);
     }
 
     // Update is called once per frame
     void Update()
     {
-        HandleHorizontalDrag();
+        // 클릭 / 드래그 입렭 처리
+        HandleInput();
+        // 카메라 목표 위치로 이동
+        MoveCameraSmoothly();
     }
 
-    void CalculateBounds()
-    {
-        if (mapBackground == null)
-        {
-            Debug.LogError("배경 오브젝트가 없습니다.");
-            return;
-        }
-        // 카메라 가로 절반
-        float vertExtent = cam.orthographicSize;
-        float horzExtent = vertExtent * cam.aspect;
-        // 배경 범위 가져오기
-        Bounds bgBounds = mapBackground.bounds;
-        // 카메라 최대, 최소 이동 범위
-        minX = bgBounds.min.x + horzExtent;
-        maxX = bgBounds.max.x - horzExtent;
-
-        if (minX > maxX)
-        {
-            minX = maxX = bgBounds.center.x;
-        }
-    }
-
-    void HandleHorizontalDrag()
+    void HandleInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
             dragOrigin = cam.ScreenToWorldPoint(Input.mousePosition);
+            isDragging = false;
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !isFocused)
         {
             Vector3 currentPos = cam.ScreenToWorldPoint(Input.mousePosition);
-            float difference = dragOrigin.x - currentPos.x;
+            float diffX = dragOrigin.x - currentPos.x;
 
-            Vector3 targetPos = cam.transform.position;
-            targetPos.x += difference * dragSpeed;
-
-            targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
-
-            cam.transform.position = targetPos;
+            if (Mathf.Abs(diffX) > 0.01f)
+            {
+                isDragging = true;
+                targetPosition.x += diffX * dragSpeed;
+                // 맵 밖 제한
+                targetPosition = ClampPosition(targetPosition, targetSize);
+            }
         }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            // 드래그 상태가 아닐 경우
+            if (!isDragging) HandleClick();
+            isDragging = false;
+        }
+    }
+
+    void HandleClick()
+    {
+        // 마우스 위치에 무엇이 있는지 확인
+        Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+
+        if (hit.collider != null)
+        {
+            // 스테이지 노드 클릭 시
+            StageNode node = hit.collider.GetComponent<StageNode>();
+            if(node != null)
+            {
+                FocusOnNode(node);
+                return;
+            }
+        }
+
+        // 확대 상태 + 바깥 클릭 시
+        if (isFocused) Unfocus();
+    }
+
+    void FocusOnNode(StageNode node)
+    {
+        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
+
+        isFocused = true;
+        currentFocusNode = node;
+        node.ShowInfo(true);
+
+        Bounds bounds = node.GetTotalBounds();
+        Vector3 nodePos = node.transform.position;
+
+        // 노드에서 상하좌우 먼 경계까지의 거리 계산
+        float distX = Mathf.Max(Mathf.Abs(bounds.max.x - nodePos.x), Mathf.Abs(bounds.min.x - nodePos.x));
+        float distY = Mathf.Max(Mathf.Abs(bounds.max.y - nodePos.y), Mathf.Abs(bounds.min.y - nodePos.y));
+        float screenRatio = (float)Screen.width / (float)Screen.height;
+        // 가로 거리 세로 비율로 전환
+        float sizeFromWidth = distX / screenRatio;
+
+        targetSize = Mathf.Max(distY, sizeFromWidth);
+        // 최소 크기 제한
+        targetSize = Mathf.Max(targetSize, 0f);
+        // 최대 크기 제한
+        targetSize = Mathf.Min(targetSize, maxPossibleSize);
+        // 목표 위치 설정
+        targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
+        // 목표 위치가 배경 밖일 시 제한
+        targetPosition = ClampPosition(targetPosition, targetSize);
+    }
+
+    void Unfocus()
+    {
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.ShowInfo(false);
+            currentFocusNode = null;
+        }
+
+        isFocused = false;
+
+        targetSize = maxPossibleSize;
+
+        Vector3 returnPos = targetPosition;
+        returnPos.y = originalPosition.y;
+        targetPosition = ClampPosition(returnPos, targetSize);
+    }
+
+    void MoveCameraSmoothly()
+    {
+        if (isDragging) // 드래그 시 즉시 이동
+        {
+            cam.transform.position = targetPosition;
+        }
+        else    // 아닐 시 부드러게 이동
+        {
+            cam.transform.position = Vector3.Lerp(cam.transform.position, targetPosition, Time.deltaTime * zoomSpeed);
+        }
+        // 확대, 축소는 항상 부드럽게 유지
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetSize, Time.deltaTime * zoomSpeed);
+    }
+
+    void CalculateMaxZoomSize()
+    {
+        float screenRatio = cam.aspect;
+
+        float heightLimit = mapBounds.size.y / 2f;
+
+        float widthLimit = (mapBounds.size.x / 2f) / screenRatio;
+
+        maxPossibleSize = Mathf.Min(heightLimit, widthLimit);
+    }
+
+    Vector3 ClampPosition(Vector3 targetPos, float currentZoomSize)
+    {
+        float vertExtent = currentZoomSize;
+        float horzExtent = vertExtent * cam.aspect;
+
+        float minX = mapBounds.min.x + horzExtent;
+        float maxX = mapBounds.max.x - horzExtent;
+        float minY = mapBounds.min.y + vertExtent;
+        float maxY = mapBounds.max.y - vertExtent;
+
+        if (minX > maxX) minX = maxX = mapBounds.center.x;
+        if (minY > maxY) minY = maxY = mapBounds.center.y;
+
+        targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
+        targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
+
+        return targetPos;
     }
 }

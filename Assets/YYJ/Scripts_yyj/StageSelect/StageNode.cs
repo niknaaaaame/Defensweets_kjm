@@ -5,8 +5,8 @@ using UnityEngine;
 public class StageNode : MonoBehaviour
 {
     [SerializeField] private GameObject infoCanvas;
-    [SerializeField] private float padding = 1.5f;
-
+    [SerializeField] private float padding = 1f;
+        
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
