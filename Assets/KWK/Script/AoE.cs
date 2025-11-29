@@ -8,6 +8,8 @@ public class AoE : MonoBehaviour, TowerInterface
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
+    public int level = 0;
+
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private float prefabDestroyTime;
@@ -24,7 +26,21 @@ public class AoE : MonoBehaviour, TowerInterface
     // Update is called once per frame
     void Update()
     {
-        
+        // 정보창 표시
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
+
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider is PolygonCollider2D && hit.collider.gameObject == this.gameObject)
+                {
+                    TowerInfoPanel.Instance.ToggleTowerInfo(this.gameObject, level);
+                }
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -92,9 +108,19 @@ public class AoE : MonoBehaviour, TowerInterface
         shootCoroutine = null;
     }
 
+    public void SetLevel(int newLevel)
+    {
+        level = newLevel;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
     public void Upgrade()
     {
-        // 업그레이드 로직
+        TowerManager.Instance.UpgradeTower(towerData, level);
     }
 
     public void Destroy()

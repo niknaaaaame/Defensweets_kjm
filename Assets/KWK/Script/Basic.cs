@@ -45,7 +45,7 @@ public class Basic : MonoBehaviour, TowerInterface
 
             foreach (RaycastHit2D hit in hits)
             {
-                if (hit.collider != null && hit.collider is PolygonCollider2D)
+                if (hit.collider is PolygonCollider2D && hit.collider.gameObject == this.gameObject)
                 {
                     TowerInfoPanel.Instance.ToggleTowerInfo(this.gameObject, level);
                 }
@@ -109,17 +109,20 @@ public class Basic : MonoBehaviour, TowerInterface
         shootCoroutine = null;
     }
 
+    public void SetLevel(int newLevel)
+    {
+        level = newLevel;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
     public void Upgrade()
     {
-        if (level < 2)
-        {
-            ResourceTest.Instance.UseSugar(towerData.levels[level].upgradeCostSugar);
-            level += 1;
-        }
-        else
-        {
-            Debug.Log("Max Level");
-        }
+        TowerManager.Instance.UpgradeTower(towerData, level);
+        TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
     }
 
     public void Destroy()

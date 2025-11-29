@@ -13,6 +13,8 @@ public class TowerManager : MonoBehaviour
     private GameObject ghostTower;
 
     private int installCost;
+    
+    private Dictionary<string, int> defaultLevels = new Dictionary<string, int>();
 
     void Awake()
     {
@@ -41,8 +43,16 @@ public class TowerManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                Instantiate(selectedTower, snappedPos, Quaternion.identity);
                 Destroy(ghostTower);
+                GameObject placed = Instantiate(selectedTower, snappedPos, Quaternion.identity);
+
+                TowerInterface towerInterface = placed.GetComponent<TowerInterface>();
+                if(towerInterface != null)
+                {
+                    int def = GetDefaultLevel(towerInterface.GetTowerData().towerName);
+                    towerInterface.SetLevel(def);
+                }
+
                 ghostTower = null;
                 selectedTower = null;
 
@@ -68,6 +78,7 @@ public class TowerManager : MonoBehaviour
         selectedTower = towerPrefab;
 
         ghostTower = Instantiate(towerPrefab);
+        ghostTower.GetComponent<Collider2D>().enabled = false;
 
         SetLayerAlpha(ghostTower, 0.5f);
 
@@ -85,6 +96,51 @@ public class TowerManager : MonoBehaviour
         foreach (Transform child in obj.transform)
         {
             SetLayerAlpha(child.gameObject, alpha);
+        }
+    }
+
+    public int GetDefaultLevel(string towerName)
+    {
+        if (defaultLevels.TryGetValue(towerName, out int value))
+        {
+            return value;
+        }
+
+        return 0;
+    }
+
+    public void SetDefaultLevel(string towerName, int level)
+    {
+        defaultLevels[towerName] = level;
+    }
+
+    public void UpgradeTower(TowerSO towerData, int level)
+    {
+        if (level < 3)
+        {
+            ResourceTest.Instance.UseSugar(towerData.levels[level].upgradeCostSugar);
+
+            MonoBehaviour[] all = FindObjectsOfType<MonoBehaviour>();
+            foreach (MonoBehaviour mb in all)
+            {
+                TowerInterface towerInterface = mb as TowerInterface;
+                if (towerInterface == null)
+                {
+                    continue;
+                }
+
+                TowerSO data = towerInterface.GetTowerData();
+                if (data.towerName == towerData.towerName)
+                {
+                    int currentLevel = towerInterface.GetLevel();
+                    towerInterface.SetLevel(currentLevel + 1);
+                }
+            }
+            SetDefaultLevel(towerData.towerName, level + 1);
+        }
+        else
+        {
+            Debug.Log("Max Level");
         }
     }
 }

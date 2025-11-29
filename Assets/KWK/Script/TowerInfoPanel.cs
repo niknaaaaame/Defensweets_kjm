@@ -37,13 +37,19 @@ public class TowerInfoPanel : MonoBehaviour
 
     }
 
-    public void ShowTowerInfo(Transform transform)
+    public void ShowTowerInfo(GameObject tower,int level)
     {
-        currentTower = transform;
-
+        currentTower = tower.transform;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(currentTower.position);
-        
         towerInfoPanel.transform.position = screenPos + new Vector3(115, 0, 0);
+
+        towerInterface = tower.GetComponent<TowerInterface>();
+        towerData = towerInterface.GetTowerData();
+
+        towerNameText.text = $"{towerData.towerName}";
+        towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
+            $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
+            $"upgrade cost\nsugar: {towerData.levels[level].upgradeCostSugar}\ncrystal: {towerData.levels[level].specialCostCrystal}";
 
         towerInfoPanel.SetActive(true);
     }
@@ -53,24 +59,15 @@ public class TowerInfoPanel : MonoBehaviour
         towerInfoPanel.SetActive(false);
     }
 
-    public void ToggleTowerInfo(GameObject tower, int level)
+    public void ToggleTowerInfo(GameObject tower, int curLevel)
     {
-        level += 1;
-        towerInterface = tower.GetComponent<TowerInterface>();
-        towerData = towerInterface.GetTowerData();
-
-        towerNameText.text = $"{towerData.towerName}";
-        towerInfoText.text = $"- level {level} -\ndamage: {towerData.levels[level].damage}" +
-            $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
-            $"upgrade cost\nsugar: {towerData.levels[level].upgradeCostSugar}\ncrystal: {towerData.levels[level].specialCostCrystal}";
-
         if (towerInfoPanel.activeSelf && currentTower == tower.transform)
         {
             HideTowerInfo();
         }
         else
         {
-            ShowTowerInfo(tower.transform);
+            ShowTowerInfo(tower, curLevel);
         }
     }
 
