@@ -30,10 +30,8 @@ public class TowerTest : MonoBehaviour
 
     private void Update()
     {
-        // 길 개척 모드가 켜져 있으면 타워 설치/삭제 비활성화
         if (exploitationToggle != null && exploitationToggle.isOn)
         {
-            // 이미 고스트 타워 떠 있으면 지워주고
             if (ghostTower != null)
             {
                 Destroy(ghostTower);
@@ -43,9 +41,6 @@ public class TowerTest : MonoBehaviour
             return;
         }
 
-        if (ghostTower == null) return;
-
-        // 선택된 타워 없으면 아무것도 안 함
         if (ghostTower == null) return;
 
         // 마우스 위치 → 타일 좌표로 스냅
@@ -61,10 +56,8 @@ public class TowerTest : MonoBehaviour
         bool isPath = TilemapReader_YYJ.Instance.IsWalkable(cellPos);   // null = 길
         bool canBuildHere = inBounds && !isPath;                         // 길이 아니어야 설치
 
-        // 왼쪽 클릭 : 설치 시도
         if (Input.GetMouseButtonDown(0) && canBuildHere)
         {
-            // 설탕 체크
             if (ResourceSystem.Instance.TryUseSugar(installCost))
             {
                 Instantiate(selectedTower, snappedPos, Quaternion.identity);
@@ -75,7 +68,6 @@ public class TowerTest : MonoBehaviour
                 Debug.Log("설탕이 부족합니다!");
             }
         }
-        // 오른쪽 클릭 : 취소
         else if (Input.GetMouseButtonDown(1))
         {
             ClearSelection();
@@ -84,7 +76,6 @@ public class TowerTest : MonoBehaviour
 
     public void SelectTower(GameObject towerPrefab, int cost)
     {
-        // 기존 고스트 있으면 제거
         if (ghostTower != null)
         {
             Destroy(ghostTower);
@@ -92,7 +83,7 @@ public class TowerTest : MonoBehaviour
 
         selectedTower = towerPrefab;
         ghostTower = Instantiate(towerPrefab);
-        SetLayerAlpha(ghostTower, 0.5f);   // 반투명 미리보기
+        SetLayerAlpha(ghostTower, 0.5f); 
 
         installCost = cost;
     }

@@ -46,11 +46,11 @@ public static class EventBusTyped
 }
 
 
-// 공용 키를 상수로 관리
+// 공용 키 상수
 public static class Events
 {
-    public const string OnMonsterKilled = "OnMonsterKilled";   // arg: int rewardSugar
-    public const string OnWaveCleared = "OnWaveCleared";      // arg: int waveIndex
-    public const string OnStateChanged = "OnStateChanged";     // arg: GameState
-    public const string OnResourcePing = "OnResourcePing";     // UI 갱신 등
+    public const string OnMonsterKilled = "OnMonsterKilled";
+    public const string OnWaveCleared = "OnWaveCleared";
+    public const string OnStateChanged = "OnStateChanged"; 
+    public const string OnResourcePing = "OnResourcePing";     // UI 갱신
 }

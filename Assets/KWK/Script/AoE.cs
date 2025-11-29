@@ -8,6 +8,8 @@ public class AoE : MonoBehaviour, TowerInterface
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
+    private float damageMultiplier = 1f; //여기도 특수타일용 변수 추가 -여영부-
+
     public int level = 0;
 
     [SerializeField] private GameObject prefab;
@@ -20,7 +22,7 @@ public class AoE : MonoBehaviour, TowerInterface
     // Start is called before the first frame update
     void Start()
     {
-        
+        ApplyTileEffect(); //-여영부-
     }
 
     // Update is called once per frame
@@ -95,10 +97,14 @@ public class AoE : MonoBehaviour, TowerInterface
                     continue;
                 }
 
+                int baseDamage = towerData.levels[level].damage; //-여영부-
+                int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
+
                 MonsterTest monster = target.GetComponent<MonsterTest>();
                 if (monster != null)
                 {
-                    monster.TakeDamage(towerData.levels[0].damage);
+                    //monster.TakeDamage(towerData.levels[0].damage);
+                    monster.TakeDamage(finalDamage); //여기도 특수타일때메 바꿨어 -여영부-
                 }
             }
 
@@ -126,5 +132,24 @@ public class AoE : MonoBehaviour, TowerInterface
     public void Destroy()
     {
         Destroy(this.gameObject);
+    }
+
+    private void ApplyTileEffect()
+    {
+        if (TilemapReader_YYJ.Instance == null)
+            return;
+
+        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
+
+        switch (effect)
+        {
+            case TileEffectType.SweetBoost:
+                damageMultiplier = 1.5f;
+                break;
+
+            default:
+                damageMultiplier = 1f;
+                break;
+        }
     }
 }

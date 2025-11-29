@@ -13,7 +13,7 @@ public class MonsterCountUI : MonoBehaviour     // GameManager에서 받아오는 방식
     {
         if (GameManager.Instance != null)
         {
-            // countText.text = $"{pretext}{GameManager.Instance.AliveMonsterCount}"; // 일단 잠시 주석
+            countText.text = $"{pretext}{GameManager.Instance.AliveMonsterCount}"; // 일단 잠시 주석
         }
     }
 }

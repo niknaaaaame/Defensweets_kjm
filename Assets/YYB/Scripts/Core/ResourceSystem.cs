@@ -40,7 +40,6 @@ public class ResourceSystem : MonoBehaviour
         EventBus.Publish(Events.OnResourcePing, null);
     }
 
-    // 초기화 (스테이지 시작 시 GameManager가 호출)
     public void Setup(int startSugar, int startCrystal)
     {
         sugar = startSugar;
