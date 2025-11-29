@@ -19,11 +19,15 @@ public class Basic : MonoBehaviour, TowerInterface
     private Vector3 originalScale;
     private float energy;
 
+    private float damageMultiplier = 1f;  //-여영부-
+
     // Start is called before the first frame update
     void Start()
     {
         energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
+
+        ApplyTileEffect(); //-여영부-
     }
 
     // Update is called once per frame
@@ -94,8 +98,12 @@ public class Basic : MonoBehaviour, TowerInterface
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             
             Bullet bullet = instance.GetComponent<Bullet>();
-            bullet.Setting(targets[0].transform, towerData.levels[level].damage);
-            
+            //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
+
+            int baseDamage = towerData.levels[level].damage;  //여기서 부터
+            int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
+            bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
+
             energy -= 10;
             if (energy <= 0)
             {
@@ -128,5 +136,24 @@ public class Basic : MonoBehaviour, TowerInterface
     public void Destroy()
     {
         Destroy(this.gameObject);
+    }
+
+    private void ApplyTileEffect()   //특수타일 공격력 증가 -여영부-
+    {
+        if (TilemapReader_YYJ.Instance == null)
+            return;
+
+        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
+
+        switch (effect)
+        {
+            case TileEffectType.SweetBoost:
+                damageMultiplier = 1.5f;  
+                break;
+
+            default:
+                damageMultiplier = 1f;
+                break;
+        }
     }
 }

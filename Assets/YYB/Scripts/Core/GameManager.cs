@@ -11,19 +11,20 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Stage Data")]
-    public StageSO stage;         // 이 씬에서 사용할 스테이지 데이터
+    public StageSO stage;
 
     public GameState CurrentState { get; private set; }
-    private int currentWaveIndex = 0;   // 아직 시작 전
+    private int currentWaveIndex = 0;
 
-    private int gateHp;           // 성문 체력(또는 침투 허용치)
-    private int aliveMonsters = 0; // 필드에 살아있는 몬스터 수
+    private int gateHp;
+    private int aliveMonsters = 0;
+    public int AliveMonsterCount => aliveMonsters;
 
     [SerializeField] private TMPro.TextMeshProUGUI gateHpText;
 
     [Header("Result UI")]
-    [SerializeField] private GameObject successPanel;   // 클리어 패널
-    [SerializeField] private GameObject failPanel;      // 실패 패널
+    [SerializeField] private GameObject successPanel;
+    [SerializeField] private GameObject failPanel;
 
     private void Awake()
     {
@@ -34,18 +35,15 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitStage();
-        // 스테이지 초기 세팅
         ResourceSystem.Instance.Setup(stage.initialSugar, stage.initialCrystal);
 
-        // 이벤트 연결
         EventBus.Subscribe(Events.OnMonsterKilled, (obj) => OnMonsterKilled());
         EventBus.Subscribe(Events.OnWaveCleared, (obj) => OnWaveCleared((int)obj));
 
         SetState(GameState.Ready);
-        // 준비가 끝나면 StartNextWave()를 버튼/타이머로 호출
     }
-    public Transform spawnTransform;  // 스폰 지점(월드)
-    public Transform goalTransform;   // 목표 지점(월드)
+    public Transform spawnTransform;
+    public Transform goalTransform;   
 
     void InitStage()
     {
@@ -81,7 +79,6 @@ public class GameManager : MonoBehaviour
             Debug.Log("[GM] 모든 웨이브를 이미 클리어했습니다.");
             return;
         }
-        // 1) 경로 계산 & 잠금
         bool ok = PathSystem.Instance.ComputeAndLockPath(spawnTransform.position, goalTransform.position);
         if (!ok)
         {
@@ -89,7 +86,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // 2) 웨이브 진행
         SetState(GameState.Wave);
 
         StartCoroutine(WaveSystem.Instance.RunWave(
@@ -101,22 +97,17 @@ public class GameManager : MonoBehaviour
 
     private void CheckWaveEnd()
     {
-        // 스폰이 끝났고 필드에 몬스터가 하나도 없을 때 → 웨이브 종료
         if (aliveMonsters > 0 || !WaveSystem.Instance.IsSpawnFinished)
             return;
 
         Debug.Log($"[GM] Wave {currentWaveIndex} 종료");
 
-        // 웨이브 클리어 이벤트
         EventBus.Publish(Events.OnWaveCleared, currentWaveIndex);
 
-        // 다음 웨이브로 인덱스 이동
         currentWaveIndex++;
 
-        // 경로 잠금 해제 (다음 Ready에서 다시 길 개척 가능)
         PathSystem.Instance.Unlock();
 
-        // 모든 웨이브를 끝냈으면 → 성공 처리
         if (currentWaveIndex >= stage.waves.Length)
         {
             OnAllWavesCleared();
@@ -130,11 +121,9 @@ public class GameManager : MonoBehaviour
 
     private void OnWaveEnded()
     {
-        // 내부 전환 + 경로 해제
         PathSystem.Instance.Unlock();
         SetState(GameState.Ready);
 
-        // UI/사운드용 이벤트 브로드캐스트
         OnWaveCleared(currentWaveIndex);
     }
 
@@ -155,7 +144,6 @@ public class GameManager : MonoBehaviour
     
     private void OnWaveCleared(int waveIndex)
     {
-        // UI 연출/사운드 등
     }
 
     private void OnAllWavesCleared()
@@ -163,7 +151,6 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Result);
         Debug.Log("[GM] 모든 웨이브 클리어 → SUCCESS");
         ShowSuccess();
-        // 결과 UI(클리어) 호출
     }
 
     private void OnFailed()
@@ -171,12 +158,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Gate HP 0 → Game Over");
         SetState(GameState.Result);
         ShowFail();
-        // 결과 UI(실패) 호출
     }
 
     private void SetState(GameState next)
     {
-        if (CurrentState == next) return; // 중복 전이 방지
+        if (CurrentState == next) return;
         CurrentState = next;
         EventBus.Publish(Events.OnStateChanged, next);
     }
@@ -185,11 +171,17 @@ public class GameManager : MonoBehaviour
     {
         SetState(GameState.Result);
         if (successPanel != null) successPanel.SetActive(true);
+
+        if (PauseManager.Instance != null)
+            PauseManager.Instance.Pause();
     }
 
     private void ShowFail()
     {
         SetState(GameState.Result);
         if (failPanel != null) failPanel.SetActive(true);
+
+        if (PauseManager.Instance != null)
+            PauseManager.Instance.Pause();
     }
 }
