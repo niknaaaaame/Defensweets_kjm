@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03dbb1360f5eda4498af63fde5b7546f, type: 3}
+  m_Name: StickyJelly
+  m_EditorClassIdentifier: 
+  monsterName: StickyJelly
+  monsterType: 2
+  targetType: 0
+  prefab: {fileID: 831253014218182870, guid: 307c45fd296fc614699db5f01f07fbc5, type: 3}
+  hp: 150
+  speed: 1
+  rewardSugar: 8
+  slowResist: 0
+  splitsOnDeath: 1
+  splitMonsterSO: {fileID: 11400000, guid: 6f78303f82c7bcb4e83a8c9de8767861, type: 2}
+  splitCount: 2
