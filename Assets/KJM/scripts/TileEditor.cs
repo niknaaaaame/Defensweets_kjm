@@ -15,7 +15,8 @@ public class TileEditor : MonoBehaviour
 
     public Tilemap tilemap;
     public TileBase groundTile;
-    public TileBase specialTile; 
+    public TileBase specialTile;
+    public TileBase resourceTile;
     public StageTilesSO specialTilesSO;
 
     public int crystalSpent = 2;
@@ -42,9 +43,12 @@ public class TileEditor : MonoBehaviour
     private Vector3Int startCell;
     private Vector2Int startIndex;
 
+    public Button ResetButton;
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        ResetButton.onClick.AddListener(ResetTile);
 
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
@@ -55,7 +59,7 @@ public class TileEditor : MonoBehaviour
             for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = BLOCK;
-                isSpecialTile[x, y] = false;
+                //isSpecialTile[x, y] = false;
             }
         }
 
@@ -104,25 +108,50 @@ public class TileEditor : MonoBehaviour
                 HandleTile(true);
             }
 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                for (int x = 0; x < mapData.mapWidth; x++)
-                {
-                    for (int y = 0; y < mapData.mapHeight; y++)
-                    {
-                        tileData[x, y] = BLOCK;
-                        Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-                        tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
-                    }
-                }
-            }
+            //if (Input.GetKeyDown(KeyCode.R))
+            //{
+            //    for (int x = 0; x < mapData.mapWidth; x++)
+            //    {
+            //        for (int y = 0; y < mapData.mapHeight; y++)
+            //        {
+            //            tileData[x, y] = BLOCK;
+            //            Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
+            //            tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
+            //        }
+            //    }
+            //}
         }
 
         if (CheckComplete())
         {
-            //Debug.Log("연결 완료"); 
+            Debug.Log("연결 완료"); 
         }
         //Debug.Log($"{CheckComplete()}");
+    }
+
+    public void ResetTile()
+    {
+        int n = 0;
+        for (int x = 0; x < mapData.mapWidth; x++)
+        {
+            for (int y = 0; y < mapData.mapHeight; y++)
+            {
+                
+                Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
+                if (isSpecialTile[x, y]) tilemap.SetTile(tilePos, specialTile);
+                else if (isResourceTile[x, y]) tilemap.SetTile(tilePos, resourceTile);
+                else if (tileData[x, y] == 0)
+                {
+                    n += 1;
+                    tilemap.SetTile(tilePos, groundTile);
+                }
+                else tilemap.SetTile(tilePos, groundTile);
+                tileData[x, y] = BLOCK;
+
+            }
+        }
+        ResourceSystem.Instance.AddCrystal(crystalRefunded * n);
+        Debug.Log($"{n}개 타일 복구: {crystalRefunded * n}개 회수");
     }
 
     void HandleTile(bool place)
@@ -197,7 +226,7 @@ public class TileEditor : MonoBehaviour
         if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //맵 바깥 검사
         if (tileData[x, y] == BLOCK) return false;
 
-        tileData[x, y] = BLOCK;
+        //tileData[x, y] = BLOCK;
         return true;
     }
 
@@ -211,18 +240,19 @@ public class TileEditor : MonoBehaviour
         List<Vector3> path = BFS.FindPath(startWorldPos, goalWorldPos);
 
         if (path == null || path.Count == 0) return false;
-
+       
         foreach (var worldPos in path)
         {
             Vector3Int cellPos = tilemap.WorldToCell(worldPos);
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
 
-            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight)
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //맵 끝과 붙어있으면 연결성 검사 안되는 문제
+                // 시작지점 복구해도 연결 완료가 뜸...
                 return false;
-
-            if (tileData[x, y] != PATH)
-                return false;
+            //Debug.Log($"{x}, {y}");
+            //if (tileData[x, y] != PATH)
+                //return false;
         }
 
         return true; 

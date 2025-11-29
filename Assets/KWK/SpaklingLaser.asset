@@ -19,7 +19,15 @@ MonoBehaviour:
   levels:
   - damage: 10
     attackSpeed: 2
-    range: 0
-    upgradeCostSugar: 0
+    range: 5
+    upgradeCostSugar: 5
     specialCostCrystal: 0
-    energy: 0
+    cost: 111111
+    energy: 111111
+  - damage: 20
+    attackSpeed: 1.5
+    range: 5
+    upgradeCostSugar: 2222222
+    specialCostCrystal: 2222222
+    cost: 2222222
+    energy: 2222222
