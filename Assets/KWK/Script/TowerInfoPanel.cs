@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class TowerInfoPanel : MonoBehaviour
 {
-    public static TowerInfoPanel Instance;
+    public static TowerInfoPanel Instance { get; private set; }
 
     public GameObject towerInfoPanel;
 
