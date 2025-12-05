@@ -8,7 +8,7 @@ public class Basic : MonoBehaviour, TowerInterface
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
-    public int level = 0;
+    [HideInInspector] public int level = 0;
 
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
@@ -18,15 +18,15 @@ public class Basic : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy;
+    public float GetEnergy() => energy;
 
     private float damageMultiplier = 1f;  //-여영부-
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
+        //energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
-
         ApplyTileEffect(); //-여영부-
     }
 
@@ -104,10 +104,10 @@ public class Basic : MonoBehaviour, TowerInterface
             int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
             bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
-            energy -= 10;
-            if (energy <= 0)
+            towerData.levels[level].energy -= 10;
+            if (towerData.levels[level].energy <= 0)
             {
-                energy = 0;
+                towerData.levels[level].energy = 0;
                 yield break;
             }
 
@@ -117,25 +117,32 @@ public class Basic : MonoBehaviour, TowerInterface
         shootCoroutine = null;
     }
 
-    public void SetLevel(int newLevel)
-    {
-        level = newLevel;
-    }
-
-    public int GetLevel()
-    {
-        return level;
-    }
-
     public void Upgrade()
     {
-        TowerManager.Instance.UpgradeTower(towerData, level);
-        TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+        if(level < 2)
+        {
+            level += 1;
+            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+        }
+        else
+        {
+            Debug.Log("Max Level Reached");
+        }
     }
 
     public void Destroy()
     {
         Destroy(this.gameObject);
+    }
+
+    public void Heal(int amount)
+    {
+        towerData.levels[level].energy += amount;
+        
+        if (towerData.levels[level].energy > towerData.levels[level].energy)
+        {
+            towerData.levels[level].energy = towerData.levels[level].energy;
+        }
     }
 
     private void ApplyTileEffect()   //특수타일 공격력 증가 -여영부-

@@ -10,24 +10,38 @@ public class AoE : MonoBehaviour, TowerInterface
 
     private float damageMultiplier = 1f; //여기도 특수타일용 변수 추가 -여영부-
 
-    public int level = 0;
+    [HideInInspector] public int level = 0;
 
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform shootPoint;
+    [SerializeField] private Transform energyBar;
     [SerializeField] private float prefabDestroyTime;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
+    private Vector3 originalScale;
+    private float energy;
+    public float GetEnergy() => energy;
 
     // Start is called before the first frame update
     void Start()
     {
+        //energy = towerData.levels[level].energy;
+        originalScale = energyBar.localScale;
+
         ApplyTileEffect(); //-여영부-
     }
 
     // Update is called once per frame
     void Update()
     {
+        // 에너지 바 갱신
+        float ratio = energy / towerData.levels[level].energy;
+        energyBar.localScale = new Vector3(originalScale.x * ratio, originalScale.y, originalScale.z);
+
+        float widthDifference = originalScale.x - energyBar.localScale.x;
+        energyBar.localPosition = new Vector3(-widthDifference / 2f, energyBar.localPosition.y, energyBar.localPosition.z);
+
         // 정보창 표시
         if (Input.GetMouseButtonDown(0))
         {
@@ -108,30 +122,45 @@ public class AoE : MonoBehaviour, TowerInterface
                 }
             }
 
+            energy -= 20;
+            if (energy < 0)
+            {
+                energy = 0;
+                yield break;
+            }
+
             yield return new WaitForSeconds(towerData.levels[0].attackSpeed);
         }
 
         shootCoroutine = null;
     }
 
-    public void SetLevel(int newLevel)
-    {
-        level = newLevel;
-    }
-
-    public int GetLevel()
-    {
-        return level;
-    }
-
     public void Upgrade()
     {
-        TowerManager.Instance.UpgradeTower(towerData, level);
+        if (level < 2)
+        {
+            level += 1;
+            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+        }
+        else
+        {
+            Debug.Log("Max Level Reached");
+        }
     }
 
     public void Destroy()
     {
         Destroy(this.gameObject);
+    }
+
+    public void Heal(int amount)
+    {
+        towerData.levels[level].energy += amount;
+
+        if (towerData.levels[level].energy > towerData.levels[level].energy)
+        {
+            towerData.levels[level].energy = towerData.levels[level].energy;
+        }
     }
 
     private void ApplyTileEffect()
