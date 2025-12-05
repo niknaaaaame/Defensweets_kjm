@@ -23,10 +23,6 @@ public class PathSystem : MonoBehaviour
         Instance = this;
     }
 
-    /// </summary>
-    /// <param name="startWorld">시작점(월드 좌표)</param>
-    /// <param name="goalWorld">도착점(월드 좌표)</param>
-    /// <returns>경로 계산 및 잠금 성공 여부</returns>
     public bool ComputeAndLockPath(Vector3 startWorld, Vector3 goalWorld)
     {
         Debug.Log("[Path] ComputeAndLockPath 호출");
@@ -49,9 +45,6 @@ public class PathSystem : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// 경로 잠금 해제. (다음 Ready 단계에서 플레이어가 길을 수정할 수 있게 함)
-    /// </summary>
     public void Unlock()
     {
         isLocked = false;

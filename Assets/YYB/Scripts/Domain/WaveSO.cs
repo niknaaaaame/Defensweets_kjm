@@ -5,9 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Defensweet/Wave")]
 public class WaveSO : ScriptableObject
 {
-    public float prepareTime;      // 웨이브 시작 전 준비 시간(Ready 페이즈 길이)
-    public SpawnGroup[] spawns;    // 스폰 묶음(종류/수량/간격)
-    public Reward reward;          // 웨이브 종료 보상(설탕가루 등)
+    public float prepareTime;      
+    public SpawnGroup[] spawns;    
+    public Reward reward;          
 }
 
 [System.Serializable]
@@ -23,6 +23,6 @@ public struct SpawnGroup
 [System.Serializable]
 public struct Reward
 {
-    public int sugar;          // 웨이브 클리어 시 지급
-    public int crystalBonus;   // 옵션: 필요 없으면 0
+    public int sugar;          
+    public int crystalBonus;   
 }
