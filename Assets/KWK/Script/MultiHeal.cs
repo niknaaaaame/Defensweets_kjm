@@ -1,12 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class SingleHeal : MonoBehaviour, TowerInterface
+public class MultiHeal : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
@@ -83,7 +79,7 @@ public class SingleHeal : MonoBehaviour, TowerInterface
     {
         yield return new WaitForSeconds(activationDelay);
         isActive = true;
-
+        
         if (targets.Count > 0 && healCoroutine == null)
         {
             healCoroutine = StartCoroutine(heal());
@@ -94,22 +90,11 @@ public class SingleHeal : MonoBehaviour, TowerInterface
     {
         while (targets.Count > 0)
         {
-            float lowestEnergy = float.MaxValue;
-            int lowestTowerIndex = 0;
-
-            for (int i = 0; i < targets.Count; i++)
+            foreach(Collider2D target in targets)
             {
-                TowerInterface tower = targets[i].GetComponent<TowerInterface>();
-                float temp = tower.GetEnergy();
-                if (temp < lowestEnergy)
-                {
-                    lowestEnergy = temp;
-                    lowestTowerIndex = i;
-                }
+                TowerInterface tower = target.GetComponent<TowerInterface>();
+                tower.Heal(towerData.levels[level].damage);
             }
-
-            TowerInterface targetTower = targets[lowestTowerIndex].GetComponent<TowerInterface>();
-            targetTower.Heal(towerData.levels[level].damage);
 
             yield return new WaitForSeconds(towerData.levels[level].attackSpeed);
         }

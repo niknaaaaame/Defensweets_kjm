@@ -69,7 +69,18 @@ public class TowerManager : MonoBehaviour
         selectedTower = towerPrefab;
 
         ghostTower = Instantiate(towerPrefab);
-        ghostTower.GetComponent<Collider2D>().enabled = false;
+
+        var colliders = ghostTower.GetComponentsInChildren<Collider2D>();
+        foreach (var col in colliders)
+        {
+            col.enabled = false;
+        }
+
+        var rbs = ghostTower.GetComponentsInChildren<Rigidbody2D>();
+        foreach (var rb in rbs)
+        {
+            rb.simulated = false;
+        }
 
         SetLayerAlpha(ghostTower, 0.5f);
 
