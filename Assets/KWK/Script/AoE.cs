@@ -26,7 +26,7 @@ public class AoE : MonoBehaviour, TowerInterface
     // Start is called before the first frame update
     void Start()
     {
-        //energy = towerData.levels[level].energy;
+        energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
 
         ApplyTileEffect(); //-¿©¿µºÎ-
@@ -155,11 +155,11 @@ public class AoE : MonoBehaviour, TowerInterface
 
     public void Heal(int amount)
     {
-        towerData.levels[level].energy += amount;
+        energy += amount;
 
-        if (towerData.levels[level].energy > towerData.levels[level].energy)
+        if (energy > towerData.levels[level].energy)
         {
-            towerData.levels[level].energy = towerData.levels[level].energy;
+            energy = towerData.levels[level].energy;
         }
     }
 
