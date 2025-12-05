@@ -25,7 +25,6 @@ public class StageNode : MonoBehaviour
     public void ShowInfo(bool show)
     {
         if (infoCanvas != null) infoCanvas.SetActive(show);
-
         if (mapCanvas != null && !show) mapCanvas.SetActive(false);
     }
     
