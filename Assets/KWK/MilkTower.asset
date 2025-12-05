@@ -10,24 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d8a6d5ef77031a43a5bdfcc7eebf14a, type: 3}
-  m_Name: SpaklingLaser
+  m_Name: MilkTower
   m_EditorClassIdentifier: 
-  towerName: SpaklingLaser
-  towerType: 2
+  towerName: 
+  towerType: 0
   icon: {fileID: 0}
   prefab: {fileID: 0}
   levels:
   - damage: 10
-    attackSpeed: 2
-    range: 5
-    upgradeCostSugar: 5
+    attackSpeed: 1
+    range: 0
+    upgradeCostSugar: 0
     specialCostCrystal: 0
-    cost: 111111
-    energy: 100
-  - damage: 20
-    attackSpeed: 1.5
-    range: 5
-    upgradeCostSugar: 2222222
-    specialCostCrystal: 2222222
-    cost: 2222222
-    energy: 100
+    cost: 0
+    energy: 0

@@ -41,8 +41,9 @@ public class TowerManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                Instantiate(selectedTower, snappedPos, Quaternion.identity);
                 Destroy(ghostTower);
+                GameObject placed = Instantiate(selectedTower, snappedPos, Quaternion.identity);
+
                 ghostTower = null;
                 selectedTower = null;
 
@@ -68,6 +69,7 @@ public class TowerManager : MonoBehaviour
         selectedTower = towerPrefab;
 
         ghostTower = Instantiate(towerPrefab);
+        ghostTower.GetComponent<Collider2D>().enabled = false;
 
         SetLayerAlpha(ghostTower, 0.5f);
 

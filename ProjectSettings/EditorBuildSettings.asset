@@ -11,4 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/YYB/YYB.unity
     guid: 4dee12bfe271e43459f9c0605dd92937
+  - enabled: 1
+    path: Assets/YYJ/TitleScene.unity
+    guid: 1daee8adb5ab13f42ba131c563bf63f7
+  - enabled: 1
+    path: Assets/YYJ/StageSelectScene.unity
+    guid: 48c67955b9f419747b11f15a027c351d
+  - enabled: 1
+    path: Assets/YYJ/YYJ.unity
+    guid: 8ffb2cc1f3237aa4fb7b174586019108
   m_configObjects: {}

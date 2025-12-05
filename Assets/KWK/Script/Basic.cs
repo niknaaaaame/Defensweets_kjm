@@ -8,6 +8,8 @@ public class Basic : MonoBehaviour, TowerInterface
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
+    [HideInInspector] public int level = 0;
+
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
@@ -16,13 +18,16 @@ public class Basic : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy;
-    private int level = 0;
+    public float GetEnergy() => energy;
+
+    private float damageMultiplier = 1f;  //-여영부-
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
+        //energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
+        ApplyTileEffect(); //-여영부-
     }
 
     // Update is called once per frame
@@ -40,19 +45,16 @@ public class Basic : MonoBehaviour, TowerInterface
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
 
-            if(hit.collider != null && hit.collider.gameObject == this.gameObject)
+            foreach (RaycastHit2D hit in hits)
             {
-                TowerInfoPanel.Instance.ToggleTowerInfo(transform);
-
-                //if (level <= 2)
-                //{
-                //    level += 1;
-                //}
+                if (hit.collider is PolygonCollider2D && hit.collider.gameObject == this.gameObject)
+                {
+                    TowerInfoPanel.Instance.ToggleTowerInfo(this.gameObject, level);
+                }
             }
         }
-
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -89,19 +91,23 @@ public class Basic : MonoBehaviour, TowerInterface
         }
     }
 
-    private IEnumerator shoot()
+    IEnumerator shoot()
     {
         while (targets.Count > 0)
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             
             Bullet bullet = instance.GetComponent<Bullet>();
-            bullet.Setting(targets[0].transform, towerData.levels[level].damage);
-            
-            energy -= 10;
-            if(energy <= 0)
+            //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
+
+            int baseDamage = towerData.levels[level].damage;  //여기서 부터
+            int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
+            bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
+
+            towerData.levels[level].energy -= 10;
+            if (towerData.levels[level].energy <= 0)
             {
-                energy = 0;
+                towerData.levels[level].energy = 0;
                 yield break;
             }
 
@@ -109,5 +115,52 @@ public class Basic : MonoBehaviour, TowerInterface
         }
 
         shootCoroutine = null;
+    }
+
+    public void Upgrade()
+    {
+        if(level < 2)
+        {
+            level += 1;
+            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+        }
+        else
+        {
+            Debug.Log("Max Level Reached");
+        }
+    }
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
+    public void Heal(int amount)
+    {
+        towerData.levels[level].energy += amount;
+        
+        if (towerData.levels[level].energy > towerData.levels[level].energy)
+        {
+            towerData.levels[level].energy = towerData.levels[level].energy;
+        }
+    }
+
+    private void ApplyTileEffect()   //특수타일 공격력 증가 -여영부-
+    {
+        if (TilemapReader_YYJ.Instance == null)
+            return;
+
+        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
+
+        switch (effect)
+        {
+            case TileEffectType.SweetBoost:
+                damageMultiplier = 1.5f;  
+                break;
+
+            default:
+                damageMultiplier = 1f;
+                break;
+        }
     }
 }
