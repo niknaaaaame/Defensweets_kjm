@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class StageSelectCamera : MonoBehaviour
 {
@@ -44,6 +45,8 @@ public class StageSelectCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
         // 클릭 / 드래그 입렭 처리
         HandleInput();
         // 카메라 목표 위치로 이동
