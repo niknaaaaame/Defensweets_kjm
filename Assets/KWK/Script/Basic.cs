@@ -25,7 +25,7 @@ public class Basic : MonoBehaviour, TowerInterface
     // Start is called before the first frame update
     void Start()
     {
-        //energy = towerData.levels[level].energy;
+        energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
         ApplyTileEffect(); //-여영부-
     }
@@ -104,10 +104,10 @@ public class Basic : MonoBehaviour, TowerInterface
             int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
             bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
-            towerData.levels[level].energy -= 10;
-            if (towerData.levels[level].energy <= 0)
+            energy -= 10;
+            if (energy <= 0)
             {
-                towerData.levels[level].energy = 0;
+                energy = 0;
                 yield break;
             }
 
@@ -137,11 +137,11 @@ public class Basic : MonoBehaviour, TowerInterface
 
     public void Heal(int amount)
     {
-        towerData.levels[level].energy += amount;
+        energy += amount;
         
-        if (towerData.levels[level].energy > towerData.levels[level].energy)
+        if (energy > towerData.levels[level].energy)
         {
-            towerData.levels[level].energy = towerData.levels[level].energy;
+            energy = towerData.levels[level].energy;
         }
     }
 
