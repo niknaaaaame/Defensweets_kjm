@@ -23,7 +23,7 @@ MonoBehaviour:
     upgradeCostSugar: 30
     specialCostCrystal: 0
     cost: 10
-    energy: 50
+    energy: 100
   - damage: 15
     attackSpeed: 0.7
     range: 3

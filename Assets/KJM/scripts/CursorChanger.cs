@@ -8,8 +8,8 @@ public class CursorChanger : MonoBehaviour
 {
     public Tilemap tilemap;        
     public MapSO mapData;         
-    public Texture2D cursorTexture; 
-    public Vector2 hotspot = Vector2.zero;
+    public Texture2D cursorTexture;
+    public Vector2 hotspot;
     public CursorMode cursorMode = CursorMode.Auto;
     public Toggle ExploitationState;
 
@@ -20,7 +20,8 @@ public class CursorChanger : MonoBehaviour
 
     void Start()
     {
-        defaultCursor = null; 
+        defaultCursor = null;
+        hotspot = new Vector2(cursorTexture.width / 2f, cursorTexture.height / 2f);
     }
 
     void Update()
