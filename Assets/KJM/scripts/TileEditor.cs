@@ -35,6 +35,12 @@ public class TileEditor : MonoBehaviour
 
     private AudioSource audioSource;
 
+    public AudioClip exploitationClip;
+    //public AudioClip resourcetileClip;
+    //public AudioClip specialtileClip;
+    public AudioClip restorationClip;
+    public AudioClip resetClip;
+
     private float soundMinInterval = 0.1f; 
     private bool canPlaySound = true;
 
@@ -152,6 +158,7 @@ public class TileEditor : MonoBehaviour
         }
         ResourceSystem.Instance.AddCrystal(crystalRefunded * n);
         Debug.Log($"{n}개 타일 복구: {crystalRefunded * n}개 회수");
+        audioSource.PlayOneShot(resetClip);
     }
 
     void HandleTile(bool place)
@@ -176,6 +183,7 @@ public class TileEditor : MonoBehaviour
                 tileData[arrayX, arrayY] = BLOCK;
                 ResourceSystem.Instance.AddCrystal(crystalRefunded);
                 Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
+                PlayTileSound(restorationClip);
             }
         }
         else
@@ -193,7 +201,7 @@ public class TileEditor : MonoBehaviour
                         Debug.Log($"자원 타일 개척 +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
-                    PlayTileSound();
+                    PlayTileSound(exploitationClip);
                 }
             }
         }
@@ -247,7 +255,7 @@ public class TileEditor : MonoBehaviour
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
 
-            Debug.Log($"인덱스: ({x},{y})");
+            //Debug.Log($"인덱스: ({x},{y})");
 
             if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //맵 끝과 붙어있으면 연결성 검사 안되는 문제
                 return false;
@@ -259,11 +267,11 @@ public class TileEditor : MonoBehaviour
         return true; 
     }
 
-    void PlayTileSound()
+    void PlayTileSound(AudioClip clip)
     {
         if (canPlaySound)
         {
-            audioSource.Play();
+            audioSource.PlayOneShot(clip);
             StartCoroutine(SoundCooldown());
         }
     }
