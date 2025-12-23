@@ -52,7 +52,10 @@ public class StageNode : MonoBehaviour
 
     public void EnterStage()
     {
-        if (!string.IsNullOrEmpty(sceneName)) SceneManager.LoadScene(sceneName);
+        if (!string.IsNullOrEmpty(sceneName))
+        {   
+            SceneManager.LoadScene(sceneName);
+        }
         else Debug.LogWarning("연결된 씬이 없습니다.");
     }
 
