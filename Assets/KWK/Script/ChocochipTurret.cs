@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class Basic : MonoBehaviour, TowerInterface
+public class ChocochipTurret : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;

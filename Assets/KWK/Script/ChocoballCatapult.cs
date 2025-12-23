@@ -1,21 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class AoE : MonoBehaviour, TowerInterface
+public class ChocoballCatapult : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
-    private float damageMultiplier = 1f; //여기도 특수타일용 변수 추가 -여영부-
-
     [HideInInspector] public int level = 0;
 
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
-    [SerializeField] private float prefabDestroyTime;
+    [SerializeField] private BoxCollider2D outerRange;
+    [SerializeField] private BoxCollider2D innerRange;
+
+    //HashSet<GameObject> outerEnemies = new HashSet<GameObject>();
+    //HashSet<GameObject> innerEnemies = new HashSet<GameObject>();
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -28,8 +29,6 @@ public class AoE : MonoBehaviour, TowerInterface
     {
         energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
-
-        ApplyTileEffect(); //-여영부-
     }
 
     // Update is called once per frame
@@ -59,77 +58,67 @@ public class AoE : MonoBehaviour, TowerInterface
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
-
-        if(!targets.Contains(other))
-        {
-            targets.Add(other);
-        }
-
-        if(shootCoroutine == null)
-        {
-            shootCoroutine = StartCoroutine(shoot());
-        }
-
+        JudgmentTarget(other);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
+        JudgmentTarget(other);
+    }
 
-        targets.Remove(other);
+    bool IsValidTarget(Collider2D target)
+    {
+        return outerRange.IsTouching(target) && !innerRange.IsTouching(target);
+    }
 
-        if(targets.Count == 0 && shootCoroutine != null)
+    void JudgmentTarget(Collider2D other)
+    {
+        if (IsValidTarget(other))
         {
-            StopCoroutine(shootCoroutine);
-            shootCoroutine = null;
+            targets.Add(other);
+            if (shootCoroutine == null)
+            {
+                shootCoroutine = StartCoroutine(shoot());
+            }
+        }
+        else
+        {
+            targets.Remove(other);
+            if (targets.Count == 0 && shootCoroutine != null)
+            {
+                StopCoroutine(shootCoroutine);
+                shootCoroutine = null;
+            }
         }
     }
 
-    private IEnumerator shoot()
+    IEnumerator shoot()
     {
         while (targets.Count > 0)
         {
-            GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
+            GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            Destroy(instance, prefabDestroyTime);
+            Bullet bullet = instance.GetComponent<Bullet>();
+            bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
-            for (int i = targets.Count - 1; i >= 0; i--)
-            {
-                var target = targets[i];
-                if (target == null)
-                {
-                    targets.RemoveAt(i);
-                    continue;
-                }
-
-                int baseDamage = towerData.levels[level].damage; //-여영부-
-                int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
-
-                MonsterTest monster = target.GetComponent<MonsterTest>();
-                if (monster != null)
-                {
-                    //monster.TakeDamage(towerData.levels[0].damage);
-                    monster.TakeDamage(finalDamage); //여기도 특수타일때메 바꿨어 -여영부-
-                }
-            }
-
-            energy -= 20;
-            if (energy < 0)
+            energy -= 10;
+            if (energy <= 0)
             {
                 energy = 0;
                 yield break;
             }
 
-            yield return new WaitForSeconds(towerData.levels[0].attackSpeed);
+            yield return new WaitForSeconds(towerData.levels[level].attackSpeed);
         }
 
         shootCoroutine = null;
@@ -160,25 +149,6 @@ public class AoE : MonoBehaviour, TowerInterface
         if (energy > towerData.levels[level].energy)
         {
             energy = towerData.levels[level].energy;
-        }
-    }
-
-    private void ApplyTileEffect()
-    {
-        if (TilemapReader_YYJ.Instance == null)
-            return;
-
-        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
-
-        switch (effect)
-        {
-            case TileEffectType.SweetBoost:
-                damageMultiplier = 1.5f;
-                break;
-
-            default:
-                damageMultiplier = 1f;
-                break;
         }
     }
 }

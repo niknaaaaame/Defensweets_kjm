@@ -37,7 +37,7 @@ public class Bullet : MonoBehaviour
     {
         if(other.CompareTag("Monster"))
         {
-            Monster monster = other.GetComponent<Monster>();
+            MonsterTest monster = other.GetComponent<MonsterTest>();
             monster.TakeDamage(damage);
 
             StopCoroutine(moveCoroutine);
