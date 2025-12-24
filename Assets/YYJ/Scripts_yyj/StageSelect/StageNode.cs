@@ -6,13 +6,12 @@ using UnityEngine.SceneManagement;
 public class StageNode : MonoBehaviour
 {
     [Header("이동할 씬")]
-    [SerializeField] private string sceneName;  // 이동할 스테이지 씬 이름
-    [Header("인포 캔버스")]
+    [SerializeField] private string sceneName;
+    [Header("UI 세팅")]
     [SerializeField] private GameObject infoCanvas;
-    [SerializeField] private float padding = 1f;
-    [Header("맵 캔버스")]
     [SerializeField] private GameObject mapCanvas;
-        
+
+    [SerializeField] private float padding = 1f;   
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
@@ -53,13 +52,17 @@ public class StageNode : MonoBehaviour
 
     public void EnterStage()
     {
-        if (!string.IsNullOrEmpty(sceneName)) SceneManager.LoadScene(sceneName);
+        if (!string.IsNullOrEmpty(sceneName))
+        {   
+            SceneManager.LoadScene(sceneName);
+        }
         else Debug.LogWarning("연결된 씬이 없습니다.");
     }
 
     public void OpenMap()
     {
         if (mapCanvas != null) mapCanvas.SetActive(true);
+        else Debug.LogWarning("맵UI가 연결되지 않았습니다.");
     }
 
     public void CloseMap()

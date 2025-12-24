@@ -7,7 +7,7 @@ public class StageSelectCamera : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer mapBackground;
     [SerializeField] private float dragSpeed = 1f;
-    [SerializeField] private float zoomSpeed = 5f;
+    [SerializeField] private float smoothTime = 0.2f;
     
     private Camera cam;
     // 카메라 드래그
@@ -22,8 +22,10 @@ public class StageSelectCamera : MonoBehaviour
     private float targetSize;
 
     private float maxPossibleSize;
-
     private Bounds mapBounds;
+
+    private Vector3 moveVelocity;
+    private float zoomVelocity;
 
     // Start is called before the first frame update
     void Start()
@@ -31,26 +33,32 @@ public class StageSelectCamera : MonoBehaviour
         cam = GetComponent<Camera>();
         if (cam == null) cam = Camera.main;
 
-        mapBounds = mapBackground.bounds;
-        // 초기 카메라 상태 저장
-        CalculateMaxZoomSize();
-
+        if (mapBackground != null)
+        {
+            mapBounds = mapBackground.bounds;
+            // 초기 카메라 상태 저장
+            CalculateMaxZoomSize();
+        }
+        else
+        {
+            Debug.LogError("배경이 연결되지 않았습니다.");
+            maxPossibleSize = cam.orthographicSize;
+        }
+        // 초기값
         float startSize = Mathf.Clamp(cam.orthographicSize, 2f, maxPossibleSize);
         cam.orthographicSize = startSize;
-
         targetSize = startSize;
+        // 초기 위치
         originalPosition = targetPosition = ClampPosition(cam.transform.position, startSize);
+        cam.transform.position = targetPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-
-        // 클릭 / 드래그 입렭 처리
-        HandleInput();
-        // 카메라 목표 위치로 이동
-        MoveCameraSmoothly();
+        HandleInput();          // 클릭 / 드래그 입력 처리
+        MoveCameraSmoothly();   // 카메라 목표 위치로 이동
     }
 
     void HandleInput()
@@ -99,7 +107,6 @@ public class StageSelectCamera : MonoBehaviour
                 return;
             }
         }
-
         // 확대 상태 + 바깥 클릭 시
         if (isFocused) Unfocus();
     }
@@ -114,14 +121,12 @@ public class StageSelectCamera : MonoBehaviour
 
         Bounds bounds = node.GetTotalBounds();
         Vector3 nodePos = node.transform.position;
-
         // 노드에서 상하좌우 먼 경계까지의 거리 계산
         float distX = Mathf.Max(Mathf.Abs(bounds.max.x - nodePos.x), Mathf.Abs(bounds.min.x - nodePos.x));
         float distY = Mathf.Max(Mathf.Abs(bounds.max.y - nodePos.y), Mathf.Abs(bounds.min.y - nodePos.y));
         float screenRatio = (float)Screen.width / (float)Screen.height;
         // 가로 거리 세로 비율로 전환
         float sizeFromWidth = distX / screenRatio;
-
         targetSize = Mathf.Max(distY, sizeFromWidth);
         // 최소 크기 제한
         targetSize = Mathf.Max(targetSize, 0f);
@@ -140,11 +145,8 @@ public class StageSelectCamera : MonoBehaviour
             currentFocusNode.ShowInfo(false);
             currentFocusNode = null;
         }
-
         isFocused = false;
-
         targetSize = maxPossibleSize;
-
         Vector3 returnPos = targetPosition;
         returnPos.y = originalPosition.y;
         targetPosition = ClampPosition(returnPos, targetSize);
@@ -155,23 +157,21 @@ public class StageSelectCamera : MonoBehaviour
         if (isDragging) // 드래그 시 즉시 이동
         {
             cam.transform.position = targetPosition;
+            moveVelocity = Vector3.zero;
         }
         else    // 아닐 시 부드러게 이동
         {
-            cam.transform.position = Vector3.Lerp(cam.transform.position, targetPosition, Time.deltaTime * zoomSpeed);
+            cam.transform.position = Vector3.SmoothDamp(cam.transform.position, targetPosition, ref moveVelocity, smoothTime);
         }
         // 확대, 축소는 항상 부드럽게 유지
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetSize, Time.deltaTime * zoomSpeed);
+        cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, targetSize, ref zoomVelocity, smoothTime);
     }
 
     void CalculateMaxZoomSize()
     {
         float screenRatio = cam.aspect;
-
         float heightLimit = mapBounds.size.y / 2f;
-
         float widthLimit = (mapBounds.size.x / 2f) / screenRatio;
-
         maxPossibleSize = Mathf.Min(heightLimit, widthLimit);
     }
 
@@ -190,7 +190,6 @@ public class StageSelectCamera : MonoBehaviour
 
         targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
         targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
-
         return targetPos;
     }
 }
