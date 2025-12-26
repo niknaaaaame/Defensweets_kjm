@@ -1,13 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class StageSelectCamera : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer mapBackground;
     [SerializeField] private float dragSpeed = 1f;
     [SerializeField] private float smoothTime = 0.2f;
+    [SerializeField] private float minZoomLimit = 0f;
+    [SerializeField] private MapCharacter mapCharacter;
+    [SerializeField] private Vector2 defaultStartPoint = Vector2.zero; // 저장 위치 없을 시 캐릭터 좌표
     
     private Camera cam;
     // 카메라 드래그
@@ -15,15 +20,11 @@ public class StageSelectCamera : MonoBehaviour
     private bool isDragging = false;
     // 줌
     private bool isFocused = false;
-    private StageNode currentFocusNode;
-    private Vector3 originalPosition;
-    
+    private StageNode currentFocusNode; 
     private Vector3 targetPosition;
     private float targetSize;
-
     private float maxPossibleSize;
     private Bounds mapBounds;
-
     private Vector3 moveVelocity;
     private float zoomVelocity;
 
@@ -45,18 +46,41 @@ public class StageSelectCamera : MonoBehaviour
             maxPossibleSize = cam.orthographicSize;
         }
         // 초기값
-        float startSize = Mathf.Clamp(cam.orthographicSize, 2f, maxPossibleSize);
+        float startSize = Mathf.Clamp(cam.orthographicSize, minZoomLimit, maxPossibleSize);
         cam.orthographicSize = startSize;
         targetSize = startSize;
-        // 초기 위치
-        originalPosition = targetPosition = ClampPosition(cam.transform.position, startSize);
-        cam.transform.position = targetPosition;
+        // 마지막 방문 노드 위치 불러오기
+        string sceneKey = SceneManager.GetActiveScene().name;
+        Vector3 logicalPos;
+
+        if (PlayerPrefs.HasKey(sceneKey + "_LastX"))
+        {
+            float lastX = PlayerPrefs.GetFloat(sceneKey + "_LastX");
+            float lastY = PlayerPrefs.GetFloat(sceneKey + "_LastY");
+            logicalPos = new Vector3(lastX, lastY, -10f);
+        }
+        else
+        {
+            logicalPos = new Vector3(defaultStartPoint.x, defaultStartPoint.y, -10f);
+        }
+
+        // MapCharacter 위치 이동
+        if (mapCharacter != null)
+        {
+            mapCharacter.TeleportTo(logicalPos);
+        }
+
+        Vector3 clampedCamPos = ClampPosition(logicalPos, startSize);
+        cam.transform.position = clampedCamPos;
+        targetPosition = clampedCamPos;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
         HandleInput();          // 클릭 / 드래그 입력 처리
         MoveCameraSmoothly();   // 카메라 목표 위치로 이동
     }
@@ -100,41 +124,70 @@ public class StageSelectCamera : MonoBehaviour
         if (hit.collider != null)
         {
             // 스테이지 노드 클릭 시
-            StageNode node = hit.collider.GetComponent<StageNode>();
-            if(node != null)
+            StageNode clickedNode = hit.collider.GetComponent<StageNode>();
+            if(clickedNode != null)
             {
-                FocusOnNode(node);
+                if (currentFocusNode == clickedNode && isFocused)
+                {
+                    ZoomToNode(clickedNode);
+                    clickedNode.ShowInfo(true);
+                }
+                else
+                {
+                    FocusOnNode(clickedNode);
+                }
                 return;
             }
         }
         // 확대 상태 + 바깥 클릭 시
         if (isFocused) Unfocus();
     }
-
+    // 이동
     void FocusOnNode(StageNode node)
     {
         if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
 
         isFocused = true;
         currentFocusNode = node;
-        node.ShowInfo(true);
 
+        Vector3 nodePos = node.transform.position;
+
+        targetSize = maxPossibleSize;
+        //목표 위치
+        targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
+        targetPosition = ClampPosition(targetPosition, targetSize);
+        // MapCharacter 명령
+        if (mapCharacter != null)
+        {
+            mapCharacter.SetTarget(nodePos);
+        }
+        // 현재 선택 위치 저장
+        string sceneKey = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetFloat(sceneKey + "_LastX", nodePos.x);
+        PlayerPrefs.SetFloat(sceneKey + "_LastY", nodePos.y);
+        PlayerPrefs.Save();
+    }
+    // 확대
+    void ZoomToNode(StageNode node)
+    {
         Bounds bounds = node.GetTotalBounds();
         Vector3 nodePos = node.transform.position;
-        // 노드에서 상하좌우 먼 경계까지의 거리 계산
+
         float distX = Mathf.Max(Mathf.Abs(bounds.max.x - nodePos.x), Mathf.Abs(bounds.min.x - nodePos.x));
         float distY = Mathf.Max(Mathf.Abs(bounds.max.y - nodePos.y), Mathf.Abs(bounds.min.y - nodePos.y));
         float screenRatio = (float)Screen.width / (float)Screen.height;
-        // 가로 거리 세로 비율로 전환
+
         float sizeFromWidth = distX / screenRatio;
-        targetSize = Mathf.Max(distY, sizeFromWidth);
-        // 최소 크기 제한
-        targetSize = Mathf.Max(targetSize, 0f);
-        // 최대 크기 제한
-        targetSize = Mathf.Min(targetSize, maxPossibleSize);
-        // 목표 위치 설정
+        float calculatedSize = Mathf.Max(distY, sizeFromWidth);
+
+        // if (node.overrideZoomSize > 0) calculatedSize = node.overrideZoomSize;
+        // 줌 범위 제한
+        calculatedSize = Mathf.Max(calculatedSize, minZoomLimit);
+        calculatedSize = Mathf.Min(calculatedSize, maxPossibleSize);
+        // 목표 사이즈 갱신
+        targetSize = calculatedSize;
+        // 위치 다시 조정
         targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
-        // 목표 위치가 배경 밖일 시 제한
         targetPosition = ClampPosition(targetPosition, targetSize);
     }
 
@@ -147,8 +200,7 @@ public class StageSelectCamera : MonoBehaviour
         }
         isFocused = false;
         targetSize = maxPossibleSize;
-        Vector3 returnPos = targetPosition;
-        returnPos.y = originalPosition.y;
+        Vector3 returnPos = targetPosition;      
         targetPosition = ClampPosition(returnPos, targetSize);
     }
 
