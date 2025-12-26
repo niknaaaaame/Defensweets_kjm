@@ -13,11 +13,12 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
+    [SerializeField] private BoxCollider2D range;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
-    private float energy;
+    private float energy = 100f;
     public float GetEnergy() => energy;
 
     private float damageMultiplier = 1f;  //-여영부-
@@ -25,7 +26,6 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
         ApplyTileEffect(); //-여영부-
     }
@@ -34,7 +34,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     void Update()
     {
         // 에너지 바 갱신
-        float ratio = energy / towerData.levels[level].energy;
+        float ratio = energy / 100;
         energyBar.localScale = new Vector3(originalScale.x * ratio, originalScale.y, originalScale.z);
         
         float widthDifference = originalScale.x - energyBar.localScale.x;
@@ -104,7 +104,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
             int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
             bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
-            energy -= 10;
+            energy -= towerData.levels[level].usingEnergy;
             if (energy <= 0)
             {
                 energy = 0;
@@ -119,14 +119,23 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
 
     public void Upgrade()
     {
-        if(level < 2)
+        switch (level)
         {
-            level += 1;
-            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-        }
-        else
-        {
-            Debug.Log("Max Level Reached");
+            case 0:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                level = 1;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 1:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                level = 2;
+                range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 2:
+                Debug.Log("Max Level Reached");
+                break;
         }
     }
 
@@ -139,9 +148,9 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     {
         energy += amount;
         
-        if (energy > towerData.levels[level].energy)
+        if (energy > 100)
         {
-            energy = towerData.levels[level].energy;
+            energy = 100;
         }
     }
 
