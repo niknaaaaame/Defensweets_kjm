@@ -11,7 +11,10 @@ public class StageNode : MonoBehaviour
     [SerializeField] private GameObject infoCanvas;
     [SerializeField] private GameObject mapCanvas;
 
-    [SerializeField] private float padding = 1f;   
+    [SerializeField] private float padding = 1f;
+
+    //public float overrideZoomSize = 0f; // 0보다 크면 이 값으로 설정
+        
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
