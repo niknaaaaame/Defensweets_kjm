@@ -14,15 +14,34 @@ public class CollectionShow : MonoBehaviour
     public Text nameText;
     public Text descriptionText;
     public Image entryImage;
+    public Image rangeImage;
+
+    [Header("UI Roots")]
+    public GameObject iconRoot;
+    public GameObject entryDetailRoot;
 
     void Start()
     {
-        ShowEntry(0);
+        ShowIconView();
     }
 
-    void ShowEntry(int index)
+    void ShowIconView()
+    {
+        iconRoot.SetActive(true);
+        entryDetailRoot.SetActive(false);
+    }
+
+    void ShowEntryView()
+    {
+        iconRoot.SetActive(false);
+        entryDetailRoot.SetActive(true);
+    }
+
+    public void ShowEntry(int index)
     {
         if (entries.Length == 0) return;
+
+        ShowEntryView(); 
 
         currentIndex = Mathf.Clamp(index, 0, entries.Length - 1);
         var data = entries[currentIndex];
@@ -30,15 +49,31 @@ public class CollectionShow : MonoBehaviour
         nameText.text = data.displayName;
         descriptionText.text = data.description;
         entryImage.sprite = data.image;
+        rangeImage.sprite = data.rangeImage;
     }
 
     public void NextPage()
     {
-        ShowEntry(currentIndex + 1);
+        int nextIndex = currentIndex + 1;
+
+        if (nextIndex >= entries.Length)
+            nextIndex = 0;
+
+        ShowEntry(nextIndex);
     }
 
     public void PrevPage()
     {
-        ShowEntry(currentIndex - 1);
+        int prevIndex = currentIndex - 1;
+
+        if (prevIndex < 0)
+            prevIndex = entries.Length - 1;
+
+        ShowEntry(prevIndex);
+    }
+
+    public void BackToIconView()
+    {
+        ShowIconView();
     }
 }
