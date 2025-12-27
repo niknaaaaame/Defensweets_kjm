@@ -7,6 +7,7 @@ public class CollectionData : ScriptableObject
 {
     [Header("Image")]
     public Sprite image;
+    public Sprite rangeImage;
 
     [Header("Name")]
     public string displayName;
