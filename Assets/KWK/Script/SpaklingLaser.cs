@@ -20,13 +20,13 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
-    private float energy;
+    private float energy = 100f;
     public float GetEnergy() => energy;
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
+        energy = 100;
         originalScale = energyBar.localScale;
 
         ApplyTileEffect(); //-여영부-
@@ -36,7 +36,7 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     void Update()
     {
         // 에너지 바 갱신
-        float ratio = energy / towerData.levels[level].energy;
+        float ratio = energy / 100;
         energyBar.localScale = new Vector3(originalScale.x * ratio, originalScale.y, originalScale.z);
 
         float widthDifference = originalScale.x - energyBar.localScale.x;
@@ -122,7 +122,7 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                 }
             }
 
-            energy -= 20;
+            energy -= towerData.levels[0].usingEnergy;
             if (energy < 0)
             {
                 energy = 0;
@@ -137,14 +137,22 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
 
     public void Upgrade()
     {
-        if (level < 2)
+        switch (level)
         {
-            level += 1;
-            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-        }
-        else
-        {
-            Debug.Log("Max Level Reached");
+            case 0:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                level = 1;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 1:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                level = 2;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 2:
+                Debug.Log("Max Level Reached");
+                break;
         }
     }
 
@@ -157,9 +165,9 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     {
         energy += amount;
 
-        if (energy > towerData.levels[level].energy)
+        if (energy > 100)
         {
-            energy = towerData.levels[level].energy;
+            energy = 100;
         }
     }
 

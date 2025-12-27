@@ -15,19 +15,16 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     [SerializeField] private BoxCollider2D outerRange;
     [SerializeField] private BoxCollider2D innerRange;
 
-    //HashSet<GameObject> outerEnemies = new HashSet<GameObject>();
-    //HashSet<GameObject> innerEnemies = new HashSet<GameObject>();
-
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
-    private float energy;
+    private float energy = 100f;
     public float GetEnergy() => energy;
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
+        energy = 100;
         originalScale = energyBar.localScale;
     }
 
@@ -35,7 +32,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     void Update()
     {
         // 에너지 바 갱신
-        float ratio = energy / towerData.levels[level].energy;
+        float ratio = energy / 100;
         energyBar.localScale = new Vector3(originalScale.x * ratio, originalScale.y, originalScale.z);
 
         float widthDifference = originalScale.x - energyBar.localScale.x;
@@ -111,7 +108,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
             Bullet bullet = instance.GetComponent<Bullet>();
             bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
-            energy -= 10;
+            energy -= towerData.levels[0].usingEnergy;
             if (energy <= 0)
             {
                 energy = 0;
@@ -126,14 +123,23 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
 
     public void Upgrade()
     {
-        if (level < 2)
+        switch (level)
         {
-            level += 1;
-            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-        }
-        else
-        {
-            Debug.Log("Max Level Reached");
+            case 0:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                level = 1;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 1:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                level = 2;
+                outerRange.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 2:
+                Debug.Log("Max Level Reached");
+                break;
         }
     }
 
@@ -146,9 +152,9 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     {
         energy += amount;
 
-        if (energy > towerData.levels[level].energy)
+        if (energy > 100)
         {
-            energy = towerData.levels[level].energy;
+            energy = 100;
         }
     }
 }

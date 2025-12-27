@@ -27,8 +27,22 @@ public class MapCharacter : MonoBehaviour
             // µµÂø ÆÇÁ¤
             if (Vector3.Distance(transform.position, targetPosition) < arrivalDistance)
             {
-
+                transform.position = targetPosition;
+                isMoving = false;
             }
         }
+    }
+
+    public void SetTarget(Vector3 newPos)
+    {
+        targetPosition = new Vector3(newPos.x, newPos.y, transform.position.z);
+        isMoving = true;
+    }
+
+    public void TeleportTo(Vector3 newPos)
+    {
+        transform.position = new Vector3(newPos.x, newPos.y, transform.position.z);
+        targetPosition = transform.position;
+        isMoving = false;
     }
 }

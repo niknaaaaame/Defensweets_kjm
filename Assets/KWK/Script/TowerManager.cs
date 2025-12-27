@@ -47,7 +47,7 @@ public class TowerManager : MonoBehaviour
                 ghostTower = null;
                 selectedTower = null;
 
-                ResourceTest.Instance.UseSugar(installCost);
+                ResourceSystem.Instance.TryUseSugar(installCost);
             }
 
             else if (Input.GetMouseButtonDown(1))

@@ -18,23 +18,23 @@ MonoBehaviour:
   prefab: {fileID: 0}
   levels:
   - damage: 10
-    attackSpeed: 0.5
-    range: 3
-    upgradeCostSugar: 30
-    specialCostCrystal: 0
-    cost: 10
-    energy: 100
-  - damage: 15
-    attackSpeed: 0.7
+    attackSpeed: 1
     range: 3
     upgradeCostSugar: 40
     specialCostCrystal: 0
-    cost: 10
-    energy: 100
+    cost: 30
+    usingEnergy: 3
+  - damage: 15
+    attackSpeed: 0.7
+    range: 3
+    upgradeCostSugar: 50
+    specialCostCrystal: 5
+    cost: 0
+    usingEnergy: 2
   - damage: 20
-    attackSpeed: 0.5
+    attackSpeed: 0.4
     range: 5
-    upgradeCostSugar: 11111111
-    specialCostCrystal: 11111111
-    cost: 10
-    energy: 100
+    upgradeCostSugar: 0
+    specialCostCrystal: 0
+    cost: 0
+    usingEnergy: 1

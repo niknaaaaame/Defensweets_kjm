@@ -22,5 +22,5 @@ public struct TowerLevel
     public int specialCostCrystal;
 
     public int cost;
-    public int energy;
+    public int usingEnergy;
 }
