@@ -90,10 +90,18 @@ public class TowerManager : MonoBehaviour
     void SetLayerAlpha(GameObject obj, float alpha)
     {
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-        
+        sr.enabled = true;
+
         Color color = sr.color;
         color.a = alpha;
-        sr.color = color;
+        if (obj.name == "Range")
+        {
+            sr.color = color;
+        }
+        else if (obj.name == "background" || obj.name == "fill")
+        {
+            sr.enabled = false;
+        }
 
         foreach (Transform child in obj.transform)
         {
