@@ -127,6 +127,12 @@ public class StageSelectCamera : MonoBehaviour
             StageNode clickedNode = hit.collider.GetComponent<StageNode>();
             if(clickedNode != null)
             {
+                if (clickedNode.CurrentState == StageState.Locked)
+                {
+                    Debug.Log("잠긴 스테이지입니다.");
+                    return;
+                }
+
                 if (currentFocusNode == clickedNode && isFocused)
                 {
                     ZoomToNode(clickedNode);

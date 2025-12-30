@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class TitleController : MonoBehaviour
 {
     [SerializeField] private Text blinkText;
+    [SerializeField] private Image blinkImage;
     [SerializeField] private float blinkSpeed = 3.0f;
     [SerializeField] private string nextSceneName = "StageSelectScene"; // 빌드 세팅에 맞게 이름 바꾸기
 
@@ -21,10 +22,13 @@ public class TitleController : MonoBehaviour
     {
         if (blinkText != null)
         {
-            Color color = blinkText.color;
+            Color color1 = blinkText.color;
+            Color color2 = blinkImage.color;
             float alpha = (Mathf.Sin(Time.time * blinkSpeed) + 1.0f) * 0.5f;
-            color.a = alpha;
-            blinkText.color = color;
+            color1.a = alpha;
+            color2.a = alpha;
+            blinkText.color = color1;
+            blinkImage.color = color2;
         }
     }
 
