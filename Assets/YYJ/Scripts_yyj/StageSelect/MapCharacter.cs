@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class MapCharacter : MonoBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("움직임 설정")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float arrivalDistance = 0.1f;
+
+    [Header("위치 조정")]
+    [SerializeField] private float yOffset = 0.5f;
 
     private Vector3 targetPosition;
     private bool isMoving = false;
@@ -35,14 +38,15 @@ public class MapCharacter : MonoBehaviour
 
     public void SetTarget(Vector3 newPos)
     {
-        targetPosition = new Vector3(newPos.x, newPos.y, transform.position.z);
+        targetPosition = new Vector3(newPos.x, newPos.y + yOffset, transform.position.z);
         isMoving = true;
     }
 
     public void TeleportTo(Vector3 newPos)
     {
-        transform.position = new Vector3(newPos.x, newPos.y, transform.position.z);
-        targetPosition = transform.position;
+        Vector3 finalPos = new Vector3(newPos.x, newPos.y + yOffset, transform.position.z);
+        transform.position = finalPos;
+        targetPosition = finalPos;
         isMoving = false;
     }
 }
