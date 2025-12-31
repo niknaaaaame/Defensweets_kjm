@@ -6,7 +6,7 @@ using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class SingleHeal : MonoBehaviour, TowerInterface
+public class MilkTower : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
@@ -119,14 +119,22 @@ public class SingleHeal : MonoBehaviour, TowerInterface
 
     public void Upgrade()
     {
-        if (level < 2)
+        switch (level)
         {
-            level += 1;
-            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-        }
-        else
-        {
-            Debug.Log("Max Level Reached");
+            case 0:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                level = 1;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 1:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                level = 2;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 2:
+                Debug.Log("Max Level Reached");
+                break;
         }
     }
 

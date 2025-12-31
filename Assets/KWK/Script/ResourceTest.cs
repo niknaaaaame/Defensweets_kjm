@@ -1,24 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class ResourceTest : MonoBehaviour
 {
-    public static ResourceTest Instance { get; private set; }
-
-    [SerializeField] private int sugar;
-    [SerializeField] private int crystal;
-
-    [SerializeField] TextMeshProUGUI sugarText;
-    [SerializeField] TextMeshProUGUI crystalText;
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance = this;
-    }
-
+    public static ResourceTest instance { get; private set; }
     // Start is called before the first frame update
     void Start()
     {
@@ -28,17 +14,6 @@ public class ResourceTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        sugarText.text = $"Sugar: {sugar}";
-        crystalText.text = $"Crystal: {crystal}";
-    }
-
-    public void UseSugar(int amount)
-    {
-        sugar -= amount;
-    }
-
-    public void UseCrystal(int amount)
-    {
-        crystal -= amount;
+        
     }
 }

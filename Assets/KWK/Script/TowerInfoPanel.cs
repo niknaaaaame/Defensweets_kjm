@@ -46,12 +46,21 @@ public class TowerInfoPanel : MonoBehaviour
         towerInterface = tower.GetComponent<TowerInterface>();
         towerData = towerInterface.GetTowerData();
 
-        towerNameText.text = $"{towerData.towerName}";
-        towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
-            $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
-            $"upgrade cost\nsugar: {towerData.levels[level].upgradeCostSugar}\ncrystal: {towerData.levels[level].specialCostCrystal}";
-
-        towerInfoPanel.SetActive(true);
+        if (level < 2)
+        {
+            towerNameText.text = $"{towerData.towerName}";
+            towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
+                $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
+                $"upgrade cost\nsugar: {towerData.levels[level].upgradeCostSugar}\ncrystal: {towerData.levels[level].specialCostCrystal}";
+        }
+        else
+        {
+            towerNameText.text = $"{towerData.towerName}";
+            towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
+                $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
+                $"Max Level";
+        }
+            towerInfoPanel.SetActive(true);
     }
 
     public void HideTowerInfo()

@@ -1,34 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.EventSystems.EventTrigger;
 
-public class AoE : MonoBehaviour, TowerInterface
+public class ChocochipTurret : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
 
-    private float damageMultiplier = 1f; //여기도 특수타일용 변수 추가 -여영부-
-
     [HideInInspector] public int level = 0;
 
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
-    [SerializeField] private float prefabDestroyTime;
+    [SerializeField] private BoxCollider2D range;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
-    private float energy;
+    private float energy = 100f;
     public float GetEnergy() => energy;
+
+    private float damageMultiplier = 1f;  //-여영부-
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = towerData.levels[level].energy;
         originalScale = energyBar.localScale;
-
         ApplyTileEffect(); //-여영부-
     }
 
@@ -36,9 +34,9 @@ public class AoE : MonoBehaviour, TowerInterface
     void Update()
     {
         // 에너지 바 갱신
-        float ratio = energy / towerData.levels[level].energy;
+        float ratio = energy / 100;
         energyBar.localScale = new Vector3(originalScale.x * ratio, originalScale.y, originalScale.z);
-
+        
         float widthDifference = originalScale.x - energyBar.localScale.x;
         energyBar.localPosition = new Vector3(-widthDifference / 2f, energyBar.localPosition.y, energyBar.localPosition.z);
 
@@ -59,77 +57,61 @@ public class AoE : MonoBehaviour, TowerInterface
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
 
-        if(!targets.Contains(other))
+        if (!targets.Contains(other))
         {
             targets.Add(other);
         }
 
-        if(shootCoroutine == null)
+        if (shootCoroutine == null)
         {
             shootCoroutine = StartCoroutine(shoot());
         }
-
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(!other.CompareTag("Monster"))
+        if (!other.CompareTag("Monster"))
         {
             return;
         }
 
         targets.Remove(other);
 
-        if(targets.Count == 0 && shootCoroutine != null)
+        if (targets.Count == 0 && shootCoroutine != null)
         {
             StopCoroutine(shootCoroutine);
             shootCoroutine = null;
         }
     }
 
-    private IEnumerator shoot()
+    IEnumerator shoot()
     {
         while (targets.Count > 0)
         {
-            GameObject instance = Instantiate(prefab, shootPoint.position, shootPoint.rotation);
+            GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+            
+            Bullet bullet = instance.GetComponent<Bullet>();
+            //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
-            Destroy(instance, prefabDestroyTime);
+            int baseDamage = towerData.levels[level].damage;  //여기서 부터
+            int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);  
+            bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
-            for (int i = targets.Count - 1; i >= 0; i--)
-            {
-                var target = targets[i];
-                if (target == null)
-                {
-                    targets.RemoveAt(i);
-                    continue;
-                }
-
-                int baseDamage = towerData.levels[level].damage; //-여영부-
-                int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
-
-                MonsterTest monster = target.GetComponent<MonsterTest>();
-                if (monster != null)
-                {
-                    //monster.TakeDamage(towerData.levels[0].damage);
-                    monster.TakeDamage(finalDamage); //여기도 특수타일때메 바꿨어 -여영부-
-                }
-            }
-
-            energy -= 20;
-            if (energy < 0)
+            energy -= towerData.levels[level].usingEnergy;
+            if (energy <= 0)
             {
                 energy = 0;
                 yield break;
             }
 
-            yield return new WaitForSeconds(towerData.levels[0].attackSpeed);
+            yield return new WaitForSeconds(towerData.levels[level].attackSpeed);
         }
 
         shootCoroutine = null;
@@ -137,14 +119,23 @@ public class AoE : MonoBehaviour, TowerInterface
 
     public void Upgrade()
     {
-        if (level < 2)
+        switch (level)
         {
-            level += 1;
-            TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-        }
-        else
-        {
-            Debug.Log("Max Level Reached");
+            case 0:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                level = 1;
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 1:
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                level = 2;
+                range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                break;
+            case 2:
+                Debug.Log("Max Level Reached");
+                break;
         }
     }
 
@@ -156,14 +147,14 @@ public class AoE : MonoBehaviour, TowerInterface
     public void Heal(int amount)
     {
         energy += amount;
-
-        if (energy > towerData.levels[level].energy)
+        
+        if (energy > 100)
         {
-            energy = towerData.levels[level].energy;
+            energy = 100;
         }
     }
 
-    private void ApplyTileEffect()
+    private void ApplyTileEffect()   //특수타일 공격력 증가 -여영부-
     {
         if (TilemapReader_YYJ.Instance == null)
             return;
@@ -173,7 +164,7 @@ public class AoE : MonoBehaviour, TowerInterface
         switch (effect)
         {
             case TileEffectType.SweetBoost:
-                damageMultiplier = 1.5f;
+                damageMultiplier = 1.5f;  
                 break;
 
             default:

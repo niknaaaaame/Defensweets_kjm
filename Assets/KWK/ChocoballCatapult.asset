@@ -10,31 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d8a6d5ef77031a43a5bdfcc7eebf14a, type: 3}
-  m_Name: ChocochipTurret
+  m_Name: ChocoballCatapult
   m_EditorClassIdentifier: 
-  towerName: ChocochipTurret
-  towerType: 0
+  towerName: ChocoballCatapult
+  towerType: 2
   icon: {fileID: 0}
   prefab: {fileID: 0}
   levels:
   - damage: 10
     attackSpeed: 1
-    range: 3
-    upgradeCostSugar: 40
-    specialCostCrystal: 0
-    cost: 30
-    usingEnergy: 3
-  - damage: 15
-    attackSpeed: 0.7
-    range: 3
-    upgradeCostSugar: 50
-    specialCostCrystal: 5
-    cost: 0
-    usingEnergy: 2
-  - damage: 20
-    attackSpeed: 0.4
-    range: 5
+    range: 0
     upgradeCostSugar: 0
     specialCostCrystal: 0
     cost: 0
-    usingEnergy: 1
+    energy: 100
