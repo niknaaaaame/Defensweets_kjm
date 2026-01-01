@@ -24,28 +24,38 @@ public class CursorChanger : MonoBehaviour
         hotspot = new Vector2(cursorTexture.width / 2f, cursorTexture.height / 2f);
     }
 
-    void Update()
+    void Update() //여기도 살짝 바꿨어요 -여영부-
     {
-        if (ExploitationState.isOn)
+        if (!ExploitationState.isOn)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPos.z = 0;
-            Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos);
+            Cursor.SetCursor(defaultCursor, Vector2.zero, cursorMode);
+            return;
+        }
 
-            Vector3Int tilemapOrigin = tilemap.cellBounds.min;
+        if (GameManager.Instance != null &&
+        GameManager.Instance.CurrentState != GameState.Ready)
+        {
+            Cursor.SetCursor(defaultCursor, Vector2.zero, cursorMode);
+            return;
+        } //웨이브상태 커서변경불가 -여영부-
 
-            tilePosX = cellPos.x - tilemapOrigin.x;
-            tilePosY = cellPos.y - tilemapOrigin.y;
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0;
+        Vector3Int cellPos = tilemap.WorldToCell(mouseWorldPos);
 
-            if (tilePosX >= 0 && tilePosX < mapData.mapWidth &&
-                tilePosY >= 0 && tilePosY < mapData.mapHeight)
-            {
-                Cursor.SetCursor(cursorTexture, hotspot, cursorMode);
-            }
-            else
-            {
-                Cursor.SetCursor(defaultCursor, Vector2.zero, cursorMode);
-            }
+        Vector3Int tilemapOrigin = tilemap.cellBounds.min;
+
+        tilePosX = cellPos.x - tilemapOrigin.x;
+        tilePosY = cellPos.y - tilemapOrigin.y;
+
+        if (tilePosX >= 0 && tilePosX < mapData.mapWidth &&
+            tilePosY >= 0 && tilePosY < mapData.mapHeight)
+        {
+            Cursor.SetCursor(cursorTexture, hotspot, cursorMode);
+        }
+        else
+        {
+            Cursor.SetCursor(defaultCursor, Vector2.zero, cursorMode);
         }
     }
 }

@@ -4,7 +4,8 @@ public class PauseManager : MonoBehaviour
 {
     public static PauseManager Instance { get; private set; }
 
-    [SerializeField] private GameObject settingsPanel; 
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject soundsPanel;
 
     private bool isPaused = false;
 
@@ -52,6 +53,23 @@ public class PauseManager : MonoBehaviour
 
         bool show = !settingsPanel.activeSelf;
         settingsPanel.SetActive(show);
+
+        if (show) Pause();
+        else Resume();
+    }
+
+    public void BottonSettings()
+    {
+        if (soundsPanel == null)
+        {
+            TogglePause();
+            return;
+        }
+
+        settingsPanel.SetActive(false);
+
+        bool show = !soundsPanel.activeSelf;
+        soundsPanel.SetActive(show);
 
         if (show) Pause();
         else Resume();

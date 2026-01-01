@@ -34,4 +34,18 @@ public class SettingsMenu : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
+
+    public void OnClickCloseSound()
+    {
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.BottonSettings();
+        }
+        else
+        {
+            // 혹시 PauseManager 안 쓰는 씬이면 그냥 패널만 끄기
+            gameObject.SetActive(false);
+            Time.timeScale = 1f;
+        }
+    }
 }
