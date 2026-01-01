@@ -101,18 +101,11 @@ public class TileEditor : MonoBehaviour
         startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
     }
 
-    void Update()
+    void Update() //조금 추가했습니다 -여영부-
     {
-        if (ExploitationState.isOn)
+        if (!ExploitationState.isOn)
         {
-            if (Input.GetMouseButton(0))
-            {
-                HandleTile(false);
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                HandleTile(true);
-            }
+            return;
 
             //if (Input.GetKeyDown(KeyCode.R))
             //{
@@ -126,6 +119,21 @@ public class TileEditor : MonoBehaviour
             //        }
             //    }
             //}
+        }
+
+        if (GameManager.Instance != null &&
+        GameManager.Instance.CurrentState != GameState.Ready)
+        {
+            return;
+        }  //웨이브단계 개척불가용 코드 -여영부-
+
+        if (Input.GetMouseButton(0))
+        {
+            HandleTile(false);
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            HandleTile(true);
         }
 
         if (CheckComplete())
