@@ -65,6 +65,12 @@ public class GameManager : MonoBehaviour
 
     public void StartNextWave()
     {
+        // 버튼에서 호출하는 기본 버전: 경로 없으면 실패 안 뜸
+        StartNextWave(false);
+    }
+
+    public void StartNextWave(bool failIfNoPath)
+    {
         Debug.Log($"[GM] StartNextWave 호출, 현재 상태 = {CurrentState}");
 
         if (CurrentState != GameState.Ready)
@@ -83,6 +89,10 @@ public class GameManager : MonoBehaviour
         if (!ok)
         {
             Debug.LogWarning("[GameManager] 경로가 없어 웨이브를 시작할 수 없습니다.");
+            if (failIfNoPath)
+            {
+                OnFailed();
+            }
             return;
         }
 

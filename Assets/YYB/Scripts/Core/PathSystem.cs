@@ -44,6 +44,12 @@ public class PathSystem : MonoBehaviour
         isLocked = true;
         return true;
     }
+    public bool HasValidPath(Vector3 startWorld, Vector3 goalWorld)
+    {
+        // 잠금(isLocked)과 상관없이, 지금 타일 상태에서 경로가 있는지만 확인
+        List<Vector3> path = BFS.FindPath(startWorld, goalWorld);
+        return path != null && path.Count > 0;
+    }
 
     public void Unlock()
     {
