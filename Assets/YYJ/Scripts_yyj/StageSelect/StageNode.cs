@@ -33,6 +33,9 @@ public class StageNode : MonoBehaviour
     [Header("여백")]
     [SerializeField] private float padding = 1f;
 
+    [Header("보상 표시")]
+    [SerializeField] private GameObject rewardCanvas;
+
     //public float overrideZoomSize = 0f; // 0보다 크면 이 값으로 설정
         
     private SpriteRenderer spriteRenderer;
@@ -44,6 +47,7 @@ public class StageNode : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (infoCanvas != null) infoCanvas.SetActive(false);
         if (mapCanvas != null) mapCanvas.SetActive(false);
+        if (rewardCanvas != null) rewardCanvas.SetActive(false);
 
         UpdateState();  // 게임 시작 시 상태 체크 및 색상 적용
     }
@@ -131,6 +135,14 @@ public class StageNode : MonoBehaviour
     public void CloseMap()
     {
         if (mapCanvas != null) mapCanvas.SetActive(false);
+    }
+
+    public void ShowReward(bool show)
+    {
+        if (rewardCanvas != null)
+        {
+            rewardCanvas.SetActive(show);
+        }
     }
 
 
