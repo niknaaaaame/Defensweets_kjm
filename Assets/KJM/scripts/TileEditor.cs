@@ -138,7 +138,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            //Debug.Log("연결 완료");  업데이트에 넣어서 계속떠서 주석처리 좀 할게요 -여영부-
+            //Debug.Log("연결 완료");  //업데이트에 넣어서 계속떠서 주석처리 좀 할게요 -여영부-
         }
         //Debug.Log($"{CheckComplete()}");
     }
