@@ -65,14 +65,31 @@ public class StageSelectCamera : MonoBehaviour
         }
 
         // MapCharacter 위치 이동
-        if (mapCharacter != null)
-        {
-            mapCharacter.TeleportTo(logicalPos);
-        }
+        if (mapCharacter != null) mapCharacter.TeleportTo(logicalPos);
 
         Vector3 clampedCamPos = ClampPosition(logicalPos, startSize);
         cam.transform.position = clampedCamPos;
         targetPosition = clampedCamPos;
+        // 캐릭터 위치 노드 찾아 보상창 켜기
+        StageNode nearestNode = null;
+        float minDst = 0.5f;
+
+        StageNode[] allNodes = FindObjectsOfType<StageNode>();
+        foreach (var node in allNodes)
+        {
+            if (Vector3.Distance(node.transform.position, logicalPos) < minDst)
+            {
+                nearestNode = node;
+                break;
+            }
+        }
+
+        if (nearestNode != null)
+        {
+            currentFocusNode = nearestNode;
+            isFocused = true;
+            nearestNode.ShowReward(true);
+        }
     }
 
     // Update is called once per frame
@@ -151,13 +168,16 @@ public class StageSelectCamera : MonoBehaviour
     // 이동
     void FocusOnNode(StageNode node)
     {
-        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.ShowInfo(false);
+            currentFocusNode.ShowReward(false);
+        }
 
         isFocused = true;
         currentFocusNode = node;
 
         Vector3 nodePos = node.transform.position;
-
         targetSize = maxPossibleSize;
         //목표 위치
         targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
@@ -165,7 +185,15 @@ public class StageSelectCamera : MonoBehaviour
         // MapCharacter 명령
         if (mapCharacter != null)
         {
-            mapCharacter.SetTarget(nodePos);
+            mapCharacter.SetTarget(nodePos , () =>
+            {
+                // 캐릭터 도착 시 이 코드가 실행
+                // 현재 포커스가 이 노드인지 확인
+                if (currentFocusNode == node)
+                {
+                    node.ShowReward(true);
+                }
+            });
         }
         // 현재 선택 위치 저장
         string sceneKey = SceneManager.GetActiveScene().name;
