@@ -138,7 +138,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            //Debug.Log("연결 완료");  업데이트에 넣어서 계속떠서 주석처리 좀 할게요 -여영부-
+            Debug.Log("연결 완료");  // 업데이트에 넣어서 계속떠서 주석처리 좀 할게요 -여영부-
         }
         //Debug.Log($"{CheckComplete()}");
     }
@@ -179,6 +179,7 @@ public class TileEditor : MonoBehaviour
 
         arrayX = cellPos.x - tilemapOrigin.x;
         arrayY = cellPos.y - tilemapOrigin.y;
+
         //Debug.Log($"HandleTile -> MouseWorld: {mouseWorldPos}, Cell: {cellPos}, Index: ({arrayX},{arrayY})");
 
         if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight) return;
@@ -260,14 +261,15 @@ public class TileEditor : MonoBehaviour
         foreach (var worldPos in path)
         {
             Vector3Int cellPos = tilemap.WorldToCell(worldPos);
+
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
-
             //Debug.Log($"인덱스: ({x},{y})");
 
             if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //맵 끝과 붙어있으면 연결성 검사 안되는 문제
                 return false;
             //Debug.Log($"{x}, {y}");
+
             if (tileData[x, y] != PATH)
                 return false;
         }
