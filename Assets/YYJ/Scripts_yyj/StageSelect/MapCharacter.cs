@@ -12,14 +12,15 @@ public class MapCharacter : MonoBehaviour
     [Header("위치 조정")]
     [SerializeField] private float yOffset = 0.5f;
 
-    private Vector3 targetPosition;
+    private Queue<Vector3> pathQueue = new Queue<Vector3>();    // 이동 경로 큐
+    private Vector3 currentTarget;  // 현재 이동 중 목표점
     private bool isMoving = false;
     private Action onArrivalCallback; // 도착 시 실행할 함수 저장 변수
 
     // Start is called before the first frame update
     void Start()
     {
-        targetPosition = transform.position;
+        currentTarget = transform.position; // 시작 시 현재 위치를 목표 설정, 제자리 유지
     }
 
     // Update is called once per frame
@@ -28,34 +29,63 @@ public class MapCharacter : MonoBehaviour
         if (isMoving)
         {
             // 타겟 위치로 이동
-            transform.position = Vector3.MoveTowards(transform.position,targetPosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, currentTarget, moveSpeed * Time.deltaTime);
             // 도착 판정
-            if (Vector3.Distance(transform.position, targetPosition) < arrivalDistance)
+            if (Vector3.Distance(transform.position, currentTarget) < arrivalDistance)
             {
-                transform.position = targetPosition;
-                isMoving = false;
-
-                // 도착 시 실행
-                if (onArrivalCallback != null)
-                {
-                    onArrivalCallback.Invoke();
-                    onArrivalCallback = null; // 실행 후 초기화
-                }
+                transform.position = currentTarget; // 위치
+                CheckNextWaypoint();    // 다음 지점 확인 
             }
         }
     }
 
-    public void SetTarget(Vector3 newPos, Action onComplete = null)
+    private void CheckNextWaypoint()    // 다음 경유지가 있으면 꺼내기, 없으면 이동 종료
     {
-        targetPosition = new Vector3(newPos.x, newPos.y + yOffset, transform.position.z);
+        if (pathQueue.Count > 0)
+        {
+            currentTarget = pathQueue.Dequeue();
+        }
+        else
+        {
+            isMoving = false;
+            onArrivalCallback?.Invoke();    // 도착 시 콜백 실행
+            onArrivalCallback = null;       // 콜백 초기화
+        }
+    }
+
+    // 단일 목적지 아닌 경로를 받아 순서대로 이동
+    public void MoveAlongPath(List<Vector3> pathPoints, Action onComplete = null)
+    {
+        pathQueue.Clear();
         onArrivalCallback = onComplete;
-        isMoving = true;
+
+        if (pathPoints == null || pathPoints.Count == 0) return;
+
+        // 전달받은 점들 큐에 추가
+        foreach (Vector3 pos in pathPoints)
+        {
+            // y 오프셋 적용
+            Vector3 adjustedPos = new Vector3(pos.x, pos.y + yOffset, transform.position.z);
+            pathQueue.Enqueue(adjustedPos);
+        }
+        // 첫 목적지 설정 및 이동 시작
+        if (pathQueue.Count > 0)
+        {
+            currentTarget = pathQueue.Dequeue();
+            isMoving = true;
+        }
+        else
+        {
+            // 이동 필요 없을 시 바로 완료 처리
+            onComplete?.Invoke();
+        }
     }
 
     public void TeleportTo(Vector3 newPos)
     {
         transform.position = new Vector3(newPos.x, newPos.y + yOffset, transform.position.z);
-        targetPosition = transform.position;
+        currentTarget = transform.position;
+        pathQueue.Clear();
         isMoving = false;
         onArrivalCallback = null;
     }
