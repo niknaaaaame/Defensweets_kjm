@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
-    public int currentStage = 1; //ÀÓ½Ã ÇöÀç ½ºÅ×ÀÌÁö ¹øÈ£
+    public int currentStage = 1; //ì„ì‹œ í˜„ì¬ ìŠ¤í…Œì´ì§€ ë²ˆí˜¸
     //public AudioClip Nomal;
     //public AudioClip Special;
     //public AudioClip Restore;
@@ -83,7 +83,7 @@ public class TileEditor : MonoBehaviour
         GameObject goalObject = GameObject.Find("Goal");
         if (goalObject == null)
         {
-            Debug.LogError("GoalÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Goalì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
@@ -92,7 +92,7 @@ public class TileEditor : MonoBehaviour
         GameObject startObject = GameObject.Find("Start");
         if (startObject == null)
         {
-            Debug.LogError("Start°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Startê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
@@ -101,7 +101,7 @@ public class TileEditor : MonoBehaviour
         startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
     }
 
-    void Update() //Á¶±İ Ãß°¡Çß½À´Ï´Ù -¿©¿µºÎ-
+    void Update() //ì¡°ê¸ˆ ì¶”ê°€í–ˆìŠµë‹ˆë‹¤ -ì—¬ì˜ë¶€-
     {
         if (!ExploitationState.isOn)
         {
@@ -125,7 +125,7 @@ public class TileEditor : MonoBehaviour
         GameManager.Instance.CurrentState != GameState.Ready)
         {
             return;
-        }  //¿şÀÌºê´Ü°è °³Ã´ºÒ°¡¿ë ÄÚµå -¿©¿µºÎ-
+        }  //ì›¨ì´ë¸Œë‹¨ê³„ ê°œì²™ë¶ˆê°€ìš© ì½”ë“œ -ì—¬ì˜ë¶€-
 
         if (Input.GetMouseButton(0))
         {
@@ -138,7 +138,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            Debug.Log("¿¬°á ¿Ï·á");  // ¾÷µ¥ÀÌÆ®¿¡ ³Ö¾î¼­ °è¼Ó¶°¼­ ÁÖ¼®Ã³¸® Á» ÇÒ°Ô¿ä -¿©¿µºÎ-
+            //Debug.Log("ì—°ê²° ì™„ë£Œ");  //ì—…ë°ì´íŠ¸ì— ë„£ì–´ì„œ ê³„ì†ë– ì„œ ì£¼ì„ì²˜ë¦¬ ì¢€ í• ê²Œìš” -ì—¬ì˜ë¶€-
         }
         //Debug.Log($"{CheckComplete()}");
     }
@@ -165,7 +165,7 @@ public class TileEditor : MonoBehaviour
             }
         }
         ResourceSystem.Instance.AddCrystal(crystalRefunded * n);
-        Debug.Log($"{n}°³ Å¸ÀÏ º¹±¸: {crystalRefunded * n}°³ È¸¼ö");
+        Debug.Log($"{n}ê°œ íƒ€ì¼ ë³µêµ¬: {crystalRefunded * n}ê°œ íšŒìˆ˜");
         audioSource.PlayOneShot(resetClip);
     }
 
@@ -207,7 +207,7 @@ public class TileEditor : MonoBehaviour
                     if (isResourceTile[arrayX, arrayY])
                     {
                         ResourceSystem.Instance.AddCrystal(crystalGain_FromTile);
-                        Debug.Log($"ÀÚ¿ø Å¸ÀÏ °³Ã´ +{crystalGain_FromTile} Crystals");
+                        Debug.Log($"ìì› íƒ€ì¼ ê°œì²™ +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
                     PlayTileSound(exploitationClip);
@@ -216,7 +216,7 @@ public class TileEditor : MonoBehaviour
         }
     }
 
-    bool CanExploitationTile(int x, int y) //°³Ã´ °¡´É Á¶°Ç
+    bool CanExploitationTile(int x, int y) //ê°œì²™ ê°€ëŠ¥ ì¡°ê±´
     {
         if (x == startIndex.x && y == startIndex.y && tileData[x, y] == BLOCK)
             return true;
@@ -238,9 +238,9 @@ public class TileEditor : MonoBehaviour
         return false;
     }
 
-    bool CanRestorationTile(int x, int y) //º¹±¸ °¡´É Á¶°Ç = Àß¸øµÈ ÀçÈ­ È¸¼ö ¹æÁö
+    bool CanRestorationTile(int x, int y) //ë³µêµ¬ ê°€ëŠ¥ ì¡°ê±´ = ì˜ëª»ëœ ì¬í™” íšŒìˆ˜ ë°©ì§€
     {
-        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //¸Ê ¹Ù±ù °Ë»ç
+        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //ë§µ ë°”ê¹¥ ê²€ì‚¬
         if (tileData[x, y] == BLOCK) return false;
 
         //tileData[x, y] = BLOCK;
@@ -264,9 +264,9 @@ public class TileEditor : MonoBehaviour
 
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
-            //Debug.Log($"ÀÎµ¦½º: ({x},{y})");
+            //Debug.Log($"ì¸ë±ìŠ¤: ({x},{y})");
 
-            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //¸Ê ³¡°ú ºÙ¾îÀÖÀ¸¸é ¿¬°á¼º °Ë»ç ¾ÈµÇ´Â ¹®Á¦
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //ë§µ ëê³¼ ë¶™ì–´ìˆìœ¼ë©´ ì—°ê²°ì„± ê²€ì‚¬ ì•ˆë˜ëŠ” ë¬¸ì œ
                 return false;
             //Debug.Log($"{x}, {y}");
 
