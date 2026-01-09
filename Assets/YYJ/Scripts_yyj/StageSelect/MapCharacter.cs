@@ -89,4 +89,63 @@ public class MapCharacter : MonoBehaviour
         isMoving = false;
         onArrivalCallback = null;
     }
+
+    public List<Vector3> CalculatePath(StageNode startNode, StageNode targetNode)
+    {
+        List<Vector3> finalPath = new List<Vector3>();
+        if (startNode == null || startNode == targetNode)
+        {
+            finalPath.Add(targetNode.transform.position);
+            return finalPath;
+        }
+        // 시작 노드의 모든 조상을 찾아서 리스트에 저장
+        List<StageNode> startAncestors = new List<StageNode>();
+        StageNode current = startNode;
+        while (current != null)
+        {
+            startAncestors.Add(current);
+            current = current.parentStageNode;
+        }
+        // 목표 노드에서 거슬러 올라가며, 시작 노드의 조상과 겹치는 조상 찾기
+        StageNode commonAncestor = null;
+        List<StageNode> targetPathFromCommon = new List<StageNode>();
+
+        current = targetNode;
+        while (current != null)
+        {
+            if (startAncestors.Contains(current))
+            {
+                commonAncestor = current;
+                break;
+            }
+            targetPathFromCommon.Add(current);  // 경로 추가
+            current = current.parentStageNode;
+        }
+
+        if (commonAncestor == null)
+        {
+            Debug.LogWarning("두 노드가 연결되어 있지 않습니다.");
+            finalPath.Add(targetNode.transform.position);
+            return finalPath;
+        }
+        // 경로 생성
+        foreach (var node in startAncestors)
+        {
+            if (node == commonAncestor) break;
+            if (node != startNode) finalPath.Add(node.transform.position);
+        }
+        
+        if (commonAncestor != startNode)
+        {
+            finalPath.Add(commonAncestor.transform.position);
+        }
+
+        targetPathFromCommon.Reverse();
+        foreach (var node in targetPathFromCommon)
+        {
+            finalPath.Add(node.transform.position);
+        }
+
+        return finalPath;
+    }
 }

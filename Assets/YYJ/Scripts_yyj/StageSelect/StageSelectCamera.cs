@@ -68,7 +68,7 @@ public class StageSelectCamera : MonoBehaviour
         targetPosition = clampedCamPos;
         // 캐릭터 위치 노드 찾아 보상창 켜기
         StageNode nearestNode = null;
-        float minDst = 0.5f;
+        float minDst = 10f;
 
         StageNode[] allNodes = FindObjectsOfType<StageNode>();
         foreach (var node in allNodes)
@@ -168,41 +168,82 @@ public class StageSelectCamera : MonoBehaviour
     // 이동
     void FocusOnNode(StageNode targetNode)
     {
+        // 현재 위치 모른다면, 캐릭터와 가까운 노드 찾기
+        if (currentFocusNode == null)
+        {
+            float minDistance = float.MaxValue;
+            StageNode nearest = null;
+            StageNode[] allNodes = FindObjectsOfType<StageNode>();
+            
+            foreach (var node in allNodes)
+            {
+                // 맵 캐릭터 있다면 캐릭터 기준, 없다면 카메라 기준
+                Vector3 searchPos;
+                if (mapCharacter != null)
+                {
+                    searchPos = mapCharacter.transform.position;
+                }
+                else
+                {
+                    searchPos = (Vector3)targetPosition;
+                }
+                float dist = Vector3.Distance(node.transform.position, searchPos);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    nearest = node;
+                }
+            }
+            // 가장 가까운 노드를 현재위치로 간주
+            currentFocusNode = nearest;
+        }
         if (currentFocusNode != null)
         {
             currentFocusNode.ShowInfo(false);
             currentFocusNode.ShowReward(false);
         }
-        // 경로 계산 : 현재 -> 목표 노드
-        List<Vector3> pathPoints = GetPathPoints(currentFocusNode, targetNode);
+
+        // 경로 계산
+        List<Vector3> pathPoints = new List<Vector3>();
+        if (mapCharacter != null)
+        {
+            pathPoints = mapCharacter.CalculatePath(currentFocusNode, targetNode);
+        }
+        else
+        {
+            // 캐릭터가 없으면 그냥 목표만 추가
+            pathPoints.Add(targetNode.transform.position);
+        }
 
         isFocused = true;
         currentFocusNode = targetNode;
 
         Vector3 nodePos = targetNode.transform.position;
         targetSize = maxPossibleSize;
-        //목표 위치
+
         targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
         targetPosition = ClampPosition(targetPosition, targetSize);
-        // MapCharacter 명령
+
+        // 캐릭터 이동 명령
         if (mapCharacter != null)
         {
-            mapCharacter.MoveAlongPath(pathPoints , () =>
+            mapCharacter.MoveAlongPath(pathPoints, () =>
             {
-                // 도착 후 실행 : 현재 포커스가 이 노드일 시 보상창 표시
                 if (currentFocusNode == targetNode)
                 {
                     targetNode.ShowReward(true);
                 }
             });
         }
-        // 현재 선택 위치 저장
+
+        // 위치 저장
         string sceneKey = SceneManager.GetActiveScene().name;
         PlayerPrefs.SetFloat(sceneKey + "_LastX", nodePos.x);
         PlayerPrefs.SetFloat(sceneKey + "_LastY", nodePos.y);
         PlayerPrefs.Save();
     }
 
+   /*
     // 두 노드 사이의 경로를 찾는 함수
     List<Vector3> GetPathPoints(StageNode startNode, StageNode endNode)
     {
@@ -237,12 +278,13 @@ public class StageSelectCamera : MonoBehaviour
                 break;  // 공통 조상 발견
             }
             endAncestors.Add(curr);
-            curr = GetParentNode(curr);
+            curr = curr.parentStageNode;
             safetyCount++;
         }
         // 공통 조상 없으면 직선 이동
         if (commonAncestor == null)
         {
+            Debug.LogWarning($"공통 조상을 찾을 수 없어 직선으로 이동 합니다. {startNode.name}");
             path.Add(endNode.transform.position);
             return path;
         }
@@ -262,18 +304,7 @@ public class StageSelectCamera : MonoBehaviour
 
         return path;
     }
-    // StageNode 에서 부모 노드를 가져오는 헬퍼 함수
-    private StageNode GetParentNode(StageNode node)
-    {
-        var field = typeof(StageNode).GetField("parentStageNode");
-        if (field != null) return field.GetValue(node) as StageNode;
-        // 만약 private serialize field라면
-        field = typeof(StageNode).GetField("parentStageNode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (field != null) return field.GetValue(node) as StageNode;
-
-        return null;
-    }
-
+   */
     // 확대
     void ZoomToNode(StageNode node)
     {
