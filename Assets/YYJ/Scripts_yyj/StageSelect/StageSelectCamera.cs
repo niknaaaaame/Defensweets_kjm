@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -64,23 +63,21 @@ public class StageSelectCamera : MonoBehaviour
             logicalPos = new Vector3(defaultStartPoint.x, defaultStartPoint.y, -10f);
         }
 
-        // MapCharacter 위치 이동
-        if (mapCharacter != null) mapCharacter.TeleportTo(logicalPos);
-
         Vector3 clampedCamPos = ClampPosition(logicalPos, startSize);
         cam.transform.position = clampedCamPos;
         targetPosition = clampedCamPos;
         // 캐릭터 위치 노드 찾아 보상창 켜기
         StageNode nearestNode = null;
-        float minDst = 0.5f;
+        float minDst = 10f;
 
         StageNode[] allNodes = FindObjectsOfType<StageNode>();
         foreach (var node in allNodes)
         {
-            if (Vector3.Distance(node.transform.position, logicalPos) < minDst)
+            float dst = Vector3.Distance(node.transform.position, logicalPos);
+            if (dst < minDst)
             {
+                minDst = dst;
                 nearestNode = node;
-                break;
             }
         }
 
@@ -89,6 +86,9 @@ public class StageSelectCamera : MonoBehaviour
             currentFocusNode = nearestNode;
             isFocused = true;
             nearestNode.ShowReward(true);
+            // 캐릭터도 해당 노드로 텔레포트
+            if (mapCharacter != null)  
+                mapCharacter.TeleportTo(nearestNode.transform.position);
         }
     }
 
@@ -166,41 +166,145 @@ public class StageSelectCamera : MonoBehaviour
         if (isFocused) Unfocus();
     }
     // 이동
-    void FocusOnNode(StageNode node)
+    void FocusOnNode(StageNode targetNode)
     {
+        // 현재 위치 모른다면, 캐릭터와 가까운 노드 찾기
+        if (currentFocusNode == null)
+        {
+            float minDistance = float.MaxValue;
+            StageNode nearest = null;
+            StageNode[] allNodes = FindObjectsOfType<StageNode>();
+            
+            foreach (var node in allNodes)
+            {
+                // 맵 캐릭터 있다면 캐릭터 기준, 없다면 카메라 기준
+                Vector3 searchPos;
+                if (mapCharacter != null)
+                {
+                    searchPos = mapCharacter.transform.position;
+                }
+                else
+                {
+                    searchPos = (Vector3)targetPosition;
+                }
+                float dist = Vector3.Distance(node.transform.position, searchPos);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    nearest = node;
+                }
+            }
+            // 가장 가까운 노드를 현재위치로 간주
+            currentFocusNode = nearest;
+        }
         if (currentFocusNode != null)
         {
             currentFocusNode.ShowInfo(false);
             currentFocusNode.ShowReward(false);
         }
 
-        isFocused = true;
-        currentFocusNode = node;
-
-        Vector3 nodePos = node.transform.position;
-        targetSize = maxPossibleSize;
-        //목표 위치
-        targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
-        targetPosition = ClampPosition(targetPosition, targetSize);
-        // MapCharacter 명령
+        // 경로 계산
+        List<Vector3> pathPoints = new List<Vector3>();
         if (mapCharacter != null)
         {
-            mapCharacter.SetTarget(nodePos , () =>
+            pathPoints = mapCharacter.CalculatePath(currentFocusNode, targetNode);
+        }
+        else
+        {
+            // 캐릭터가 없으면 그냥 목표만 추가
+            pathPoints.Add(targetNode.transform.position);
+        }
+
+        isFocused = true;
+        currentFocusNode = targetNode;
+
+        Vector3 nodePos = targetNode.transform.position;
+        targetSize = maxPossibleSize;
+
+        targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
+        targetPosition = ClampPosition(targetPosition, targetSize);
+
+        // 캐릭터 이동 명령
+        if (mapCharacter != null)
+        {
+            mapCharacter.MoveAlongPath(pathPoints, () =>
             {
-                // 캐릭터 도착 시 이 코드가 실행
-                // 현재 포커스가 이 노드인지 확인
-                if (currentFocusNode == node)
+                if (currentFocusNode == targetNode)
                 {
-                    node.ShowReward(true);
+                    targetNode.ShowReward(true);
                 }
             });
         }
-        // 현재 선택 위치 저장
+
+        // 위치 저장
         string sceneKey = SceneManager.GetActiveScene().name;
         PlayerPrefs.SetFloat(sceneKey + "_LastX", nodePos.x);
         PlayerPrefs.SetFloat(sceneKey + "_LastY", nodePos.y);
         PlayerPrefs.Save();
     }
+
+   /*
+    // 두 노드 사이의 경로를 찾는 함수
+    List<Vector3> GetPathPoints(StageNode startNode, StageNode endNode)
+    {
+        List<Vector3> path = new List<Vector3>();
+        if (startNode == null || endNode == null)
+        {
+            if (endNode != null) path.Add(endNode.transform.position);
+            return path;
+        }
+        // 시작점 부모들 찾기
+        List<StageNode> startAncestors = new List<StageNode>();
+        StageNode curr = startNode;
+        // 무한 루프 방지용 카운트
+        int safetyCount = 0;
+        while (curr != null && safetyCount < 100)
+        {
+            startAncestors.Add(curr);
+            curr = curr.parentStageNode;
+            safetyCount++;
+        }
+        // 도착점 조상들을 찾으면서, 시작점 조상과 겹치는지 확인
+        StageNode commonAncestor = null;
+        List<StageNode> endAncestors = new List<StageNode>();
+        curr = endNode;
+        safetyCount = 0;
+
+        while (curr != null && safetyCount < 100)
+        {
+            if (startAncestors.Contains(curr))
+            {
+                commonAncestor = curr;
+                break;  // 공통 조상 발견
+            }
+            endAncestors.Add(curr);
+            curr = curr.parentStageNode;
+            safetyCount++;
+        }
+        // 공통 조상 없으면 직선 이동
+        if (commonAncestor == null)
+        {
+            Debug.LogWarning($"공통 조상을 찾을 수 없어 직선으로 이동 합니다. {startNode.name}");
+            path.Add(endNode.transform.position);
+            return path;
+        }
+        // 경로 구성
+        foreach (var node in startAncestors)
+        {
+            if (node == commonAncestor) break;
+            if (node != startNode) path.Add(node.transform.position);
+        }
+        // 공통 조상 추가
+        path.Add(commonAncestor.transform.position);
+        // 공통 조상 -> 도착점
+        for (int i = endAncestors.Count - 1; i >= 0; i--)
+        {
+            path.Add(endAncestors[i].transform.position);
+        }
+
+        return path;
+    }
+   */
     // 확대
     void ZoomToNode(StageNode node)
     {
@@ -227,12 +331,9 @@ public class StageSelectCamera : MonoBehaviour
 
     void Unfocus()
     {
-        if (currentFocusNode != null)
-        {
-            currentFocusNode.ShowInfo(false);
-            currentFocusNode = null;
-        }
+        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
         isFocused = false;
+        currentFocusNode = null;
         targetSize = maxPossibleSize;
         Vector3 returnPos = targetPosition;      
         targetPosition = ClampPosition(returnPos, targetSize);

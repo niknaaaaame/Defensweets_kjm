@@ -39,7 +39,7 @@ public class StageNode : MonoBehaviour
     //public float overrideZoomSize = 0f; // 0보다 크면 이 값으로 설정
 
     [Header("연결 선 시각화")]
-    [SerializeField] private StageNode parentStageNode; // 연결된 이전 스테이지 (선 시작점)
+    public StageNode parentStageNode; // 연결된 이전 스테이지 (선 시작점)
     [SerializeField] private LineRenderer pathLine;
     [SerializeField] private float drawDuration = 0.5f; // 선이 그려지는 시간
 
