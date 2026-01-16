@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +14,9 @@ public class WorldNode : MonoBehaviour
     public int requiredClearStageID = 0; // 해금에 필요한 클리어 스테이지 ID (0이면 무조건 해금)
 
     [Header("UI")]
+    [SerializeField] private GameObject infoCanvas;
+
+    [Header("시각적 요소")]
     [SerializeField] private SpriteRenderer statusIndicator;
     [SerializeField] private Color lockedColor = Color.gray; // 잠긴 상태 색상
     [SerializeField] private Color unlockedColor = Color.white; // 해금된 상태 색상
@@ -23,7 +27,8 @@ public class WorldNode : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        UpdateWorldState();
+        if (infoCanvas != null) infoCanvas.SetActive(false);
     }
 
     public void UpdateWorldState()
@@ -79,4 +84,32 @@ public class WorldNode : MonoBehaviour
             Debug.Log("이 월드는 잠겨 있습니다.");
         }
     }
+
+    public void ShowInfo(bool show)
+    {
+        if (!IsUnlocked) return;
+
+        if (infoCanvas != null)
+        {
+            infoCanvas.SetActive(show);
+        }
+        else
+        {
+            Debug.LogWarning("인포 캔버스가 설정되지 않았습니다.");
+        }
+    }
+
+
+    public void LoadWorldScene()
+    {
+        if (!string.IsNullOrEmpty(stageSelectSceneName))
+        {
+            SceneManager.LoadScene(stageSelectSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("연결된 씬이 없습니다.");
+        }
+    }
+
 }
