@@ -65,13 +65,30 @@ public class TileEditor : MonoBehaviour
         isResourceTile = new bool[mapData.mapWidth, mapData.mapHeight];
         groundType = new int[mapData.mapWidth, mapData.mapHeight];
 
+        List<Vector2Int> allPositions = new List<Vector2Int>();
+
         for (int x = 0; x < mapData.mapWidth; x++)
         {
             for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = BLOCK;
                 groundType[x, y] = (Random.value < groundType1Ratio) ? 1 : 0;
+                allPositions.Add(new Vector2Int(x, y));
             }
+        }
+
+        for (int i = 0; i < allPositions.Count; i++)
+        {
+            int rand = Random.Range(i, allPositions.Count);
+            (allPositions[i], allPositions[rand]) = (allPositions[rand], allPositions[i]);
+        }
+
+        int groundType1Count = Mathf.RoundToInt(allPositions.Count * 0.05f);
+
+        for (int i = 0; i < groundType1Count; i++)
+        {
+            Vector2Int pos = allPositions[i];
+            groundType[pos.x, pos.y] = 1;
         }
 
         foreach (var stage in specialTilesSO.stages.FindAll(s => s.stageNumber == currentStage))
@@ -143,11 +160,11 @@ public class TileEditor : MonoBehaviour
             //}
         }
 
-        if (GameManager.Instance != null &&
-        GameManager.Instance.CurrentState != GameState.Ready)
-        {
-            return;
-        }  //웨이브단계 개척불가용 코드 -여영부-
+        //if (GameManager.Instance != null &&
+        //GameManager.Instance.CurrentState != GameState.Ready)
+        //{
+        //    return;
+        //}  //웨이브단계 개척불가용 코드 -여영부-
 
         if (Input.GetMouseButton(0))
         {
