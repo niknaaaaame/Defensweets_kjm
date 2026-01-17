@@ -14,7 +14,7 @@ public class TileEditor : MonoBehaviour
     public Toggle ExploitationState;
 
     public Tilemap tilemap;
-    public TileBase groundTile;
+    public TileBase[] groundTiles;
     public TileBase specialTile;
     public TileBase resourceTile;
     public StageTilesSO specialTilesSO;
@@ -26,6 +26,10 @@ public class TileEditor : MonoBehaviour
     private int[,] tileData;
     private bool[,] isSpecialTile;
     private bool[,] isResourceTile;
+    private int[,] groundType;
+
+    [Range(0f, 1f)]
+    public float groundType1Ratio = 0.1f;
 
     private int arrayX;
     private int arrayY;
@@ -59,13 +63,14 @@ public class TileEditor : MonoBehaviour
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
         isResourceTile = new bool[mapData.mapWidth, mapData.mapHeight];
+        groundType = new int[mapData.mapWidth, mapData.mapHeight];
 
         for (int x = 0; x < mapData.mapWidth; x++)
         {
             for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = BLOCK;
-                //isSpecialTile[x, y] = false;
+                groundType[x, y] = (Random.value < groundType1Ratio) ? 1 : 0;
             }
         }
 
@@ -99,6 +104,23 @@ public class TileEditor : MonoBehaviour
         start = startObject.transform;
         startCell = tilemap.WorldToCell(start.position);
         startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
+
+        for (int x = 0; x < mapData.mapWidth; x++)
+        {
+            for (int y = 0; y < mapData.mapHeight; y++)
+            {
+                if (isSpecialTile[x, y] || isResourceTile[x, y])
+                    continue;
+
+                Vector3Int tilePos = new Vector3Int(
+                    x + tilemap.cellBounds.min.x,
+                    y + tilemap.cellBounds.min.y,
+                    0
+                );
+
+                tilemap.SetTile(tilePos, groundTiles[groundType[x, y]]);
+            }
+        }
     }
 
     void Update() //조금 추가했습니다 -여영부-
@@ -152,14 +174,18 @@ public class TileEditor : MonoBehaviour
             {
                 
                 Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-                if (isSpecialTile[x, y]) tilemap.SetTile(tilePos, specialTile);
-                else if (isResourceTile[x, y]) tilemap.SetTile(tilePos, resourceTile);
-                else if (tileData[x, y] == 0)
+                if (isSpecialTile[x, y])
                 {
-                    n += 1;
-                    tilemap.SetTile(tilePos, groundTile);
+                    tilemap.SetTile(tilePos, specialTile);
                 }
-                else tilemap.SetTile(tilePos, groundTile);
+                else if (isResourceTile[x, y])
+                {
+                    tilemap.SetTile(tilePos, resourceTile);
+                }
+                else
+                {
+                    tilemap.SetTile(tilePos, groundTiles[groundType[x, y]]);
+                }
                 tileData[x, y] = BLOCK;
 
             }
@@ -188,7 +214,12 @@ public class TileEditor : MonoBehaviour
         {
             if (CanRestorationTile(arrayX, arrayY))
             {
-                tilemap.SetTile(cellPos, isSpecialTile[arrayX, arrayY] ? specialTile : groundTile);
+                if (isSpecialTile[arrayX, arrayY])
+                    tilemap.SetTile(cellPos, specialTile);
+                else if (isResourceTile[arrayX, arrayY])
+                    tilemap.SetTile(cellPos, resourceTile);
+                else
+                    tilemap.SetTile(cellPos, groundTiles[groundType[arrayX, arrayY]]);
                 tileData[arrayX, arrayY] = BLOCK;
                 ResourceSystem.Instance.AddCrystal(crystalRefunded);
                 Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
@@ -266,7 +297,7 @@ public class TileEditor : MonoBehaviour
             int y = cellPos.y - tilemap.cellBounds.min.y;
             //Debug.Log($"인덱스: ({x},{y})");
 
-            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //맵 끝과 붙어있으면 연결성 검사 안되는 문제
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight)
                 return false;
             //Debug.Log($"{x}, {y}");
 
