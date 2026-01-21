@@ -98,7 +98,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             
-            Bullet bullet = instance.GetComponent<Bullet>();
+            Chocochip bullet = instance.GetComponent<Chocochip>();
             //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
             int baseDamage = towerData.levels[level].damage;  //여기서 부터
