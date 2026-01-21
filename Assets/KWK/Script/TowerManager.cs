@@ -82,6 +82,12 @@ public class TowerManager : MonoBehaviour
             rb.simulated = false;
         }
 
+        var lineRenderers = ghostTower.GetComponentsInChildren<LineRenderer>();
+        foreach (var lr in lineRenderers)
+        {
+            lr.enabled = true;
+        }
+
         SetLayerAlpha(ghostTower, 0.5f);
 
         installCost = cost;
@@ -90,6 +96,26 @@ public class TowerManager : MonoBehaviour
     void SetLayerAlpha(GameObject obj, float alpha)
     {
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+
+        if (obj.name == "background" || obj.name == "fill")
+        {
+            sr.enabled = false;
+        }
+        else
+        {
+            Color color = sr.color;
+            color.a = alpha;
+            sr.color = color;
+        }
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerAlpha(child.gameObject, alpha);
+        }
+    }
+
+    /*
+     SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
         sr.enabled = true;
 
         Color color = sr.color;
@@ -107,5 +133,5 @@ public class TowerManager : MonoBehaviour
         {
             SetLayerAlpha(child.gameObject, alpha);
         }
-    }
+    */
 }

@@ -33,10 +33,19 @@ public class StageNode : MonoBehaviour
     [Header("여백")]
     [SerializeField] private float padding = 1f;
 
+    [Header("보상 표시")]
+    [SerializeField] private GameObject rewardCanvas;
+
     //public float overrideZoomSize = 0f; // 0보다 크면 이 값으로 설정
+
+    [Header("연결 선 시각화")]
+    public StageNode parentStageNode; // 연결된 이전 스테이지 (선 시작점)
+    [SerializeField] private LineRenderer pathLine;
+    [SerializeField] private float drawDuration = 0.5f; // 선이 그려지는 시간
+
+    private bool isLineDrawn = false;
         
     private SpriteRenderer spriteRenderer;
-
     public StageState CurrentState { get; private set; } // 현재 상태 프로퍼티
 
     private void Awake()
@@ -44,6 +53,31 @@ public class StageNode : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (infoCanvas != null) infoCanvas.SetActive(false);
         if (mapCanvas != null) mapCanvas.SetActive(false);
+        if (rewardCanvas != null) rewardCanvas.SetActive(false);
+
+        if (pathLine != null)   // 라인 렌더러 초기화
+        {
+            pathLine.positionCount = 2; // 시작점, 끝점 2개
+            pathLine.enabled = false;   // 처음엔 꺼둠
+        }
+        // 렌더링 순서 자동 정리
+        if (spriteRenderer != null)
+        {
+            // 기준 노드 순서
+            int baseOrder = spriteRenderer.sortingOrder;
+            // 연결 선은 노드보다 1칸 위
+            if (pathLine != null)
+            {
+                pathLine.sortingLayerID = spriteRenderer.sortingLayerID;    // 같은 레이어
+                pathLine.sortingOrder = baseOrder + 1;
+            }
+            // 상태는 1칸 더 위
+            if (statusIndicator != null)
+            {
+                statusIndicator.sortingLayerID = spriteRenderer.sortingLayerID;
+                statusIndicator.sortingOrder = baseOrder + 2;
+            }
+        }
 
         UpdateState();  // 게임 시작 시 상태 체크 및 색상 적용
     }
@@ -64,6 +98,7 @@ public class StageNode : MonoBehaviour
         }
 
         UpdateVisuals();
+        UpdatePathLine();   // 상태에 따라 선 그리기
     }
 
     private void UpdateVisuals()
@@ -133,6 +168,60 @@ public class StageNode : MonoBehaviour
         if (mapCanvas != null) mapCanvas.SetActive(false);
     }
 
+    public void ShowReward(bool show)
+    {
+        if (rewardCanvas != null)
+        {
+            rewardCanvas.SetActive(show);
+        }
+    }
+
+    private void UpdatePathLine()
+    {
+        // 연결 부모 노드 or 라인 렌더러 없으면 패스
+        if (parentStageNode == null || pathLine == null) return;
+        // 잠김 상태라면 선을 끄고 리턴
+        if (CurrentState == StageState.Locked)
+        {
+            pathLine.enabled = false;
+            isLineDrawn = false;
+            return;
+        }
+        // 선이 안그려져 있다면 그리기
+        if (!isLineDrawn)
+        {
+            StartCoroutine(DrawLineRoutine());
+        }
+    }
+
+    private IEnumerator DrawLineRoutine()
+    {
+        isLineDrawn = true;
+        pathLine.enabled = true;
+
+        Vector3 startPos = parentStageNode.transform.position;
+        Vector3 endPos = transform.position;
+        // z값 조정
+        startPos.z = 0f;
+        endPos.z = 0f;
+
+        pathLine.SetPosition(0, startPos);
+        pathLine.SetPosition(1, startPos);  // 처음엔 끝점도 시작점에 위치
+
+        float timer = 0f;
+        while (timer < drawDuration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / drawDuration;
+            // 선형 보간으로 끝점을 서서히 이동
+            Vector3 currentEndPos = Vector3.Lerp(startPos, endPos, t);
+            pathLine.SetPosition(1, currentEndPos);
+
+            yield return null;
+        }
+        // 최종 위치 확정
+        pathLine.SetPosition(1, endPos);
+    }
 
     // 이 밑은 테스트용
     [ContextMenu("테스트: 이 스테이지 클리어 처리")]

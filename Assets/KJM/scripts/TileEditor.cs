@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
-    public int currentStage = 1; //ÀÓ½Ã ÇöÀç ½ºÅ×ÀÌÁö ¹øÈ£
+    public int currentStage = 1; //ì„ì‹œ í˜„ì¬ ìŠ¤í…Œì´ì§€ ë²ˆí˜¸
     //public AudioClip Nomal;
     //public AudioClip Special;
     //public AudioClip Restore;
@@ -14,7 +14,7 @@ public class TileEditor : MonoBehaviour
     public Toggle ExploitationState;
 
     public Tilemap tilemap;
-    public TileBase groundTile;
+    public TileBase[] groundTiles;
     public TileBase specialTile;
     public TileBase resourceTile;
     public StageTilesSO specialTilesSO;
@@ -26,6 +26,10 @@ public class TileEditor : MonoBehaviour
     private int[,] tileData;
     private bool[,] isSpecialTile;
     private bool[,] isResourceTile;
+    private int[,] groundType;
+
+    [Range(0f, 1f)]
+    public float groundType1Ratio = 0.1f;
 
     private int arrayX;
     private int arrayY;
@@ -59,14 +63,32 @@ public class TileEditor : MonoBehaviour
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
         isResourceTile = new bool[mapData.mapWidth, mapData.mapHeight];
+        groundType = new int[mapData.mapWidth, mapData.mapHeight];
+
+        List<Vector2Int> allPositions = new List<Vector2Int>();
 
         for (int x = 0; x < mapData.mapWidth; x++)
         {
             for (int y = 0; y < mapData.mapHeight; y++)
             {
                 tileData[x, y] = BLOCK;
-                //isSpecialTile[x, y] = false;
+                groundType[x, y] = (Random.value < groundType1Ratio) ? 1 : 0;
+                allPositions.Add(new Vector2Int(x, y));
             }
+        }
+
+        for (int i = 0; i < allPositions.Count; i++)
+        {
+            int rand = Random.Range(i, allPositions.Count);
+            (allPositions[i], allPositions[rand]) = (allPositions[rand], allPositions[i]);
+        }
+
+        int groundType1Count = Mathf.RoundToInt(allPositions.Count * 0.05f);
+
+        for (int i = 0; i < groundType1Count; i++)
+        {
+            Vector2Int pos = allPositions[i];
+            groundType[pos.x, pos.y] = 1;
         }
 
         foreach (var stage in specialTilesSO.stages.FindAll(s => s.stageNumber == currentStage))
@@ -83,7 +105,7 @@ public class TileEditor : MonoBehaviour
         GameObject goalObject = GameObject.Find("Goal");
         if (goalObject == null)
         {
-            Debug.LogError("GoalÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Goalì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
@@ -92,16 +114,33 @@ public class TileEditor : MonoBehaviour
         GameObject startObject = GameObject.Find("Start");
         if (startObject == null)
         {
-            Debug.LogError("Start°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("Startê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             Destroy(gameObject);
             return;
         }
         start = startObject.transform;
         startCell = tilemap.WorldToCell(start.position);
         startIndex = new Vector2Int(startCell.x - tilemap.cellBounds.min.x, startCell.y - tilemap.cellBounds.min.y);
+
+        for (int x = 0; x < mapData.mapWidth; x++)
+        {
+            for (int y = 0; y < mapData.mapHeight; y++)
+            {
+                if (isSpecialTile[x, y] || isResourceTile[x, y])
+                    continue;
+
+                Vector3Int tilePos = new Vector3Int(
+                    x + tilemap.cellBounds.min.x,
+                    y + tilemap.cellBounds.min.y,
+                    0
+                );
+
+                tilemap.SetTile(tilePos, groundTiles[groundType[x, y]]);
+            }
+        }
     }
 
-    void Update() //Á¶±İ Ãß°¡Çß½À´Ï´Ù -¿©¿µºÎ-
+    void Update() //ì¡°ê¸ˆ ì¶”ê°€í–ˆìŠµë‹ˆë‹¤ -ì—¬ì˜ë¶€-
     {
         if (!ExploitationState.isOn)
         {
@@ -121,11 +160,11 @@ public class TileEditor : MonoBehaviour
             //}
         }
 
-        if (GameManager.Instance != null &&
-        GameManager.Instance.CurrentState != GameState.Ready)
-        {
-            return;
-        }  //¿şÀÌºê´Ü°è °³Ã´ºÒ°¡¿ë ÄÚµå -¿©¿µºÎ-
+        //if (GameManager.Instance != null &&
+        //GameManager.Instance.CurrentState != GameState.Ready)
+        //{
+        //    return;
+        //}  //ì›¨ì´ë¸Œë‹¨ê³„ ê°œì²™ë¶ˆê°€ìš© ì½”ë“œ -ì—¬ì˜ë¶€-
 
         if (Input.GetMouseButton(0))
         {
@@ -138,7 +177,7 @@ public class TileEditor : MonoBehaviour
 
         if (CheckComplete())
         {
-            //Debug.Log("¿¬°á ¿Ï·á");  ¾÷µ¥ÀÌÆ®¿¡ ³Ö¾î¼­ °è¼Ó¶°¼­ ÁÖ¼®Ã³¸® Á» ÇÒ°Ô¿ä -¿©¿µºÎ-
+            //Debug.Log("ì—°ê²° ì™„ë£Œ");  //ì—…ë°ì´íŠ¸ì— ë„£ì–´ì„œ ê³„ì†ë– ì„œ ì£¼ì„ì²˜ë¦¬ ì¢€ í• ê²Œìš” -ì—¬ì˜ë¶€-
         }
         //Debug.Log($"{CheckComplete()}");
     }
@@ -152,20 +191,24 @@ public class TileEditor : MonoBehaviour
             {
                 
                 Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-                if (isSpecialTile[x, y]) tilemap.SetTile(tilePos, specialTile);
-                else if (isResourceTile[x, y]) tilemap.SetTile(tilePos, resourceTile);
-                else if (tileData[x, y] == 0)
+                if (isSpecialTile[x, y])
                 {
-                    n += 1;
-                    tilemap.SetTile(tilePos, groundTile);
+                    tilemap.SetTile(tilePos, specialTile);
                 }
-                else tilemap.SetTile(tilePos, groundTile);
+                else if (isResourceTile[x, y])
+                {
+                    tilemap.SetTile(tilePos, resourceTile);
+                }
+                else
+                {
+                    tilemap.SetTile(tilePos, groundTiles[groundType[x, y]]);
+                }
                 tileData[x, y] = BLOCK;
 
             }
         }
         ResourceSystem.Instance.AddCrystal(crystalRefunded * n);
-        Debug.Log($"{n}°³ Å¸ÀÏ º¹±¸: {crystalRefunded * n}°³ È¸¼ö");
+        Debug.Log($"{n}ê°œ íƒ€ì¼ ë³µêµ¬: {crystalRefunded * n}ê°œ íšŒìˆ˜");
         audioSource.PlayOneShot(resetClip);
     }
 
@@ -179,6 +222,7 @@ public class TileEditor : MonoBehaviour
 
         arrayX = cellPos.x - tilemapOrigin.x;
         arrayY = cellPos.y - tilemapOrigin.y;
+
         //Debug.Log($"HandleTile -> MouseWorld: {mouseWorldPos}, Cell: {cellPos}, Index: ({arrayX},{arrayY})");
 
         if (arrayX < 0 || arrayX >= mapData.mapWidth || arrayY < 0 || arrayY >= mapData.mapHeight) return;
@@ -187,7 +231,12 @@ public class TileEditor : MonoBehaviour
         {
             if (CanRestorationTile(arrayX, arrayY))
             {
-                tilemap.SetTile(cellPos, isSpecialTile[arrayX, arrayY] ? specialTile : groundTile);
+                if (isSpecialTile[arrayX, arrayY])
+                    tilemap.SetTile(cellPos, specialTile);
+                else if (isResourceTile[arrayX, arrayY])
+                    tilemap.SetTile(cellPos, resourceTile);
+                else
+                    tilemap.SetTile(cellPos, groundTiles[groundType[arrayX, arrayY]]);
                 tileData[arrayX, arrayY] = BLOCK;
                 ResourceSystem.Instance.AddCrystal(crystalRefunded);
                 Debug.Log($"Crystal: {ResourceSystem.Instance.Crystal}");
@@ -206,7 +255,7 @@ public class TileEditor : MonoBehaviour
                     if (isResourceTile[arrayX, arrayY])
                     {
                         ResourceSystem.Instance.AddCrystal(crystalGain_FromTile);
-                        Debug.Log($"ÀÚ¿ø Å¸ÀÏ °³Ã´ +{crystalGain_FromTile} Crystals");
+                        Debug.Log($"ìì› íƒ€ì¼ ê°œì²™ +{crystalGain_FromTile} Crystals");
                         isResourceTile[arrayX, arrayY] = false;
                     }
                     PlayTileSound(exploitationClip);
@@ -215,7 +264,7 @@ public class TileEditor : MonoBehaviour
         }
     }
 
-    bool CanExploitationTile(int x, int y) //°³Ã´ °¡´É Á¶°Ç
+    bool CanExploitationTile(int x, int y) //ê°œì²™ ê°€ëŠ¥ ì¡°ê±´
     {
         if (x == startIndex.x && y == startIndex.y && tileData[x, y] == BLOCK)
             return true;
@@ -237,9 +286,9 @@ public class TileEditor : MonoBehaviour
         return false;
     }
 
-    bool CanRestorationTile(int x, int y) //º¹±¸ °¡´É Á¶°Ç = Àß¸øµÈ ÀçÈ­ È¸¼ö ¹æÁö
+    bool CanRestorationTile(int x, int y) //ë³µêµ¬ ê°€ëŠ¥ ì¡°ê±´ = ì˜ëª»ëœ ì¬í™” íšŒìˆ˜ ë°©ì§€
     {
-        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //¸Ê ¹Ù±ù °Ë»ç
+        if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) return false; //ë§µ ë°”ê¹¥ ê²€ì‚¬
         if (tileData[x, y] == BLOCK) return false;
 
         //tileData[x, y] = BLOCK;
@@ -260,14 +309,15 @@ public class TileEditor : MonoBehaviour
         foreach (var worldPos in path)
         {
             Vector3Int cellPos = tilemap.WorldToCell(worldPos);
+
             int x = cellPos.x - tilemap.cellBounds.min.x;
             int y = cellPos.y - tilemap.cellBounds.min.y;
+            //Debug.Log($"ì¸ë±ìŠ¤: ({x},{y})");
 
-            //Debug.Log($"ÀÎµ¦½º: ({x},{y})");
-
-            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight) //¸Ê ³¡°ú ºÙ¾îÀÖÀ¸¸é ¿¬°á¼º °Ë»ç ¾ÈµÇ´Â ¹®Á¦
+            if (x < 0 || x >= mapData.mapWidth || y < 0 || y >= mapData.mapHeight)
                 return false;
             //Debug.Log($"{x}, {y}");
+
             if (tileData[x, y] != PATH)
                 return false;
         }
