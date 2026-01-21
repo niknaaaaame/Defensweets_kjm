@@ -107,7 +107,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            Bullet bullet = instance.GetComponent<Bullet>();
+            Chocoball bullet = instance.GetComponent<Chocoball>();
             bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
             energy -= towerData.levels[0].usingEnergy;
