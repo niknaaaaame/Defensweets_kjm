@@ -5,6 +5,7 @@ using UnityEngine;
 public class Chocoball : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float lifeTime;
 
     private Transform target;
     private Coroutine moveCoroutine;
@@ -13,7 +14,7 @@ public class Chocoball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Destroy(gameObject, lifeTime);
     }
 
     // Update is called once per frame
