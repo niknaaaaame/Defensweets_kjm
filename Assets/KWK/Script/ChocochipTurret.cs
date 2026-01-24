@@ -14,6 +14,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
     [SerializeField] private BoxCollider2D range;
+    [SerializeField] private LineRenderer lr;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -97,7 +98,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             
-            Bullet bullet = instance.GetComponent<Bullet>();
+            Chocochip bullet = instance.GetComponent<Chocochip>();
             //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
             int baseDamage = towerData.levels[level].damage;  //여기서 부터
@@ -132,11 +133,24 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
                 level = 2;
                 range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                StartCoroutine(upgradeRange());
                 break;
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
         }
+    }
+
+    IEnumerator upgradeRange()
+    {
+        lr.SetPosition(0, new Vector3(-2.5f, 2.5f, 0f));
+        lr.SetPosition(1, new Vector3(2.5f, 2.5f, 0f));
+        lr.SetPosition(2, new Vector3(2.5f, -2.5f, 0f));
+        lr.SetPosition(3, new Vector3(-2.5f, -2.5f, 0f));
+        lr.enabled = true;
+        yield return new WaitForSeconds(1f);
+        lr.enabled = false;
+        yield break;
     }
 
     public void Destroy()

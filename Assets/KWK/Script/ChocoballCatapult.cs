@@ -14,6 +14,8 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     [SerializeField] private Transform energyBar;
     [SerializeField] private BoxCollider2D outerRange;
     [SerializeField] private BoxCollider2D innerRange;
+    [SerializeField] private LineRenderer outlr;
+    [SerializeField] private LineRenderer inlr;
 
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
@@ -105,7 +107,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            Bullet bullet = instance.GetComponent<Bullet>();
+            Chocoball bullet = instance.GetComponent<Chocoball>();
             bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
             energy -= towerData.levels[0].usingEnergy;
@@ -135,12 +137,27 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
                 outerRange.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                StartCoroutine(upgradeRange());
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
         }
+    }
+
+    IEnumerator upgradeRange()
+    {
+        outlr.SetPosition(0, new Vector3(-3.5f, 3.5f, 0f));
+        outlr.SetPosition(1, new Vector3(3.5f, 3.5f, 0f));
+        outlr.SetPosition(2, new Vector3(3.5f, -3.5f, 0f));
+        outlr.SetPosition(3, new Vector3(-3.5f, -3.5f, 0f));
+        outlr.enabled = true;
+        inlr.enabled = true;
+        yield return new WaitForSeconds(1f);
+        outlr.enabled = false;
+        inlr.enabled = false;
+        yield break;
     }
 
     public void Destroy()

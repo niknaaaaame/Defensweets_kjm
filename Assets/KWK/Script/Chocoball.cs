@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Chocoball : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float lifeTime;
 
     private Transform target;
-    private Rigidbody2D rb;
     private Coroutine moveCoroutine;
     private int damage;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        Destroy(gameObject, lifeTime);
     }
 
     // Update is called once per frame
@@ -28,14 +28,12 @@ public class Bullet : MonoBehaviour
         target = newTarget;
         damage = newDamage;
 
-        rb = GetComponent<Rigidbody2D>();
-
         moveCoroutine = StartCoroutine(move());
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Monster"))
+        if (other.CompareTag("Monster"))
         {
             MonsterTest monster = other.GetComponent<MonsterTest>();
             monster.TakeDamage(damage);
@@ -47,9 +45,27 @@ public class Bullet : MonoBehaviour
 
     private IEnumerator move()
     {
-        Vector2 direction = (target.position - transform.position).normalized;
-        rb.velocity = direction * speed;
+        Vector3 startPos = transform.position;
+        float distance = Vector3.Distance(startPos, target.position);
+        float elapsedTime = 0f;
+        float maxHeight = 1.5f;
 
-        yield return new WaitForSeconds(0.1f);
+        float t = 0f;
+        while (t < 1f)
+        {
+            elapsedTime += Time.deltaTime;
+
+            t = (elapsedTime * speed) / distance;
+
+            Vector3 currentPos = Vector3.Lerp(startPos, target.position, t);
+            float height = Mathf.Sin(t * Mathf.PI) * maxHeight;
+            currentPos.y += height;
+
+            transform.position = currentPos;
+
+            yield return null;
+        }
+
+        transform.position = target.position;
     }
 }
