@@ -160,11 +160,11 @@ public class TileEditor : MonoBehaviour
             //}
         }
 
-        if (GameManager.Instance != null &&
-        GameManager.Instance.CurrentState != GameState.Ready)
-        {
-            return;
-        }  //웨이브단계 개척불가용 코드 -여영부-
+        //if (GameManager.Instance != null &&
+        //GameManager.Instance.CurrentState != GameState.Ready)
+        //{
+        //    return;
+        //}  //웨이브단계 개척불가용 코드 -여영부-
 
         if (Input.GetMouseButton(0))
         {

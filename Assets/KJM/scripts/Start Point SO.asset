@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stages:
   - stageNumber: 1
-    startPosition: 2
-    goalPosition: 7
+    startPosition: 5
+    goalPosition: 6
+  - stageNumber: 2
+    startPosition: 5
+    goalPosition: 6

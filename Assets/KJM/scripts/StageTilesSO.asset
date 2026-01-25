@@ -14,16 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stages:
   - stageNumber: 1
+    type: 1
+    tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
+    positions:
+    - {x: 4, y: 7}
+    - {x: 8, y: 4}
+    - {x: 13, y: 9}
+    - {x: 16, y: 5}
+    - {x: 19, y: 3}
+    - {x: 22, y: 10}
+  - stageNumber: 2
     type: 0
     tileAsset: {fileID: 11400000, guid: db5fd48adecfe49458b536e80f542dbb, type: 2}
     positions:
-    - {x: 2, y: 3}
-    - {x: 2, y: 4}
-    - {x: 2, y: 5}
-  - stageNumber: 1
+    - {x: 8, y: 6}
+    - {x: 8, y: 7}
+    - {x: 9, y: 6}
+    - {x: 9, y: 7}
+    - {x: 18, y: 3}
+    - {x: 18, y: 4}
+    - {x: 19, y: 3}
+    - {x: 19, y: 4}
+    - {x: 26, y: 6}
+    - {x: 26, y: 7}
+    - {x: 27, y: 6}
+    - {x: 27, y: 7}
+  - stageNumber: 2
     type: 1
     tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
     positions:
     - {x: 3, y: 3}
-    - {x: 3, y: 4}
-    - {x: 3, y: 5}
+    - {x: 14, y: 9}
+    - {x: 20, y: 5}
+    - {x: 27, y: 4}
