@@ -36,6 +36,7 @@ public class TowerManager : MonoBehaviour
 
             Vector3Int cellPos = tilemap.WorldToCell(mousePos);
             Vector3 snappedPos = tilemap.GetCellCenterWorld(cellPos);
+            snappedPos.y += 0.16f; // Adjust for tower pivot
 
             ghostTower.transform.position = snappedPos;
 
