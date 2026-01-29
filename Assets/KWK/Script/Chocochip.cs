@@ -33,14 +33,20 @@ public class Chocochip : MonoBehaviour
         moveCoroutine = StartCoroutine(move());
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)     //몬스터테스트인거 일반 몬스터로 바꿀게 -여영부-
     {
-        if(other.CompareTag("Monster"))
-        {
-            MonsterTest monster = other.GetComponent<MonsterTest>();
-            monster.TakeDamage(damage);
+        if (!other.CompareTag("Monster"))
+            return;
 
-            StopCoroutine(moveCoroutine);
+        // 여기 타입만 Monster 로 변경
+        Monster monster = other.GetComponent<Monster>();
+        if (monster != null)
+        {
+            monster.TakeDamage(damage);   // Monster 쪽 데미지 함수 이름에 맞춰서 호출
+
+            if (moveCoroutine != null)
+                StopCoroutine(moveCoroutine);
+
             Destroy(gameObject);
         }
     }
