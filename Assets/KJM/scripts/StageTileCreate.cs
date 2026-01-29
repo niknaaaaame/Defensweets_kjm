@@ -7,21 +7,21 @@ public class StageTileCreate : MonoBehaviour
 {
     public StageTilesSO tilesData;
     public Tilemap tilemap;
-    //public TileBase specialTile;
-    //public StageTilesSO.TileType createType = StageTilesSO.TileType.Special; //기본값 설정
 
-    public int currentStage = 1; //임시 현재 스테이지 번호
+    private int stageNumber;
     //타워 설치 시 특수 타일 판단은 TileBase 에셋으로 확인
 
     void Start()
     {
+        stageNumber = TileEditor.Instance.currentStage;
+
         if (tilesData == null || tilemap == null)
             return;
 
-        var stages = tilesData.stages.FindAll(s => s.stageNumber == currentStage);
+        var stages = tilesData.stages.FindAll(s => s.stageNumber == stageNumber);
         if (stages == null)
         {
-            Debug.LogWarning($"스테이지 {currentStage} 데이터 없음!");
+            Debug.LogWarning($"스테이지 {stageNumber} 데이터 없음!");
             return;
         }
 
