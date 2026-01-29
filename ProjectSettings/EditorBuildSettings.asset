@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/YYB/Test_Scene.unity
     guid: 232ce931cb5f97a4e9d2d0b5ec8a3a9b
+  - enabled: 1
+    path: Assets/YYJ/WorldSelectScene.unity
+    guid: e08b89bd293c01543bca440f733caab0
   m_configObjects: {}
