@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
+    public static TileEditor Instance;
     public int currentStage = 1; //임시 현재 스테이지 번호
     //public AudioClip Nomal;
     //public AudioClip Special;
@@ -55,6 +56,10 @@ public class TileEditor : MonoBehaviour
 
     public Button ResetButton;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -160,11 +165,11 @@ public class TileEditor : MonoBehaviour
             //}
         }
 
-        //if (GameManager.Instance != null &&
-        //GameManager.Instance.CurrentState != GameState.Ready)
-        //{
-        //    return;
-        //}  //웨이브단계 개척불가용 코드 -여영부-
+        if (GameManager.Instance != null &&
+        GameManager.Instance.CurrentState != GameState.Ready)
+        {
+            return;
+        }  //웨이브단계 개척불가용 코드 -여영부-
 
         if (Input.GetMouseButton(0))
         {
@@ -184,6 +189,12 @@ public class TileEditor : MonoBehaviour
 
     public void ResetTile()
     {
+        if (GameManager.Instance != null &&
+        GameManager.Instance.CurrentState != GameState.Ready)
+        {
+            return;
+        }
+
         int n = 0;
         for (int x = 0; x < mapData.mapWidth; x++)
         {

@@ -45,5 +45,77 @@ MonoBehaviour:
     positions:
     - {x: 3, y: 3}
     - {x: 14, y: 9}
-    - {x: 20, y: 5}
-    - {x: 27, y: 4}
+    - {x: 25, y: 2}
+  - stageNumber: 3
+    type: 0
+    tileAsset: {fileID: 11400000, guid: db5fd48adecfe49458b536e80f542dbb, type: 2}
+    positions:
+    - {x: 5, y: 2}
+    - {x: 5, y: 3}
+    - {x: 6, y: 2}
+    - {x: 6, y: 3}
+    - {x: 14, y: 5}
+    - {x: 14, y: 6}
+    - {x: 15, y: 5}
+    - {x: 15, y: 6}
+    - {x: 24, y: 9}
+    - {x: 24, y: 10}
+    - {x: 25, y: 9}
+    - {x: 25, y: 10}
+  - stageNumber: 3
+    type: 1
+    tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
+    positions:
+    - {x: 13, y: 1}
+    - {x: 21, y: 1}
+    - {x: 27, y: 3}
+  - stageNumber: 4
+    type: 0
+    tileAsset: {fileID: 11400000, guid: db5fd48adecfe49458b536e80f542dbb, type: 2}
+    positions:
+    - {x: 3, y: 8}
+    - {x: 3, y: 9}
+    - {x: 4, y: 8}
+    - {x: 4, y: 9}
+    - {x: 12, y: 5}
+    - {x: 12, y: 6}
+    - {x: 13, y: 5}
+    - {x: 13, y: 6}
+    - {x: 21, y: 2}
+    - {x: 21, y: 3}
+    - {x: 22, y: 2}
+    - {x: 22, y: 3}
+  - stageNumber: 4
+    type: 1
+    tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
+    positions:
+    - {x: 5, y: 0}
+    - {x: 14, y: 0}
+    - {x: 23, y: 0}
+  - stageNumber: 5
+    type: 0
+    tileAsset: {fileID: 11400000, guid: db5fd48adecfe49458b536e80f542dbb, type: 2}
+    positions:
+    - {x: 1, y: 3}
+    - {x: 1, y: 4}
+    - {x: 2, y: 3}
+    - {x: 2, y: 4}
+    - {x: 4, y: 1}
+    - {x: 4, y: 2}
+    - {x: 5, y: 1}
+    - {x: 5, y: 2}
+    - {x: 6, y: 4}
+    - {x: 6, y: 5}
+    - {x: 7, y: 4}
+    - {x: 7, y: 5}
+    - {x: 10, y: 2}
+    - {x: 10, y: 3}
+    - {x: 11, y: 2}
+    - {x: 11, y: 3}
+  - stageNumber: 5
+    type: 1
+    tileAsset: {fileID: 11400000, guid: 46696056c859d264887c27cce9e56de6, type: 2}
+    positions:
+    - {x: 14, y: 6}
+    - {x: 20, y: 10}
+    - {x: 27, y: 1}
