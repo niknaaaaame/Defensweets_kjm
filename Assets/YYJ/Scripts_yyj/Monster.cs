@@ -112,7 +112,6 @@ public class Monster : MonoBehaviour, IDamageable
             
         }
     
-
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, targetPosition) < 0.1f)

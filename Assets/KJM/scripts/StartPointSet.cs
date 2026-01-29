@@ -7,7 +7,8 @@ public class StartPointSet : MonoBehaviour
 {
     [Header("Data")]
     public StartPointSO startPointSO;
-    public int currentStageNumber;
+
+    private int stageNumber;
 
     [Header("Tilemap Snap")]
     public Tilemap tilemap;
@@ -25,13 +26,14 @@ public class StartPointSet : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        stageNumber = TileEditor.Instance.currentStage;
         SetPositions();
     }
 
     public void SetPositions()
     {
         var stage = startPointSO.stages
-            .Find(s => s.stageNumber == currentStageNumber);
+            .Find(s => s.stageNumber == stageNumber);
 
         if (stage == null)
             return;
