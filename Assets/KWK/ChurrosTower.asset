@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d8a6d5ef77031a43a5bdfcc7eebf14a, type: 3}
+  m_Name: ChurrosTower
+  m_EditorClassIdentifier: 
+  towerName: ChurrosTower
+  towerType: 2
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  levels:
+  - damage: 15
+    attackSpeed: 1
+    range: 5
+    upgradeCostSugar: 50
+    specialCostCrystal: 0
+    cost: 40
+    usingEnergy: 3
+  - damage: 20
+    attackSpeed: 0.7
+    range: 5
+    upgradeCostSugar: 60
+    specialCostCrystal: 10
+    cost: 0
+    usingEnergy: 2
+  - damage: 25
+    attackSpeed: 0.4
+    range: 5
+    upgradeCostSugar: 0
+    specialCostCrystal: 0
+    cost: 0
+    usingEnergy: 1
