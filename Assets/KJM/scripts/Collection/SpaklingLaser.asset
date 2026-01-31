@@ -12,11 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9812c5d1c6f9fba41b48e7b9a9497897, type: 3}
   m_Name: SpaklingLaser
   m_EditorClassIdentifier: 
-  image: {fileID: 21300000, guid: ac8f933482189554a887bade3cc53bea, type: 3}
-  rangeImage: {fileID: 21300000, guid: ac8f933482189554a887bade3cc53bea, type: 3}
+  image: {fileID: 21300000, guid: ffca6baedc9cc274c954ff1efd0e919e, type: 3}
+  level3Image: {fileID: 21300000, guid: c1f13f7bd4bf4114d93bdf01fa0115a8, type: 3}
   displayName: "\uD0C4\uC0B0\uC218 \uB808\uC774\uC800"
   description: "\uD0C0\uC6CC\uC758 \uBC29\uD5A5\uC73C\uB85C \uC801\uC5D0\uAC8C \uC9C1\uC120
     \uAD00\uD1B5 \uD53C\uD574\uB97C \uC900\uB2E4.\n\uAD00\uD1B5 \uD53C\uD574\uB294
     \uCCAB \uB300\uC0C1\uC5D0\uAC8C \uC801\uC911\uD55C \uD6C4\uC5D0\uB3C4 \uC0AC\uB77C\uC9C0\uC9C0
     \uC54A\uC73C\uBA70, \uACBD\uB85C \uC0C1\uC758 \uBAA8\uB4E0 \uC801\uC5D0\uAC8C
     \uD53C\uD574\uB97C \uC900\uB2E4."
+  ATK:
+  - 20
+  - 25
+  - 30
+  AS:
+  - 2s
+  - 1.5s
+  - 1s
+  Range:
+  - 6x1
+  - 6x1
+  - 6x1
+  DrainRate:
+  - 10
+  - 8
+  - 6

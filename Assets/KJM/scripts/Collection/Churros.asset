@@ -12,9 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9812c5d1c6f9fba41b48e7b9a9497897, type: 3}
   m_Name: Churros
   m_EditorClassIdentifier: 
-  image: {fileID: 21300000, guid: ac8f933482189554a887bade3cc53bea, type: 3}
-  rangeImage: {fileID: 21300000, guid: ac8f933482189554a887bade3cc53bea, type: 3}
+  image: {fileID: 21300000, guid: 9c9678d932ab6344fa767edce06596cd, type: 3}
+  level3Image: {fileID: 21300000, guid: 8d12fedc21f47db448855fe4f0f7fddf, type: 3}
   displayName: "\uCE04\uB7EC\uC2A4 \uD0C0\uC6CC"
   description: "\uACF5\uC911\uC5D0 \uC874\uC7AC\uD558\uB294 \uD558\uB098\uC758 \uC801\uC5D0\uAC8C
     \uD53C\uD574\uB97C \uC900\uB2E4.\n\uC9C0\uC0C1\uC758 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C
     \uC904 \uC218 \uC5C6\uB2E4."
+  ATK:
+  - 15
+  - 20
+  - 25
+  AS:
+  - 1s
+  - 0.7s
+  - 0.4s
+  Range:
+  - 5x5
+  - 5x5
+  - 5x5
+  DrainRate:
+  - 3
+  - 2
+  - 1
