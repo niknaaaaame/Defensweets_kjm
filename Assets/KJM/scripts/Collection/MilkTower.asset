@@ -12,10 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9812c5d1c6f9fba41b48e7b9a9497897, type: 3}
   m_Name: MilkTower
   m_EditorClassIdentifier: 
-  image: {fileID: 21300000, guid: 9904758177c70ba4583ef489f9ad8436, type: 3}
-  rangeImage: {fileID: 21300000, guid: ac8f933482189554a887bade3cc53bea, type: 3}
+  image: {fileID: 21300000, guid: 150f68c149e404e4bb2af30917e0a2c9, type: 3}
+  level3Image: {fileID: 21300000, guid: 8b961d6207a5265438b35a529609ccad, type: 3}
   displayName: "\uBC00\uD06C \uD0C0\uC6CC"
   description: "\uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC5D0\uB108\uC9C0\uB97C \uC0AC\uC6A9\uD558\uB294
     \uC544\uAD70 \uD0C0\uC6CC \uD558\uB098\uC758 \uC5D0\uB108\uC9C0\uB97C \uC9C0\uC18D\uC801\uC73C\uB85C
     \uD68C\uBCF5\uC2DC\uD0A8\uB2E4.\n\uBC00\uD06C \uD0C0\uC6CC\uB294 \uC790\uCCB4
     \uC5D0\uB108\uC9C0\uB97C \uC0AC\uC6A9\uD558\uC9C0 \uC54A\uB294\uB2E4."
+  ATK:
+  - 10
+  - 10
+  - 15
+  AS:
+  - 2s
+  - 1s
+  - 1s
+  Range:
+  - 5x5
+  - 5x5
+  - 5x5
+  DrainRate:
+  - '-'
+  - '-'
+  - '-'
