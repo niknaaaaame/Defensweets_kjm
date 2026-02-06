@@ -18,9 +18,16 @@ public class MilkTower : MonoBehaviour, TowerInterface
     [SerializeField] private float activationDelay = 0.2f;
     private bool isActive = false;
 
+    [SerializeField] private Sprite lev3;
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
+    private SpriteRenderer spriteRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         StartCoroutine(activationDelayCoroutine());
     }
 
@@ -130,6 +137,7 @@ public class MilkTower : MonoBehaviour, TowerInterface
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
+                spriteRenderer.sprite = lev3;
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:

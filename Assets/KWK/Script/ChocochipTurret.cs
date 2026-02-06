@@ -15,7 +15,12 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     [SerializeField] private Transform energyBar;
     [SerializeField] private BoxCollider2D range;
     [SerializeField] private LineRenderer lr;
+    [SerializeField] private Sprite lev3;
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
 
+    private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
@@ -27,6 +32,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         originalScale = energyBar.localScale;
         ApplyTileEffect(); //-¿©¿µºÎ-
     }
@@ -132,6 +138,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
                 range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                spriteRenderer.sprite = lev3;
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 StartCoroutine(upgradeRange());
                 break;
