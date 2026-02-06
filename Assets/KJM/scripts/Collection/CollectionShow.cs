@@ -81,7 +81,7 @@ public class CollectionShow : MonoBehaviour
             }
             else
             {
-                iconImages[i].color = new Color32(125, 125, 125, 255);
+                iconImages[i].color = new Color32(150, 150, 150, 255);
             }
         }
 

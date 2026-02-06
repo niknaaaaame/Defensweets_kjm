@@ -12,7 +12,7 @@ public class TileEditor : MonoBehaviour
     //public AudioClip Special;
     //public AudioClip Restore;
     public MapSO mapData;
-    public Toggle ExploitationState;
+    //public Toggle ExploitationState;
 
     public Tilemap tilemap;
     public TileBase[] groundTiles;
@@ -55,6 +55,7 @@ public class TileEditor : MonoBehaviour
     private Vector2Int startIndex;
 
     public Button ResetButton;
+    private Collider2D tilemapCollider;
 
     private void Awake()
     {
@@ -64,6 +65,7 @@ public class TileEditor : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         ResetButton.onClick.AddListener(ResetTile);
+        tilemapCollider = tilemap.GetComponent<Collider2D>();
 
         tileData = new int[mapData.mapWidth, mapData.mapHeight];
         isSpecialTile = new bool[mapData.mapWidth, mapData.mapHeight];
@@ -147,29 +149,17 @@ public class TileEditor : MonoBehaviour
 
     void Update() //조금 추가했습니다 -여영부-
     {
-        if (!ExploitationState.isOn)
-        {
-            return;
-
-            //if (Input.GetKeyDown(KeyCode.R))
-            //{
-            //    for (int x = 0; x < mapData.mapWidth; x++)
-            //    {
-            //        for (int y = 0; y < mapData.mapHeight; y++)
-            //        {
-            //            tileData[x, y] = BLOCK;
-            //            Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
-            //            tilemap.SetTile(tilePos, isSpecialTile[x, y] ? specialTile : groundTile);
-            //        }
-            //    }
-            //}
-        }
 
         if (GameManager.Instance != null &&
         GameManager.Instance.CurrentState != GameState.Ready)
         {
             return;
         }  //웨이브단계 개척불가용 코드 -여영부-
+
+        if (IsPointerBlockedByObject())
+        {
+            return;
+        }
 
         if (Input.GetMouseButton(0))
         {
@@ -221,6 +211,27 @@ public class TileEditor : MonoBehaviour
         ResourceSystem.Instance.AddCrystal(crystalRefunded * n);
         Debug.Log($"{n}개 타일 복구: {crystalRefunded * n}개 회수");
         audioSource.PlayOneShot(resetClip);
+    }
+
+    bool IsPointerBlockedByObject()
+    {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+
+        GameObject[] towers = GameObject.FindGameObjectsWithTag("Tower");
+
+        foreach (var tower in towers)
+        {
+            SpriteRenderer sr = tower.GetComponentInChildren<SpriteRenderer>();
+            if (sr == null) continue;
+
+            if (sr.bounds.Contains(mouseWorldPos))
+            {
+                return true; 
+            }
+        }
+
+        return false;
     }
 
     void HandleTile(bool place)
