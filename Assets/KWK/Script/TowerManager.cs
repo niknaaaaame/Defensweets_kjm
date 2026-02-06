@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -14,6 +16,10 @@ public class TowerManager : MonoBehaviour
 
     private int installCost;
 
+    private enum Orientation { Default, Left, Right, Back }
+    private Orientation ghostOrientation = Orientation.Default;
+    private Sprite ghostDefaultSprite;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -23,13 +29,13 @@ public class TowerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(ghostTower != null)
+        if (ghostTower != null)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
@@ -40,13 +46,39 @@ public class TowerManager : MonoBehaviour
 
             ghostTower.transform.position = snappedPos;
 
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                ApplyOrientationToGhost(Orientation.Left);
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                ApplyOrientationToGhost(Orientation.Right);
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                ApplyOrientationToGhost(Orientation.Back);
+            }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                ApplyOrientationToGhost(Orientation.Default);
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
+                Sprite chosenSprite = GetGhostRootSprite(ghostTower);
+
                 Destroy(ghostTower);
                 GameObject placed = Instantiate(selectedTower, snappedPos, Quaternion.identity);
 
+                var placedRootSr = placed.GetComponent<SpriteRenderer>();
+                if(placedRootSr != null && chosenSprite != null)
+                {
+                    placedRootSr.sprite = chosenSprite;
+                }
+
                 ghostTower = null;
                 selectedTower = null;
+                ghostOrientation = Orientation.Default;
 
                 ResourceSystem.Instance.TryUseSugar(installCost);
             }
@@ -56,6 +88,8 @@ public class TowerManager : MonoBehaviour
                 Destroy(ghostTower);
                 ghostTower = null;
                 selectedTower = null;
+                ghostOrientation = Orientation.Default;
+                ghostDefaultSprite = null;
             }
         }
     }
@@ -70,6 +104,9 @@ public class TowerManager : MonoBehaviour
         selectedTower = towerPrefab;
 
         ghostTower = Instantiate(towerPrefab);
+
+        ghostDefaultSprite = ghostTower.GetComponent<SpriteRenderer>().sprite;
+        ghostOrientation = Orientation.Default;
 
         var colliders = ghostTower.GetComponentsInChildren<Collider2D>();
         foreach (var col in colliders)
@@ -115,6 +152,77 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+    Sprite GetGhostRootSprite(GameObject ghost)
+    {
+        var sr = ghost.GetComponent<SpriteRenderer>();
+        return sr.sprite;
+    }
+
+    void ApplyOrientationToGhost(Orientation orientation)
+    {
+        Sprite leftSprite = null;
+        Sprite rightSprite = null;
+        Sprite backSprite = null;
+
+        var comps = ghostTower.GetComponents<MonoBehaviour>();
+        foreach (var comp in comps)
+        {
+            if (comp == null) continue;
+            var type = comp.GetType();
+            var leftField = type.GetField("left", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var rightField = type.GetField("right", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var backField = type.GetField("back", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+            if (leftField != null && leftField.FieldType == typeof(Sprite))
+            {
+                leftSprite = leftField.GetValue(comp) as Sprite;
+            }
+            if (rightField != null && rightField.FieldType == typeof(Sprite))
+            {
+                rightSprite = rightField.GetValue(comp) as Sprite;
+            }
+            if (backField != null && backField.FieldType == typeof(Sprite))
+            {
+                backSprite = backField.GetValue(comp) as Sprite;
+            }
+        }
+
+        Sprite spriteToApply = null;
+        switch (orientation)
+        {
+            case Orientation.Left:
+                spriteToApply = leftSprite;
+                break;
+
+            case Orientation.Right:
+                spriteToApply = rightSprite;
+                break;
+
+            case Orientation.Back:
+                spriteToApply = backSprite;
+                break;
+
+            case Orientation.Default:
+                spriteToApply = ghostDefaultSprite;
+                break;
+        }
+
+        var rootSr = ghostTower.GetComponent<SpriteRenderer>();
+        if(rootSr != null)
+        {
+            if(spriteToApply != null)
+            {
+                rootSr.sprite = spriteToApply;
+            }
+            else
+            {
+                Debug.LogWarning("해당 타워 프리팹에 left/right 스프라이트 필드가 없습니다: " + ghostTower.name);
+            }
+        }
+        ghostOrientation = orientation;
+    }
+}
+
     /*
      SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
         sr.enabled = true;
@@ -135,4 +243,3 @@ public class TowerManager : MonoBehaviour
             SetLayerAlpha(child.gameObject, alpha);
         }
     */
-}

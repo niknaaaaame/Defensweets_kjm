@@ -13,7 +13,12 @@ public class ChurrosTower : MonoBehaviour
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
     [SerializeField] private LineRenderer lr;
+    [SerializeField] private Sprite lev3;
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
 
+    private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
@@ -25,6 +30,7 @@ public class ChurrosTower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         originalScale = energyBar.localScale;
         ApplyTileEffect();
     }
@@ -130,6 +136,7 @@ public class ChurrosTower : MonoBehaviour
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
+                spriteRenderer.sprite = lev3;
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:
