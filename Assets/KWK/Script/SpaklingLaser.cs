@@ -26,12 +26,15 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
 
         ApplyTileEffect(); //-¿©¿µºÎ-
@@ -128,6 +131,8 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
             }
 
             energy -= towerData.levels[0].usingEnergy;
+            audioSource.Play();
+
             if (energy < 0)
             {
                 energy = 0;

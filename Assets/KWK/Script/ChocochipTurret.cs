@@ -25,6 +25,8 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
 
     private float damageMultiplier = 1f;  //-여영부-
@@ -33,6 +35,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
         ApplyTileEffect(); //-여영부-
     }
@@ -112,6 +115,8 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
             bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
             energy -= towerData.levels[level].usingEnergy;
+            audioSource.Play();
+
             if (energy <= 0)
             {
                 energy = 0;

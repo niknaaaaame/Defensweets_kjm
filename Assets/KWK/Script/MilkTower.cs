@@ -23,11 +23,13 @@ public class MilkTower : MonoBehaviour, TowerInterface
     [SerializeField] private Sprite right;
     [SerializeField] private Sprite back;
     private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         StartCoroutine(activationDelayCoroutine());
     }
 
