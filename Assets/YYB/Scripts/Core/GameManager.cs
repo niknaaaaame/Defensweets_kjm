@@ -51,6 +51,10 @@ public class GameManager : MonoBehaviour
         currentWaveIndex = 0;
         aliveMonsters = 0;
         UpdateGateHpUI();
+        if (HeartHPUI.Instance != null)
+        {
+            HeartHPUI.Instance.Init(gateHp);
+        }
 
         if (successPanel != null) successPanel.SetActive(false);
         if (failPanel != null) failPanel.SetActive(false);
@@ -142,6 +146,11 @@ public class GameManager : MonoBehaviour
         gateHp--;
         if (gateHp < 0) gateHp = 0;
         UpdateGateHpUI();
+        if (HeartHPUI.Instance != null)
+        {
+            HeartHPUI.Instance.SetHP(gateHp);
+        }
+
         if (gateHp <= 0) OnFailed();
     }
     
