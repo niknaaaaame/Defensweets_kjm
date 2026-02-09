@@ -15,16 +15,22 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     [SerializeField] private Transform energyBar;
     [SerializeField] private BoxCollider2D range;
     [SerializeField] private LineRenderer lr;
-    [SerializeField] private Sprite lev3;
+    
     [SerializeField] private Sprite left;
     [SerializeField] private Sprite right;
     [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
 
     private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
 
     private float damageMultiplier = 1f;  //-여영부-
@@ -33,6 +39,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
         ApplyTileEffect(); //-여영부-
     }
@@ -112,6 +119,8 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
             bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
 
             energy -= towerData.levels[level].usingEnergy;
+            audioSource.Play();
+
             if (energy <= 0)
             {
                 energy = 0;
@@ -129,19 +138,56 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
-                spriteRenderer.sprite = lev3;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                StartCoroutine(upgradeRange());
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 2;
+                    range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    StartCoroutine(upgradeRange());
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;

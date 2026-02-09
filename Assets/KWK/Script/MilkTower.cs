@@ -18,16 +18,22 @@ public class MilkTower : MonoBehaviour, TowerInterface
     [SerializeField] private float activationDelay = 0.2f;
     private bool isActive = false;
 
-    [SerializeField] private Sprite lev3;
     [SerializeField] private Sprite left;
     [SerializeField] private Sprite right;
     [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
+
     private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         StartCoroutine(activationDelayCoroutine());
     }
 
@@ -67,6 +73,7 @@ public class MilkTower : MonoBehaviour, TowerInterface
         if (healCoroutine == null && isActive)
         {
             healCoroutine = StartCoroutine(heal());
+            audioSource.Play();
         }
     }
 
@@ -94,6 +101,7 @@ public class MilkTower : MonoBehaviour, TowerInterface
         if (targets.Count > 0 && healCoroutine == null)
         {
             healCoroutine = StartCoroutine(heal());
+            audioSource.Play();
         }
     }
 
@@ -129,17 +137,55 @@ public class MilkTower : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -¿©¿µºÎ-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                spriteRenderer.sprite = lev3;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
+                    {
+
+                        Debug.Log("Not enough resources to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
+                    level = 2;
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;

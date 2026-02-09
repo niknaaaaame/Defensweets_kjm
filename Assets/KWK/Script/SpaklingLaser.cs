@@ -16,22 +16,29 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
     [SerializeField] private float prefabDestroyTime;
-    [SerializeField] private Sprite lev3;
+    
     [SerializeField] private Sprite left;
     [SerializeField] private Sprite right;
     [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
 
     private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
 
         ApplyTileEffect(); //-여영부-
@@ -119,7 +126,8 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                 int baseDamage = towerData.levels[level].damage; //-여영부-
                 int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
 
-                MonsterTest monster = target.GetComponent<MonsterTest>();
+                //MonsterTest monster = target.GetComponent<MonsterTest>(); -여영부-
+                IDamageable monster = target.GetComponent<IDamageable>();
                 if (monster != null)
                 {
                     //monster.TakeDamage(towerData.levels[0].damage);
@@ -128,6 +136,8 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
             }
 
             energy -= towerData.levels[0].usingEnergy;
+            audioSource.Play();
+
             if (energy < 0)
             {
                 energy = 0;
@@ -145,17 +155,56 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                spriteRenderer.sprite = lev3;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
+                    {
+
+                        Debug.Log("Not enough resources to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
+                    level = 2;
+
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
