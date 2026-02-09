@@ -12,7 +12,15 @@ public class StageSelectCamera : MonoBehaviour
     [SerializeField] private float minZoomLimit = 0f;
     [SerializeField] private MapCharacter mapCharacter;
     [SerializeField] private Vector2 defaultStartPoint = Vector2.zero; // 저장 위치 없을 시 캐릭터 좌표
-    
+
+    [Header("Zoom Settings")]
+    // 체크 시 아래 고정 줌 크기 사용, 체크 해제 시 스테이지 크기에 맞춰 조정
+    public bool useFixedZoom = true;
+    // 숫자 작을수록 더 크게 확대
+    public float fixedZoomSize = 3.0f;
+    // 자동 조정 시 여유 공간 (숫자 클수록 덜 확대)
+    public float autoZoomBuffer = 1.0f;
+
     private Camera cam;
     // 카메라 드래그
     private Vector3 dragOrigin;
@@ -150,15 +158,13 @@ public class StageSelectCamera : MonoBehaviour
                     return;
                 }
 
-                if (currentFocusNode == clickedNode && isFocused)
-                {
-                    ZoomToNode(clickedNode);
-                    clickedNode.ShowInfo(true);
-                }
-                else
-                {
-                    FocusOnNode(clickedNode);
-                }
+                FocusOnNode(clickedNode);
+
+                ZoomToNode(clickedNode);
+
+                clickedNode.ShowInfo(true);
+                clickedNode.ShowReward(true);
+
                 return;
             }
         }
@@ -204,37 +210,37 @@ public class StageSelectCamera : MonoBehaviour
         }
 
         // 경로 계산
-        List<Vector3> pathPoints = new List<Vector3>();
-        if (mapCharacter != null)
-        {
-            pathPoints = mapCharacter.CalculatePath(currentFocusNode, targetNode);
-        }
-        else
-        {
-            // 캐릭터가 없으면 그냥 목표만 추가
-            pathPoints.Add(targetNode.transform.position);
-        }
+        //List<Vector3> pathPoints = new List<Vector3>();
+        //if (mapCharacter != null)
+        //{
+        //    pathPoints = mapCharacter.CalculatePath(currentFocusNode, targetNode);
+        //}
+        //else
+        //{
+        //    // 캐릭터가 없으면 그냥 목표만 추가
+        //    pathPoints.Add(targetNode.transform.position);
+        //}
 
         isFocused = true;
         currentFocusNode = targetNode;
 
         Vector3 nodePos = targetNode.transform.position;
-        targetSize = maxPossibleSize;
+        //targetSize = maxPossibleSize;
 
         targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
         targetPosition = ClampPosition(targetPosition, targetSize);
 
         // 캐릭터 이동 명령
-        if (mapCharacter != null)
-        {
-            mapCharacter.MoveAlongPath(pathPoints, () =>
-            {
-                if (currentFocusNode == targetNode)
-                {
-                    targetNode.ShowReward(true);
-                }
-            });
-        }
+        //if (mapCharacter != null)
+        //{
+        //    mapCharacter.MoveAlongPath(pathPoints, () =>
+        //    {
+        //        if (currentFocusNode == targetNode)
+        //        {
+        //            targetNode.ShowReward(true);
+        //        }
+        //    });
+        //}
 
         // 위치 저장
         string sceneKey = SceneManager.GetActiveScene().name;
@@ -308,15 +314,25 @@ public class StageSelectCamera : MonoBehaviour
     // 확대
     void ZoomToNode(StageNode node)
     {
-        Bounds bounds = node.GetTotalBounds();
-        Vector3 nodePos = node.transform.position;
+        float calculatedSize;
 
-        float distX = Mathf.Max(Mathf.Abs(bounds.max.x - nodePos.x), Mathf.Abs(bounds.min.x - nodePos.x));
-        float distY = Mathf.Max(Mathf.Abs(bounds.max.y - nodePos.y), Mathf.Abs(bounds.min.y - nodePos.y));
-        float screenRatio = (float)Screen.width / (float)Screen.height;
+        if (useFixedZoom)
+        {
+            calculatedSize = fixedZoomSize;
+        }
+        else
+        {
+            Bounds bounds = node.GetTotalBounds();
+            Vector3 nodePos = node.transform.position;
 
-        float sizeFromWidth = distX / screenRatio;
-        float calculatedSize = Mathf.Max(distY, sizeFromWidth);
+            float distX = Mathf.Max(Mathf.Abs(bounds.max.x - nodePos.x), Mathf.Abs(bounds.min.x - nodePos.x));
+            float distY = Mathf.Max(Mathf.Abs(bounds.max.y - nodePos.y), Mathf.Abs(bounds.min.y - nodePos.y));
+            float screenRatio = (float)Screen.width / (float)Screen.height;
+
+            float sizeFromWidth = distX / screenRatio;
+
+            calculatedSize = Mathf.Max(distY, sizeFromWidth) + autoZoomBuffer;
+        }
 
         // if (node.overrideZoomSize > 0) calculatedSize = node.overrideZoomSize;
         // 줌 범위 제한
@@ -325,13 +341,19 @@ public class StageSelectCamera : MonoBehaviour
         // 목표 사이즈 갱신
         targetSize = calculatedSize;
         // 위치 다시 조정
-        targetPosition = new Vector3(nodePos.x, nodePos.y, -10f);
+        Vector3 targetPos = node.transform.position;
+        targetPosition = new Vector3(targetPos.x, targetPos.y, -10f);
         targetPosition = ClampPosition(targetPosition, targetSize);
+
     }
 
     void Unfocus()
     {
-        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.ShowInfo(false);
+            currentFocusNode.ShowReward(false);
+        }
         isFocused = false;
         currentFocusNode = null;
         targetSize = maxPossibleSize;

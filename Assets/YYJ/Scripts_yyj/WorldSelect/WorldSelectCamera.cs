@@ -173,10 +173,16 @@ public class WorldSelectCamera : MonoBehaviour
         if (currentFocusNode != null)
         {
             currentFocusNode.ShowInfo(false);
+            currentFocusNode.SetDimmed(false);
         }
         
         isFocused = true;
         currentFocusNode = targetNode;
+
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.SetDimmed(true);
+        }
 
         Vector3 nodePos = targetNode.transform.position;
         targetSize = maxPossibleSize;
@@ -273,7 +279,12 @@ public class WorldSelectCamera : MonoBehaviour
 
     void Unfocus()
     {
-        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.ShowInfo(false);
+            currentFocusNode.SetDimmed(false);
+        }
+
         isFocused = false;
         currentFocusNode = null;
         targetSize = maxPossibleSize;

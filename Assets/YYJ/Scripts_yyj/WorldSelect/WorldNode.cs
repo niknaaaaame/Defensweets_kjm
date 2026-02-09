@@ -21,6 +21,7 @@ public class WorldNode : MonoBehaviour
     [SerializeField] private Color lockedColor = Color.gray; // 잠긴 상태 색상
     [SerializeField] private Color unlockedColor = Color.white; // 해금된 상태 색상
     [SerializeField] private GameObject lockIcon;   // 잠금 이미지 있을 시
+    public GameObject dimmerObject;
 
     public bool IsUnlocked { get; private set; }
 
@@ -28,7 +29,16 @@ public class WorldNode : MonoBehaviour
     void Start()
     {
         UpdateWorldState();
+        SetDimmed(false);
         if (infoCanvas != null) infoCanvas.SetActive(false);
+    }
+
+    public void SetDimmed(bool isActive)
+    {
+        if (dimmerObject != null)
+        {
+            dimmerObject.SetActive(isActive);
+        }
     }
 
     public void UpdateWorldState()
