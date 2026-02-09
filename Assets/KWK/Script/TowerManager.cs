@@ -217,9 +217,9 @@ public class TowerManager : MonoBehaviour
                 spriteToApply = leftSprite;
                 if (isSpaklingLaser)
                 {
-                    ghostBoxCollider.offset = new Vector2(-2.5f, 0);
+                    ghostBoxCollider.offset = new Vector2(-2.5f, -0.26f);
                     ghostBoxCollider.size = new Vector2(6f, 1f);
-                    ghostRangeTransform.localPosition = new Vector3(-2.5f, 0, 0);
+                    ghostRangeTransform.localPosition = new Vector3(-2.76f, -0.26f, 0);
                     angle = 90f;
                 }
                 break;
@@ -228,9 +228,9 @@ public class TowerManager : MonoBehaviour
                 spriteToApply = rightSprite;
                 if (isSpaklingLaser)
                 {
-                    ghostBoxCollider.offset = new Vector2(2.5f, 0);
+                    ghostBoxCollider.offset = new Vector2(2.5f, -0.26f);
                     ghostBoxCollider.size = new Vector2(6f, 1f);
-                    ghostRangeTransform.localPosition = new Vector3(2.5f, 0, 0);
+                    ghostRangeTransform.localPosition = new Vector3(2.24f, -0.26f, 0);
                     angle = 90f;
                 }
                 break;
@@ -239,7 +239,7 @@ public class TowerManager : MonoBehaviour
                 spriteToApply = backSprite;
                 if (isSpaklingLaser)
                 {
-                    ghostBoxCollider.offset = new Vector2(0, 2.5f);
+                    ghostBoxCollider.offset = new Vector2(0, -2.76f);
                     ghostBoxCollider.size = new Vector2(1f, 6f);
                     ghostRangeTransform.localPosition = new Vector3(0, 2.5f, 0);
                     angle = 0f;
@@ -250,7 +250,7 @@ public class TowerManager : MonoBehaviour
                 spriteToApply = ghostDefaultSprite;
                 if (isSpaklingLaser)
                 {
-                    ghostBoxCollider.offset = new Vector2(0, -2.5f);
+                    ghostBoxCollider.offset = new Vector2(0, -2.76f);
                     ghostBoxCollider.size = new Vector2(1f, 6f);
                     ghostRangeTransform.localPosition = new Vector3(0, -2.5f, 0);
                     angle = 0f;

@@ -16,10 +16,14 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
     [SerializeField] private float prefabDestroyTime;
-    [SerializeField] private Sprite lev3;
+    
     [SerializeField] private Sprite left;
     [SerializeField] private Sprite right;
     [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
 
     private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
@@ -158,7 +162,24 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
-                spriteRenderer.sprite = lev3;
+                
+                if(spriteRenderer.sprite == left)
+                {
+                    spriteRenderer.sprite = left3;
+                }
+                else if(spriteRenderer.sprite == right)
+                {
+                    spriteRenderer.sprite = right3;
+                }
+                else if(spriteRenderer.sprite == back)
+                {
+                    spriteRenderer.sprite = back3;
+                }
+                else
+                {
+                    spriteRenderer.sprite = front3;
+                }
+
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:
