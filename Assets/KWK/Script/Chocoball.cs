@@ -35,7 +35,12 @@ public class Chocoball : MonoBehaviour
     {
         if (other.CompareTag("Monster"))
         {
-            MonsterTest monster = other.GetComponent<MonsterTest>();
+            // MonsterTest monster = other.GetComponent<MonsterTest>(); -¿©¿µºÎ-
+            IDamageable monster = other.GetComponent<IDamageable>();
+            if (monster == null)
+            {
+                return;
+            }
             monster.TakeDamage(damage);
 
             StopCoroutine(moveCoroutine);

@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterTest : MonoBehaviour
+//public class MonsterTest : MonoBehaviour
+public class MonsterTest : MonoBehaviour, IDamageable
 {
     [SerializeField] private float speed;
     [SerializeField] private int health;

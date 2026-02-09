@@ -126,7 +126,8 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                 int baseDamage = towerData.levels[level].damage; //-여영부-
                 int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
 
-                MonsterTest monster = target.GetComponent<MonsterTest>();
+                //MonsterTest monster = target.GetComponent<MonsterTest>(); -여영부-
+                IDamageable monster = target.GetComponent<IDamageable>();
                 if (monster != null)
                 {
                     //monster.TakeDamage(towerData.levels[0].damage);
