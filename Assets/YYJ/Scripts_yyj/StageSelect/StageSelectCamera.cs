@@ -163,6 +163,7 @@ public class StageSelectCamera : MonoBehaviour
                 ZoomToNode(clickedNode);
 
                 clickedNode.ShowInfo(true);
+                clickedNode.ShowReward(true);
 
                 return;
             }
@@ -343,11 +344,16 @@ public class StageSelectCamera : MonoBehaviour
         Vector3 targetPos = node.transform.position;
         targetPosition = new Vector3(targetPos.x, targetPos.y, -10f);
         targetPosition = ClampPosition(targetPosition, targetSize);
+
     }
 
     void Unfocus()
     {
-        if (currentFocusNode != null) currentFocusNode.ShowInfo(false);
+        if (currentFocusNode != null)
+        {
+            currentFocusNode.ShowInfo(false);
+            currentFocusNode.ShowReward(false);
+        }
         isFocused = false;
         currentFocusNode = null;
         targetSize = maxPossibleSize;
