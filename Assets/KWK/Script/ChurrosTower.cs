@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChurrosTower : MonoBehaviour
+public class ChurrosTower : MonoBehaviour, TowerInterface
 {
     public TowerSO towerData;
     public TowerSO GetTowerData() => towerData;
@@ -13,7 +13,16 @@ public class ChurrosTower : MonoBehaviour
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform energyBar;
     [SerializeField] private LineRenderer lr;
+    
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
 
+    private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
@@ -25,6 +34,7 @@ public class ChurrosTower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         originalScale = energyBar.localScale;
         ApplyTileEffect();
     }
@@ -96,7 +106,7 @@ public class ChurrosTower : MonoBehaviour
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            Chocochip bullet = instance.GetComponent<Chocochip>();
+            Churros bullet = instance.GetComponent<Churros>();
             //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
 
             int baseDamage = towerData.levels[level].damage;  //여기서 부터
@@ -130,6 +140,24 @@ public class ChurrosTower : MonoBehaviour
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
+
+                if (spriteRenderer.sprite == left)
+                {
+                    spriteRenderer.sprite = left3;
+                }
+                else if (spriteRenderer.sprite == right)
+                {
+                    spriteRenderer.sprite = right3;
+                }
+                else if (spriteRenderer.sprite == back)
+                {
+                    spriteRenderer.sprite = back3;
+                }
+                else
+                {
+                    spriteRenderer.sprite = front3;
+                }
+
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:

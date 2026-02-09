@@ -104,7 +104,7 @@ public class MapCharacter : MonoBehaviour
         while (current != null)
         {
             startAncestors.Add(current);
-            current = current.parentStageNode;
+            //current = current.parentStageNode;
         }
         // 목표 노드에서 거슬러 올라가며, 시작 노드의 조상과 겹치는 조상 찾기
         StageNode commonAncestor = null;
@@ -119,7 +119,7 @@ public class MapCharacter : MonoBehaviour
                 break;
             }
             targetPathFromCommon.Add(current);  // 경로 추가
-            current = current.parentStageNode;
+            //current = current.parentStageNode;
         }
 
         if (commonAncestor == null)

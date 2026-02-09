@@ -25,8 +25,8 @@ public class ResourceSystem : MonoBehaviour
 
     void Update()
     {
-        sugarText.text = $"Sugar: {Sugar}";
-        crystalText.text = $"Crystal: {Crystal}";
+        sugarText.text = $"{Sugar}";
+        crystalText.text = $"{Crystal}";
     }
 
     private void OnDestroy()

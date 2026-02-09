@@ -23,4 +23,18 @@ MonoBehaviour:
     upgradeCostSugar: 10
     specialCostCrystal: 0
     cost: 10
-    energy: 1000
+    usingEnergy: 0
+  - damage: 5
+    attackSpeed: 0.7
+    range: 3
+    upgradeCostSugar: 10
+    specialCostCrystal: 0
+    cost: 10
+    usingEnergy: 0
+  - damage: 5
+    attackSpeed: 0.7
+    range: 3
+    upgradeCostSugar: 10
+    specialCostCrystal: 0
+    cost: 10
+    usingEnergy: 0

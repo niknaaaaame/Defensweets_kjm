@@ -18,9 +18,22 @@ public class MilkTower : MonoBehaviour, TowerInterface
     [SerializeField] private float activationDelay = 0.2f;
     private bool isActive = false;
 
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
+
+    private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         StartCoroutine(activationDelayCoroutine());
     }
 
@@ -60,6 +73,7 @@ public class MilkTower : MonoBehaviour, TowerInterface
         if (healCoroutine == null && isActive)
         {
             healCoroutine = StartCoroutine(heal());
+            audioSource.Play();
         }
     }
 
@@ -87,6 +101,7 @@ public class MilkTower : MonoBehaviour, TowerInterface
         if (targets.Count > 0 && healCoroutine == null)
         {
             healCoroutine = StartCoroutine(heal());
+            audioSource.Play();
         }
     }
 
@@ -130,6 +145,24 @@ public class MilkTower : MonoBehaviour, TowerInterface
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
                 ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 level = 2;
+
+                if (spriteRenderer.sprite == left)
+                {
+                    spriteRenderer.sprite = left3;
+                }
+                else if (spriteRenderer.sprite == right)
+                {
+                    spriteRenderer.sprite = right3;
+                }
+                else if (spriteRenderer.sprite == back)
+                {
+                    spriteRenderer.sprite = back3;
+                }
+                else
+                {
+                    spriteRenderer.sprite = front3;
+                }
+
                 TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
                 break;
             case 2:
