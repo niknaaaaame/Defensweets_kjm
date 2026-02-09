@@ -137,34 +137,55 @@ public class MilkTower : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -¿©¿µºÎ-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
+                    {
 
-                if (spriteRenderer.sprite == left)
-                {
-                    spriteRenderer.sprite = left3;
-                }
-                else if (spriteRenderer.sprite == right)
-                {
-                    spriteRenderer.sprite = right3;
-                }
-                else if (spriteRenderer.sprite == back)
-                {
-                    spriteRenderer.sprite = back3;
-                }
-                else
-                {
-                    spriteRenderer.sprite = front3;
-                }
+                        Debug.Log("Not enough resources to upgrade.");
+                        return;
+                    }
 
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
+                    level = 2;
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
