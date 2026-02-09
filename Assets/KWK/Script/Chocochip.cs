@@ -5,6 +5,7 @@ using UnityEngine;
 public class Chocochip : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float lifeTime;
 
     private Transform target;
     private Rigidbody2D rb;
@@ -14,7 +15,7 @@ public class Chocochip : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Destroy(gameObject, lifeTime);
     }
 
     // Update is called once per frame
