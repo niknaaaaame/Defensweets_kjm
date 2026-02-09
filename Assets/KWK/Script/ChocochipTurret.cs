@@ -138,36 +138,56 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
 
-                if (spriteRenderer.sprite == left)
-                {
-                    spriteRenderer.sprite = left3;
-                }
-                else if (spriteRenderer.sprite == right)
-                {
-                    spriteRenderer.sprite = right3;
-                }
-                else if (spriteRenderer.sprite == back)
-                {
-                    spriteRenderer.sprite = back3;
-                }
-                else
-                {
-                    spriteRenderer.sprite = front3;
-                }
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 2;
+                    range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
 
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                StartCoroutine(upgradeRange());
-                break;
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    StartCoroutine(upgradeRange());
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
