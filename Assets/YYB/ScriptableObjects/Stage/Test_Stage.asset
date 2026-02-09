@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Test_Stage
   m_EditorClassIdentifier: 
   stageId: Test_Stage
-  initialSugar: 100
+  initialSugar: 200
   initialCrystal: 300
-  gateHp: 6
+  gateHp: 5
   waves:
   - {fileID: 11400000, guid: f988bf4a585ecc74099c798693f28525, type: 2}
   - {fileID: 11400000, guid: 5f89e6a9c9714534ba3cdd8ada2cbf11, type: 2}

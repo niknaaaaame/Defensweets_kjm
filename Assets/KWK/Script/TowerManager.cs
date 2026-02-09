@@ -72,6 +72,12 @@ public class TowerManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
+                if (!ResourceSystem.Instance.TryUseSugar(installCost))
+                {
+                    Debug.Log("Not enough sugar to place tower.");
+                    return;
+                }
+
                 Sprite chosenSprite = GetGhostRootSprite(ghostTower);
 
                 Destroy(ghostTower);
@@ -93,7 +99,7 @@ public class TowerManager : MonoBehaviour
                 selectedTower = null;
                 ghostOrientation = Orientation.Default;
 
-                ResourceSystem.Instance.TryUseSugar(installCost);
+                //ResourceSystem.Instance.TryUseSugar(installCost);
             }
 
             else if (Input.GetMouseButtonDown(1))
