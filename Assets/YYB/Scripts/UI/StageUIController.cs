@@ -3,30 +3,21 @@ using UnityEngine.UI;
 
 public class StageUIController : MonoBehaviour
 {
-    [Header("개척 토글 / 웨이브 버튼")]
-    [SerializeField] private Toggle exploitationToggle;   // 개척 토글
+    [Header("웨이브 시작 버튼")]
     [SerializeField] private Button startWaveButton;      // 웨이브 시작 버튼
 
     [Header("경로 체크 설정")]
-    [SerializeField] private float pathCheckInterval = 0.3f;
+    [SerializeField] private float pathCheckInterval = 0.3f; // Ready 상태에서 경로 재검사 주기(초)
 
     private float pathCheckTimer;
     private bool hasPath = false;
 
     private void Start()
     {
-        if (exploitationToggle != null)
-            exploitationToggle.onValueChanged.AddListener(OnExploitationToggleChanged);
-
+        // 처음 한 번은 바로 경로 체크 + UI 갱신
         pathCheckTimer = 0f;
         ForcePathRecheck();
         UpdateUIState();
-    }
-
-    private void OnDestroy()
-    {
-        if (exploitationToggle != null)
-            exploitationToggle.onValueChanged.RemoveListener(OnExploitationToggleChanged);
     }
 
     private void Update()
@@ -34,9 +25,10 @@ public class StageUIController : MonoBehaviour
         if (GameManager.Instance == null)
             return;
 
-        // Ready 상태일 때만 주기적으로 경로 재검사
-        bool isReady = GameManager.Instance.CurrentState == GameState.Ready;
+        GameState state = GameManager.Instance.CurrentState;
+        bool isReady = state == GameState.Ready;
 
+        // Ready 상태일 때만 주기적으로 경로 재검사
         pathCheckTimer -= Time.deltaTime;
         if (isReady && pathCheckTimer <= 0f)
         {
@@ -44,15 +36,13 @@ public class StageUIController : MonoBehaviour
             ForcePathRecheck();
         }
 
+        // 상태/경로에 따라 버튼 인터랙션 갱신
         UpdateUIState();
     }
 
-    private void OnExploitationToggleChanged(bool isOn)
-    {
-        // 토글이 켜지면 StartWave를 막는 로직만 다시 반영
-        UpdateUIState();
-    }
-
+    /// <summary>
+    /// 현재 Start/Goal 기준으로 유효한 경로가 있는지 검사한다.
+    /// </summary>
     private void ForcePathRecheck()
     {
         hasPath = false;
@@ -71,6 +61,9 @@ public class StageUIController : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// GameState + 경로 유무에 따라 UI(특히 Start 버튼)를 갱신한다.
+    /// </summary>
     private void UpdateUIState()
     {
         if (GameManager.Instance == null)
@@ -78,26 +71,23 @@ public class StageUIController : MonoBehaviour
 
         GameState state = GameManager.Instance.CurrentState;
         bool isReady = state == GameState.Ready;
-        bool exploitationOn = exploitationToggle != null && exploitationToggle.isOn;
-
-        // 개척 토글은 Ready 상태에서만 조작 가능
-        if (exploitationToggle != null)
-        {
-            exploitationToggle.interactable = isReady;
-
-            if (!isReady && exploitationToggle.isOn)
-            {
-                exploitationToggle.isOn = false;
-                exploitationOn = false;
-            }
-        }
 
         // StartWave 버튼 활성 조건:
-        // Ready 상태 && 개척 토글 OFF && 경로 있음
+        // Ready 상태 && 유효한 경로 있음
         if (startWaveButton != null)
         {
-            bool canStart = isReady && !exploitationOn && hasPath;
-            startWaveButton.interactable = canStart;
+            startWaveButton.interactable = isReady && hasPath;
         }
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 즉시 경로 재검사를 요청하고 싶을 때 호출 가능.
+    /// (안 써도 상관 없음)
+    /// </summary>
+    public void RequestImmediatePathRecheck()
+    {
+        pathCheckTimer = 0f;
+        ForcePathRecheck();
+        UpdateUIState();
     }
 }

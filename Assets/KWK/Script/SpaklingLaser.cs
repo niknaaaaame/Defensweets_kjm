@@ -126,7 +126,8 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                 int baseDamage = towerData.levels[level].damage; //-여영부-
                 int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier); //-여영부-
 
-                MonsterTest monster = target.GetComponent<MonsterTest>();
+                //MonsterTest monster = target.GetComponent<MonsterTest>(); -여영부-
+                IDamageable monster = target.GetComponent<IDamageable>();
                 if (monster != null)
                 {
                     //monster.TakeDamage(towerData.levels[0].damage);
@@ -154,34 +155,56 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
-            case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                
-                if(spriteRenderer.sprite == left)
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
                 {
-                    spriteRenderer.sprite = left3;
-                }
-                else if(spriteRenderer.sprite == right)
-                {
-                    spriteRenderer.sprite = right3;
-                }
-                else if(spriteRenderer.sprite == back)
-                {
-                    spriteRenderer.sprite = back3;
-                }
-                else
-                {
-                    spriteRenderer.sprite = front3;
-                }
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
 
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
+            case 1:
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
+                    {
+
+                        Debug.Log("Not enough resources to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
+                    level = 2;
+
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;

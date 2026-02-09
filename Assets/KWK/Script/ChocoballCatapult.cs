@@ -128,18 +128,40 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         switch (level)
         {
             case 0:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                level = 1;
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    {
+                        Debug.Log("Not enough sugar to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    level = 1;
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 1:
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar);
-                ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
-                level = 2;
-                outerRange.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
-                StartCoroutine(upgradeRange());
-                TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                break;
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -여영부-
+                //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
+                {
+                    int sugarCost = towerData.levels[level].upgradeCostSugar;
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
+                    {
+                        Debug.Log("Not enough resources to upgrade.");
+                        return;
+                    }
+
+                    ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
+                    level = 2;
+                    outerRange.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
+                    StartCoroutine(upgradeRange());
+                    TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
+                    break;
+                }
             case 2:
                 Debug.Log("Max Level Reached");
                 break;
