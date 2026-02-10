@@ -180,7 +180,7 @@ public class GameManager : MonoBehaviour
 
         if (!int.TryParse(stage.stageId, out int clearedStageNumber))
         {
-            Debug.LogWarning($"[GM] stageId({stage.stageId})");
+            Debug.LogWarning($"[GM] stageId({stage.stageId})스테이지아이디");
             return;
         }
 
@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
         {
             ProgressionSave.UnlockTower(churrosTowerUnlockKey);
             EventBus.Publish(Events.OnTowerUnlocked, churrosTowerUnlockKey);
-            Debug.Log($"[GM] ({churrosTowerUnlockKey}) . (Stage {clearedStageNumber})");
+            Debug.Log($"[GM] ({churrosTowerUnlockKey}) . (Stage {clearedStageNumber})타워 클리어스테이지번호");
         }
     }
 

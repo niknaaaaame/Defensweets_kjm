@@ -29,6 +29,7 @@ public static class ProgressionSave
 
         PlayerPrefs.SetInt(TowerUnlockPrefix + towerKey, 1);
         PlayerPrefs.Save();
+        Debug.Log($"[ProgressionSave] Tower {towerKey} unlocked!");
     }
 
     public static bool IsTowerUnlocked(string towerKey)

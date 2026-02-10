@@ -9,6 +9,7 @@ public class TowerUnlockUI : MonoBehaviour
     [Header("Targets")]
     [SerializeField] private GameObject towerButtonObject;
     [SerializeField] private Button towerButton;
+
     private const string DefaultTowerButtonName = "TowerButton";
 
     private void Awake()
@@ -52,14 +53,9 @@ public class TowerUnlockUI : MonoBehaviour
 
     private GameObject FindTowerButtonObject()
     {
-        Transform buttonChild = transform.Find(DefaultTowerButtonName);
-        if (buttonChild != null)
-            return buttonChild.gameObject;
+        var child = transform.Find("TowerButton");
+        if (child != null) return child.gameObject;
 
-        Button buttonInChildren = GetComponentInChildren<Button>(true);
-        if (buttonInChildren != null && buttonInChildren.gameObject != gameObject)
-            return buttonInChildren.gameObject;
-
-        return null;
+        return GetComponentInChildren<Button>()?.gameObject;
     }
 }
