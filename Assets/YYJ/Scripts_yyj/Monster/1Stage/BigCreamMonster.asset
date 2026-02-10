@@ -15,7 +15,7 @@ MonoBehaviour:
   monsterName: BigCreamMonster
   monsterType: 2
   targetType: 0
-  prefab: {fileID: 0}
+  prefab: {fileID: 3687997812809581531, guid: f9d78780d7acb5f4c8f8be9967330982, type: 3}
   hp: 550
   speed: 0.5
   rewardSugar: 32
