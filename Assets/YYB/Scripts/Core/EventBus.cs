@@ -53,4 +53,5 @@ public static class Events
     public const string OnWaveCleared = "OnWaveCleared";
     public const string OnStateChanged = "OnStateChanged"; 
     public const string OnResourcePing = "OnResourcePing";     // UI °»½Å
+    public const string OnTowerUnlocked = "OnTowerUnlocked";
 }

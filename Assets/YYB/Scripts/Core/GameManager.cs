@@ -189,6 +189,7 @@ public class GameManager : MonoBehaviour
         if (clearedStageNumber >= churrosUnlockStage)
         {
             ProgressionSave.UnlockTower(churrosTowerUnlockKey);
+            EventBus.Publish(Events.OnTowerUnlocked, churrosTowerUnlockKey);
             Debug.Log($"[GM] ({churrosTowerUnlockKey}) . (Stage {clearedStageNumber})");
         }
     }
