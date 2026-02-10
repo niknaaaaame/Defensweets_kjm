@@ -51,6 +51,45 @@ public class Churros : MonoBehaviour
     private IEnumerator move()
     {
         Vector3 startPos = transform.position;
+        Vector3 endPos = target.position;
+        float distance = Vector3.Distance(startPos, endPos);
+        float elapsedTime = 0f;
+        float maxHeight = 1.5f;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            elapsedTime += Time.deltaTime;
+            t = (elapsedTime * speed) / distance;
+
+            Vector3 nextPos = Vector3.Lerp(startPos, endPos, t);
+
+            float height = Mathf.Sin(t * Mathf.PI) * maxHeight;
+            nextPos.y += height;
+
+            Vector3 direction = nextPos - transform.position;
+            if (direction != Vector3.zero)
+            {
+                // 2D 회전: Atan2 사용 (스프라이트가 위쪽을 향하도록 만들었다면 -90 등 보정)
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                // 만약 스프라이트가 위(0,1)를 향하도록 만들어졌다면 -90도 보정 필요
+                transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+
+                //transform.rotation = Quaternion.LookRotation(direction);
+            }
+
+            transform.position = nextPos;
+
+            yield return null;
+        }
+
+        transform.position = endPos;
+    }
+
+    /*
+     private IEnumerator move()
+    {
+        Vector3 startPos = transform.position;
         float distance = Vector3.Distance(startPos, target.position);
         float elapsedTime = 0f;
         float maxHeight = 1.5f;
@@ -73,4 +112,5 @@ public class Churros : MonoBehaviour
 
         transform.position = target.position;
     }
+     */
 }
