@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ChocoballCatapult : MonoBehaviour, TowerInterface
 {
@@ -30,6 +31,8 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
 
     private float damageMultiplier = 1f;
@@ -38,6 +41,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
         ApplyTileEffect();
     }
@@ -55,6 +59,11 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         // 정보창 표시
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
@@ -128,6 +137,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
 
 
             energy -= towerData.levels[0].usingEnergy;
+            audioSource.Play();
             if (energy <= 0)
             {
                 energy = 0;
