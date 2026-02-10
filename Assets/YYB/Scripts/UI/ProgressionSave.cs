@@ -3,6 +3,7 @@ using UnityEngine;
 public static class ProgressionSave
 {
     private const string ClearedStagePrefix = "progress.clearedStage.";
+    private const string LegacyClearedStagePrefix = "Stage_";
     private const string TowerUnlockPrefix = "progress.unlockedTower.";
 
     public static void MarkStageCleared(int stageNumber)
@@ -11,6 +12,7 @@ public static class ProgressionSave
             return;
 
         PlayerPrefs.SetInt(ClearedStagePrefix + stageNumber, 1);
+        PlayerPrefs.SetInt(GetLegacyStageClearKey(stageNumber), 1);
         PlayerPrefs.Save();
     }
 
@@ -19,7 +21,13 @@ public static class ProgressionSave
         if (stageNumber <= 0)
             return false;
 
-        return PlayerPrefs.GetInt(ClearedStagePrefix + stageNumber, 0) == 1;
+        return PlayerPrefs.GetInt(ClearedStagePrefix + stageNumber, 0) == 1
+               || PlayerPrefs.GetInt(GetLegacyStageClearKey(stageNumber), 0) == 1;
+    }
+
+    public static string GetLegacyStageClearKey(int stageNumber)
+    {
+        return $"{LegacyClearedStagePrefix}{stageNumber}_Cleared";
     }
 
     public static void UnlockTower(string towerKey)
