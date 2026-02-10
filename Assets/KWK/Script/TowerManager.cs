@@ -21,16 +21,21 @@ public class TowerManager : MonoBehaviour
     private Orientation ghostOrientation = Orientation.Default;
     private Sprite ghostDefaultSprite;
 
+
     private Transform ghostRangeTransform;
     private Transform ghostShootPoint;
     private BoxCollider2D ghostBoxCollider;
 
     private bool isSpaklingLaser = false;
 
+    private AudioSource audioSource;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Start is called before the first frame update
@@ -82,6 +87,7 @@ public class TowerManager : MonoBehaviour
 
                 Destroy(ghostTower);
                 GameObject placed = Instantiate(selectedTower, snappedPos, Quaternion.identity);
+                audioSource.Play();
 
                 var placedRootSr = placed.GetComponent<SpriteRenderer>();
                 if(placedRootSr != null && chosenSprite != null)
