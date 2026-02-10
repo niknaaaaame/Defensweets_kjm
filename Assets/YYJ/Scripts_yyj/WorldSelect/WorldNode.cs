@@ -44,7 +44,8 @@ public class WorldNode : MonoBehaviour
     public void UpdateWorldState()
     {
         // 해금 조건 확인
-        if (requiredClearStageID == 0 || PlayerPrefs.GetInt($"Stage_{requiredClearStageID}_Cleared", 0) == 1)
+        //if (requiredClearStageID == 0 || PlayerPrefs.GetInt($"Stage_{requiredClearStageID}_Cleared", 0) == 1) -여영부-
+        if (requiredClearStageID == 0 || ProgressionSave.HasClearedStage(requiredClearStageID))
         {
             IsUnlocked = true;
         }

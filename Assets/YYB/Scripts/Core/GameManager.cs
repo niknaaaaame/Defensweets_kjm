@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.Analytics;
-using TMPro;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +21,10 @@ public class GameManager : MonoBehaviour
     [Header("Result UI")]
     [SerializeField] private GameObject successPanel;
     [SerializeField] private GameObject failPanel;
+
+    [Header("Tower Unlock")]
+    [SerializeField] private int churrosUnlockStage = 3;
+    [SerializeField] private string churrosTowerUnlockKey = "churros";
 
     private void Awake()
     {
@@ -167,9 +167,31 @@ public class GameManager : MonoBehaviour
 
     private void OnAllWavesCleared()
     {
+        SaveStageClearProgress();
         SetState(GameState.Result);
         Debug.Log("[GM] 모든 웨이브 클리어 → SUCCESS");
         ShowSuccess();
+    }
+
+    private void SaveStageClearProgress()
+    {
+        if (stage == null || string.IsNullOrWhiteSpace(stage.stageId))
+            return;
+
+        if (!int.TryParse(stage.stageId, out int clearedStageNumber))
+        {
+            Debug.LogWarning($"[GM] stageId({stage.stageId})스테이지아이디");
+            return;
+        }
+
+        ProgressionSave.MarkStageCleared(clearedStageNumber);
+
+        if (clearedStageNumber >= churrosUnlockStage)
+        {
+            ProgressionSave.UnlockTower(churrosTowerUnlockKey);
+            EventBus.Publish(Events.OnTowerUnlocked, churrosTowerUnlockKey);
+            Debug.Log($"[GM] ({churrosTowerUnlockKey}) . (Stage {clearedStageNumber})타워 클리어스테이지번호");
+        }
     }
 
     private void OnFailed()

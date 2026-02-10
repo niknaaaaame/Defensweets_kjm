@@ -29,4 +29,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/KJM/Scene/CollectionScene.unity
     guid: f5667ba552bfa764796231c841ecc2ed
+  - enabled: 1
+    path: Assets/YYB/Stage1.unity
+    guid: 7518614ce7c6f0a4b8ee517b7d0d4ec3
+  - enabled: 1
+    path: Assets/YYB/Stage2.unity
+    guid: e6ff8635f6239fb46bdc49a2ea6bd672
+  - enabled: 1
+    path: Assets/YYB/Stage3.unity
+    guid: b68d05024a4d97c4f98af0817e0b72e1
+  - enabled: 1
+    path: Assets/YYB/Stage4.unity
+    guid: 5eb24abb2c17cc44597cf605275df085
+  - enabled: 1
+    path: Assets/YYB/Stage5.unity
+    guid: 2de710370c4c24945ace99c826fd6583
   m_configObjects: {}
