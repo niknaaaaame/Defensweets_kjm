@@ -162,13 +162,16 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
                 //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].specialCostCrystal);
                 {
                     int sugarCost = towerData.levels[level].upgradeCostSugar;
-                    if (ResourceSystem.Instance.Sugar < sugarCost)
+                    //if (ResourceSystem.Instance.Sugar < sugarCost)
+                    int crystalCost = towerData.levels[level].specialCostCrystal;
+                    if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
                     {
-                        Debug.Log("Not enough sugar to upgrade.");
+                        Debug.Log("Not enough resources to upgrade.");
                         return;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
+                    ResourceSystem.Instance.TryUseCrystal(crystalCost);
                     level = 2;
                     range.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
 
