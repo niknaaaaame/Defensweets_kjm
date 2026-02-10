@@ -15,9 +15,12 @@ public class TowerInfoPanel : MonoBehaviour
     [SerializeField] Button upgradeButton;
     [SerializeField] Button destroyButton;
 
+    [SerializeField] private float hideDelay = 2f;
+
     private Transform currentTower = null;
     private TowerSO towerData = null;
     private TowerInterface towerInterface = null;
+    private Coroutine delayCoroutine;
 
     private void Awake()
     {
@@ -60,19 +63,30 @@ public class TowerInfoPanel : MonoBehaviour
                 $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
                 $"Max Level";
         }
-            towerInfoPanel.SetActive(true);
+        
+        towerInfoPanel.SetActive(true);
+
+        if (delayCoroutine != null)
+        {
+            StopCoroutine(delayCoroutine);
+        }
+
+        delayCoroutine = StartCoroutine(DelayHidePanel(hideDelay));
     }
 
-    public void HideTowerInfo()
+    IEnumerator DelayHidePanel(float delay)
     {
+        yield return new WaitForSeconds(delay);
         towerInfoPanel.SetActive(false);
+        delayCoroutine = null;
+
     }
 
     public void ToggleTowerInfo(GameObject tower, int curLevel)
     {
         if (towerInfoPanel.activeSelf && currentTower == tower.transform)
         {
-            HideTowerInfo();
+            towerInfoPanel.SetActive(false);
         }
         else
         {
@@ -88,6 +102,6 @@ public class TowerInfoPanel : MonoBehaviour
     public void OnClickDestroy()
     {
         towerInterface.Destroy();
-        HideTowerInfo();
+        towerInfoPanel.SetActive(false);
     }
 }
