@@ -97,15 +97,17 @@ public class StageNode : MonoBehaviour
 
     public void UpdateState()
     {   // 이미 클리어 했는지 확인
-        bool isCleared = PlayerPrefs.GetInt($"Stage_{stageID}_Cleared", 0) == 1;
-        
+        //bool isCleared = PlayerPrefs.GetInt($"Stage_{stageID}_Cleared", 0) == 1; -여영부-
+        bool isCleared = ProgressionSave.HasClearedStage(stageID);
+
         if (isCleared)
         {
             CurrentState = StageState.Cleared;
         }
         else
         {
-            bool isUnlocked = requiredStageID == 0 || PlayerPrefs.GetInt($"Stage_{requiredStageID}_Cleared", 0) == 1;
+            //bool isUnlocked = requiredStageID == 0 || PlayerPrefs.GetInt($"Stage_{requiredStageID}_Cleared", 0) == 1; -여영부-
+            bool isUnlocked = requiredStageID == 0 || ProgressionSave.HasClearedStage(requiredStageID);
             if (isUnlocked == true) CurrentState = StageState.Unlocked;
             else CurrentState = StageState.Locked;
         }
@@ -240,8 +242,9 @@ public class StageNode : MonoBehaviour
     [ContextMenu("테스트: 이 스테이지 클리어 처리")]
     public void TestClearStage()
     {
-        PlayerPrefs.SetInt($"Stage_{stageID}_Cleared", 1);
-        PlayerPrefs.Save();
+        //PlayerPrefs.SetInt($"Stage_{stageID}_Cleared", 1); -여영부-
+        //PlayerPrefs.Save();
+        ProgressionSave.MarkStageCleared(stageID);
         Debug.Log($"[Test] 스테이지 {stageID} 클리어 처리");
 
         StagePathConnector connector = GetComponent<StagePathConnector>();

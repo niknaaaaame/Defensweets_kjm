@@ -59,10 +59,10 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         // 정보창 표시
         if (Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
+            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            //{
+            //    return;
+            //}
 
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
@@ -229,6 +229,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
 
     public void Destroy()
     {
+        TowerRefundUtility.RefundTowerCost(towerData, level);
         Destroy(this.gameObject);
     }
 

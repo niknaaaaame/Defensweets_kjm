@@ -10,14 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77130832570bf3747bc655af302a5f29, type: 3}
-  m_Name: Wave2
+  m_Name: Wave1_5_5
   m_EditorClassIdentifier: 
   prepareTime: 0
   spawns:
   - monster: {fileID: 11400000, guid: 8f61f450e9b523f448f3d9961b6af6d7, type: 2}
-    count: 5
+    count: 25
     interval: 0.7
     startDelay: 0
+  - monster: {fileID: 11400000, guid: 912a2cbf07edd2f468eff79c17ff7e8d, type: 2}
+    count: 15
+    interval: 0.7
+    startDelay: 15
+  - monster: {fileID: 11400000, guid: 6d77fb3d1369fa9468ba3e814e8fdff5, type: 2}
+    count: 25
+    interval: 0.7
+    startDelay: 25
   reward:
-    sugar: 100
-    crystalBonus: 20
+    sugar: 500
+    crystalBonus: 30
