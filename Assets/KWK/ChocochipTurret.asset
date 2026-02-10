@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8a6d5ef77031a43a5bdfcc7eebf14a, type: 3}
   m_Name: ChocochipTurret
   m_EditorClassIdentifier: 
-  towerName: ChocochipTurret
+  towerName: "\uCD08\uCF54\uCE69 \uD130\uB81B"
+  summary: "\uD558\uB098\uC758 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC900\uB2E4"
   towerType: 0
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,6 +25,7 @@ MonoBehaviour:
     specialCostCrystal: 0
     cost: 30
     usingEnergy: 3
+    preview: {fileID: 21300000, guid: 49ad93637c98e7e48bd83a4bf3e7f77d, type: 3}
   - damage: 15
     attackSpeed: 0.7
     range: 3
@@ -31,6 +33,7 @@ MonoBehaviour:
     specialCostCrystal: 5
     cost: 0
     usingEnergy: 2
+    preview: {fileID: 21300000, guid: 49ad93637c98e7e48bd83a4bf3e7f77d, type: 3}
   - damage: 20
     attackSpeed: 0.4
     range: 5
@@ -38,3 +41,4 @@ MonoBehaviour:
     specialCostCrystal: 0
     cost: 0
     usingEnergy: 1
+    preview: {fileID: 21300000, guid: 76463f17ebbcaa04cab2d24f024a8208, type: 3}

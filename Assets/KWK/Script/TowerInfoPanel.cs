@@ -12,8 +12,12 @@ public class TowerInfoPanel : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI towerNameText;
     [SerializeField] TextMeshProUGUI towerInfoText;
+    [SerializeField] TextMeshProUGUI towerSumText;
     [SerializeField] Button upgradeButton;
     [SerializeField] Button destroyButton;
+    [SerializeField] Image previewImage;
+    [SerializeField] AudioSource upgradeAudio;
+    [SerializeField] AudioSource destroyAudio;
 
     [SerializeField] private float hideDelay = 2f;
 
@@ -31,7 +35,7 @@ public class TowerInfoPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -40,7 +44,7 @@ public class TowerInfoPanel : MonoBehaviour
 
     }
 
-    public void ShowTowerInfo(GameObject tower,int level)
+    public void ShowTowerInfo(GameObject tower, int level)
     {
         currentTower = tower.transform;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(currentTower.position);
@@ -52,18 +56,18 @@ public class TowerInfoPanel : MonoBehaviour
         if (level < 2)
         {
             towerNameText.text = $"{towerData.towerName}";
-            towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
-                $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
-                $"upgrade cost\nsugar: {towerData.levels[level].upgradeCostSugar}\ncrystal: {towerData.levels[level].specialCostCrystal}";
+            towerSumText.text = $"{towerData.summary}";
+            towerInfoText.text = $"- level {level + 1} -\n공격력: {towerData.levels[level].damage}   공격속도: {towerData.levels[level].attackSpeed}\n-------------------\n업그레이드 비용\nsugar: {towerData.levels[level].upgradeCostSugar}    crystal: {towerData.levels[level].specialCostCrystal}";
         }
         else
         {
             towerNameText.text = $"{towerData.towerName}";
-            towerInfoText.text = $"- level {level + 1} -\ndamage: {towerData.levels[level].damage}" +
-                $"\nattackspeed: {towerData.levels[level].attackSpeed}\nrange: {towerData.levels[level].range}\n---------------------\n" +
-                $"Max Level";
+            towerSumText.text = $"{towerData.summary}";
+            towerInfoText.text = $"- level {level + 1} -\n공격력: {towerData.levels[level].damage}   공격속도: {towerData.levels[level].attackSpeed}\n-------------------\n      최대레벨";
         }
-        
+
+        previewImage.sprite = towerData.levels[level].preview;
+
         towerInfoPanel.SetActive(true);
 
         if (delayCoroutine != null)
@@ -97,11 +101,25 @@ public class TowerInfoPanel : MonoBehaviour
     public void OnCilckUpgrade()
     {
         towerInterface.Upgrade();
+        upgradeAudio.Play();
     }
 
     public void OnClickDestroy()
     {
         towerInterface.Destroy();
+        destroyAudio.Play();
+
+        if (delayCoroutine != null)
+        {
+            StopCoroutine(delayCoroutine);
+        }
+        delayCoroutine = StartCoroutine(DelayHideAfterSound(destroyAudio.clip.length));
+    }
+
+    IEnumerator DelayHideAfterSound(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         towerInfoPanel.SetActive(false);
+        delayCoroutine = null;
     }
 }
