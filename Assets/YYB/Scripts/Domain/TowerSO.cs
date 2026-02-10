@@ -23,4 +23,8 @@ public struct TowerLevel
 
     public int cost;
     public int usingEnergy;
+
+    public Sprite preview;
+    public string name;
+    public string summary;
 }

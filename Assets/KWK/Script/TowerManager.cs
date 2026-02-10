@@ -22,7 +22,7 @@ public class TowerManager : MonoBehaviour
     private Sprite ghostDefaultSprite;
 
     private Transform ghostRangeTransform;
-    private Quaternion ghostRangeDefaultRotation;
+    private Transform ghostShootPoint;
     private BoxCollider2D ghostBoxCollider;
 
     private bool isSpaklingLaser = false;
@@ -93,6 +93,9 @@ public class TowerManager : MonoBehaviour
                     BoxCollider2D placedBox = placed.GetComponent<BoxCollider2D>();
                     placedBox.offset = ghostBoxCollider.offset;
                     placedBox.size = ghostBoxCollider.size;
+                    Transform shootPoint = FindChildRecursive(placed.transform, "ShootPoint");
+                    shootPoint.localPosition = ghostShootPoint.localPosition;
+                    shootPoint.localRotation = ghostShootPoint.localRotation;
                 }
 
                 ghostTower = null;
@@ -128,12 +131,15 @@ public class TowerManager : MonoBehaviour
         ghostDefaultSprite = ghostTower.GetComponent<SpriteRenderer>().sprite;
         ghostOrientation = Orientation.Default;
 
-        ghostRangeTransform = FindChildRecursive(ghostTower.transform, "Range");
-        ghostRangeDefaultRotation = ghostRangeTransform.localRotation;
-        ghostBoxCollider = ghostTower.GetComponent<BoxCollider2D>();
-
         isSpaklingLaser = false;
         isSpaklingLaser = towerPrefab.GetComponent<SpaklingLaser>() != null;
+        if (isSpaklingLaser)
+        {
+            ghostRangeTransform = FindChildRecursive(ghostTower.transform, "Range");
+            ghostBoxCollider = ghostTower.GetComponent<BoxCollider2D>();
+            ghostShootPoint = FindChildRecursive(ghostTower.transform, "ShootPoint");
+        }
+        
 
         var colliders = ghostTower.GetComponentsInChildren<Collider2D>();
         foreach (var col in colliders)
@@ -226,6 +232,7 @@ public class TowerManager : MonoBehaviour
                     ghostBoxCollider.offset = new Vector2(-2.5f, -0.26f);
                     ghostBoxCollider.size = new Vector2(6f, 1f);
                     ghostRangeTransform.localPosition = new Vector3(-2.76f, -0.26f, 0);
+                    ghostShootPoint.localPosition = new Vector3(-3f, -0.26f, 0);
                     angle = 90f;
                 }
                 break;
@@ -237,6 +244,7 @@ public class TowerManager : MonoBehaviour
                     ghostBoxCollider.offset = new Vector2(2.5f, -0.26f);
                     ghostBoxCollider.size = new Vector2(6f, 1f);
                     ghostRangeTransform.localPosition = new Vector3(2.24f, -0.26f, 0);
+                    ghostShootPoint.localPosition = new Vector3(3f, -0.26f, 0);
                     angle = 90f;
                 }
                 break;
@@ -245,9 +253,10 @@ public class TowerManager : MonoBehaviour
                 spriteToApply = backSprite;
                 if (isSpaklingLaser)
                 {
-                    ghostBoxCollider.offset = new Vector2(0, -2.76f);
+                    ghostBoxCollider.offset = new Vector2(0, 2.24f);
                     ghostBoxCollider.size = new Vector2(1f, 6f);
                     ghostRangeTransform.localPosition = new Vector3(0, 2.5f, 0);
+                    ghostShootPoint.localPosition = new Vector3(0, 2.74f, 0);
                     angle = 0f;
                 }
                 break;
@@ -259,6 +268,7 @@ public class TowerManager : MonoBehaviour
                     ghostBoxCollider.offset = new Vector2(0, -2.76f);
                     ghostBoxCollider.size = new Vector2(1f, 6f);
                     ghostRangeTransform.localPosition = new Vector3(0, -2.5f, 0);
+                    ghostShootPoint.localPosition = new Vector3(0, -3.26f, 0);
                     angle = 0f;
                 }
                 break;
@@ -278,6 +288,7 @@ public class TowerManager : MonoBehaviour
         }
         ghostOrientation = orientation;
         ghostRangeTransform.localRotation = Quaternion.Euler(0, 0, angle);
+        ghostShootPoint.localRotation = Quaternion.Euler(0, 0, angle);
     }
 
     Transform FindChildRecursive(Transform parent, string name)
