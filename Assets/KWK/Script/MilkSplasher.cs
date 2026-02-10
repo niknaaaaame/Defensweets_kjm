@@ -147,6 +147,7 @@ public class MilkSplasher : MonoBehaviour, TowerInterface
 
     public void Destroy()
     {
+        TowerRefundUtility.RefundTowerCost(towerData, level);
         Destroy(this.gameObject);
     }
 

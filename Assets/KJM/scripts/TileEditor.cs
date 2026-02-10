@@ -190,7 +190,11 @@ public class TileEditor : MonoBehaviour
         {
             for (int y = 0; y < mapData.mapHeight; y++)
             {
-                
+                if (tileData[x, y] == PATH) //타일 개수 세는게 없길래 추가했습니다 -여영부-
+                {
+                    n++;
+                }
+
                 Vector3Int tilePos = new Vector3Int(x + tilemap.origin.x, y + tilemap.origin.y, 0);
                 if (isSpecialTile[x, y])
                 {
