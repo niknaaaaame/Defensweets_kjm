@@ -17,7 +17,7 @@ MonoBehaviour:
   - monster: {fileID: 11400000, guid: 8f61f450e9b523f448f3d9961b6af6d7, type: 2}
     count: 25
     interval: 1.5
-    startDelay: 5
+    startDelay: 10
   - monster: {fileID: 11400000, guid: 912a2cbf07edd2f468eff79c17ff7e8d, type: 2}
     count: 10
     interval: 1.5
@@ -25,10 +25,10 @@ MonoBehaviour:
   - monster: {fileID: 11400000, guid: 6d77fb3d1369fa9468ba3e814e8fdff5, type: 2}
     count: 20
     interval: 1
-    startDelay: 50
+    startDelay: 45
   - monster: {fileID: 11400000, guid: b245a3e612da7624894ab3fb07fd084a, type: 2}
     count: 2
-    interval: 40
+    interval: 30
     startDelay: 0
   reward:
     sugar: 0
