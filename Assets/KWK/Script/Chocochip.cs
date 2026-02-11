@@ -36,6 +36,14 @@ public class Chocochip : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)     //몬스터테스트인거 일반 몬스터로 바꿀게 -여영부-
     {
+        if (other.CompareTag("Monster"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    /*private void OnTriggerEnter2D(Collider2D other)     //몬스터테스트인거 일반 몬스터로 바꿀게 -여영부-
+    {
         if (!other.CompareTag("Monster"))
             return;
 
@@ -50,7 +58,7 @@ public class Chocochip : MonoBehaviour
 
             Destroy(gameObject);
         }
-    }
+    }*/
 
     private IEnumerator move()
     {
