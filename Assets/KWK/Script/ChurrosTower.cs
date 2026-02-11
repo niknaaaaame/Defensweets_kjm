@@ -133,7 +133,7 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
         shootCoroutine = null;
     }
 
-    public void Upgrade()
+    public bool Upgrade()
     {
         switch (level)
         {
@@ -144,13 +144,13 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
                     if (ResourceSystem.Instance.Sugar < sugarCost)
                     {
                         Debug.Log("Not enough sugar to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
                     level = 1;
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 1:
                 //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -¿©¿µºÎ-
@@ -161,7 +161,7 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
                     if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
                     {
                         Debug.Log("Not enough resources to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
@@ -186,11 +186,13 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
                     }
 
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 2:
                 Debug.Log("Max Level Reached");
-                break;
+                return false;
+            default:
+                return false;
         }
     }
 
