@@ -115,6 +115,41 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         while (targets.Count > 0)
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+
+            Chocochip bullet = instance.GetComponent<Chocochip>();
+            //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
+
+            int baseDamage = towerData.levels[level].damage;  //여기서 부터
+            int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
+            bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
+
+            //IDamageable monster = targets[0].GetComponent<IDamageable>();
+            MonsterTest monster = targets[0].GetComponent<MonsterTest>();
+            if (monster != null)
+            {
+                monster.TakeDamage(finalDamage);
+            }
+
+            energy -= towerData.levels[level].usingEnergy;
+            audioSource.Play();
+
+            if (energy <= 0)
+            {
+                energy = 0;
+                yield break;
+            }
+
+            yield return new WaitForSeconds(towerData.levels[level].attackSpeed);
+        }
+
+        shootCoroutine = null;
+    }
+
+    /*IEnumerator shoot()
+    {
+        while (targets.Count > 0)
+        {
+            GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
             
             Chocochip bullet = instance.GetComponent<Chocochip>();
             //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
@@ -136,7 +171,7 @@ public class ChocochipTurret : MonoBehaviour, TowerInterface
         }
 
         shootCoroutine = null;
-    }
+    }*/
 
     public void Upgrade()
     {
