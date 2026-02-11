@@ -16,20 +16,20 @@ MonoBehaviour:
   spawns:
   - monster: {fileID: 11400000, guid: 8f61f450e9b523f448f3d9961b6af6d7, type: 2}
     count: 25
-    interval: 0.7
-    startDelay: 0
+    interval: 1.5
+    startDelay: 5
   - monster: {fileID: 11400000, guid: 912a2cbf07edd2f468eff79c17ff7e8d, type: 2}
     count: 10
-    interval: 0.7
-    startDelay: 15
+    interval: 1.5
+    startDelay: 20
   - monster: {fileID: 11400000, guid: 6d77fb3d1369fa9468ba3e814e8fdff5, type: 2}
     count: 20
-    interval: 0.7
-    startDelay: 25
+    interval: 1
+    startDelay: 50
   - monster: {fileID: 11400000, guid: b245a3e612da7624894ab3fb07fd084a, type: 2}
     count: 2
-    interval: 15
-    startDelay: 50
+    interval: 40
+    startDelay: 0
   reward:
     sugar: 0
     crystalBonus: 0
