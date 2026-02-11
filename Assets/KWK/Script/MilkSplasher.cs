@@ -102,7 +102,7 @@ public class MilkSplasher : MonoBehaviour, TowerInterface
         healCoroutine = null;
     }
 
-    public void Upgrade()
+    public bool Upgrade()
     {
         switch (level)
         {
@@ -113,13 +113,13 @@ public class MilkSplasher : MonoBehaviour, TowerInterface
                     if (ResourceSystem.Instance.Sugar < sugarCost)
                     {
                         Debug.Log("Not enough sugar to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
                     level = 1;
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 1:
                 //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -¿©¿µºÎ-
@@ -130,18 +130,20 @@ public class MilkSplasher : MonoBehaviour, TowerInterface
                     if (ResourceSystem.Instance.Sugar < sugarCost || ResourceSystem.Instance.Crystal < crystalCost)
                     {
                         Debug.Log("Not enough resources to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
                     ResourceSystem.Instance.TryUseCrystal(crystalCost);
                     level = 2;
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 2:
                 Debug.Log("Max Level Reached");
-                break;
+                return false;
+            default:
+                return false;
         }
     }
 
