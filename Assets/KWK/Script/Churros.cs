@@ -35,6 +35,14 @@ public class Churros : MonoBehaviour
     {
         if (other.CompareTag("Monster"))
         {
+            Destroy(gameObject);
+        }
+    }
+
+    /*private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Monster"))
+        {
             //MonsterTest monster = other.GetComponent<MonsterTest>(); -¿©¿µºÎ-
             IDamageable monster = other.GetComponent<IDamageable>();
             if (monster == null)
@@ -46,7 +54,7 @@ public class Churros : MonoBehaviour
             StopCoroutine(moveCoroutine);
             Destroy(gameObject);
         }
-    }
+    }*/
 
     private IEnumerator move()
     {
