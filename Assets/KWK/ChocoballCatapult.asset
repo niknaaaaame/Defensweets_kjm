@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8a6d5ef77031a43a5bdfcc7eebf14a, type: 3}
   m_Name: ChocoballCatapult
   m_EditorClassIdentifier: 
-  towerName: ChocoballCatapult
+  towerName: "\uCD08\uCF54\uBCFC \uD22C\uC11D\uAE30"
+  summary: "\uD558\uB098\uC758 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC8FC\uBA70,
+    \uCD5C\uC18C \uBC94\uC704 \uB0B4\uC758 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C
+    \uC904 \uC218 \uC5C6\uB2E4"
   towerType: 2
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,6 +27,7 @@ MonoBehaviour:
     specialCostCrystal: 0
     cost: 30
     usingEnergy: 5
+    preview: {fileID: 21300000, guid: 8465b0a04b6e2d743ba703475bd283ff, type: 3}
   - damage: 20
     attackSpeed: 1.2
     range: 5
@@ -31,6 +35,7 @@ MonoBehaviour:
     specialCostCrystal: 10
     cost: 0
     usingEnergy: 5
+    preview: {fileID: 21300000, guid: 8465b0a04b6e2d743ba703475bd283ff, type: 3}
   - damage: 25
     attackSpeed: 0.8
     range: 7
@@ -38,3 +43,4 @@ MonoBehaviour:
     specialCostCrystal: 0
     cost: 0
     usingEnergy: 3
+    preview: {fileID: 21300000, guid: e9c647e389449dd438ea713f6a6d90ab, type: 3}

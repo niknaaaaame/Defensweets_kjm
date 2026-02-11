@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ChurrosTower : MonoBehaviour, TowerInterface
 {
@@ -52,6 +53,11 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
         // 정보창 표시
         if (Input.GetMouseButtonDown(0))
         {
+            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            //{
+            //    return;
+            //}
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
@@ -190,6 +196,7 @@ public class ChurrosTower : MonoBehaviour, TowerInterface
 
     public void Destroy()
     {
+        TowerRefundUtility.RefundTowerCost(towerData, level);
         Destroy(this.gameObject);
     }
 

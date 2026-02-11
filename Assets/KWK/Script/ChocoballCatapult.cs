@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ChocoballCatapult : MonoBehaviour, TowerInterface
 {
@@ -17,17 +18,32 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
     [SerializeField] private LineRenderer outlr;
     [SerializeField] private LineRenderer inlr;
 
+    [SerializeField] private Sprite left;
+    [SerializeField] private Sprite right;
+    [SerializeField] private Sprite back;
+    [SerializeField] private Sprite front3;
+    [SerializeField] private Sprite left3;
+    [SerializeField] private Sprite right3;
+    [SerializeField] private Sprite back3;
+
+    private SpriteRenderer spriteRenderer;
     private List<Collider2D> targets = new List<Collider2D>();
     private Coroutine shootCoroutine;
     private Vector3 originalScale;
     private float energy = 100f;
+
+    private AudioSource audioSource;
     public float GetEnergy() => energy;
+
+    private float damageMultiplier = 1f;
 
     // Start is called before the first frame update
     void Start()
     {
-        energy = 100;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         originalScale = energyBar.localScale;
+        ApplyTileEffect();
     }
 
     // Update is called once per frame
@@ -43,6 +59,11 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         // 정보창 표시
         if (Input.GetMouseButtonDown(0))
         {
+            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            //{
+            //    return;
+            //}
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
@@ -107,10 +128,16 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         {
             GameObject instance = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-            Chocoball bullet = instance.GetComponent<Chocoball>();
-            bullet.Setting(targets[0].transform, towerData.levels[level].damage);
+            Churros bullet = instance.GetComponent<Churros>();
+            //bullet.Setting(targets[0].transform, towerData.levels[level].damage);
+
+            int baseDamage = towerData.levels[level].damage;  //여기서 부터
+            int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
+            bullet.Setting(targets[0].transform, finalDamage);  //여기까지 특수타일 배수 구현때문에 살짝 바꿨어-여영부-
+
 
             energy -= towerData.levels[0].usingEnergy;
+            audioSource.Play();
             if (energy <= 0)
             {
                 energy = 0;
@@ -157,6 +184,24 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
                     ResourceSystem.Instance.TryUseCrystal(crystalCost);
                     level = 2;
+
+                    if (spriteRenderer.sprite == left)
+                    {
+                        spriteRenderer.sprite = left3;
+                    }
+                    else if (spriteRenderer.sprite == right)
+                    {
+                        spriteRenderer.sprite = right3;
+                    }
+                    else if (spriteRenderer.sprite == back)
+                    {
+                        spriteRenderer.sprite = back3;
+                    }
+                    else
+                    {
+                        spriteRenderer.sprite = front3;
+                    }
+
                     outerRange.size = new Vector2(towerData.levels[level].range, towerData.levels[level].range);
                     StartCoroutine(upgradeRange());
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
@@ -170,10 +215,10 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
 
     IEnumerator upgradeRange()
     {
-        outlr.SetPosition(0, new Vector3(-3.5f, 3.5f, 0f));
-        outlr.SetPosition(1, new Vector3(3.5f, 3.5f, 0f));
-        outlr.SetPosition(2, new Vector3(3.5f, -3.5f, 0f));
-        outlr.SetPosition(3, new Vector3(-3.5f, -3.5f, 0f));
+        outlr.SetPosition(0, new Vector3(-3.5f, 3.24f, 0f));
+        outlr.SetPosition(1, new Vector3(3.5f, 3.24f, 0f));
+        outlr.SetPosition(2, new Vector3(3.5f, -3.76f, 0f));
+        outlr.SetPosition(3, new Vector3(-3.5f, -3.76f, 0f));
         outlr.enabled = true;
         inlr.enabled = true;
         yield return new WaitForSeconds(1f);
@@ -184,6 +229,7 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
 
     public void Destroy()
     {
+        TowerRefundUtility.RefundTowerCost(towerData, level);
         Destroy(this.gameObject);
     }
 
@@ -194,6 +240,25 @@ public class ChocoballCatapult : MonoBehaviour, TowerInterface
         if (energy > 100)
         {
             energy = 100;
+        }
+    }
+
+    private void ApplyTileEffect()   //특수타일 공격력 증가 -여영부-
+    {
+        if (TilemapReader_YYJ.Instance == null)
+            return;
+
+        TileEffectType effect = TilemapReader_YYJ.Instance.GetEffectAtWorldPos(transform.position);
+
+        switch (effect)
+        {
+            case TileEffectType.SweetBoost:
+                damageMultiplier = 1.5f;
+                break;
+
+            default:
+                damageMultiplier = 1f;
+                break;
         }
     }
 }

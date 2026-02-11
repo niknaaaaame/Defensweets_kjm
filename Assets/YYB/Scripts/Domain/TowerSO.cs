@@ -6,6 +6,7 @@ using UnityEngine;
 public class TowerSO : ScriptableObject
 {
     public string towerName;
+    public string summary;
     public TowerType towerType;
     public Sprite icon;
     public GameObject prefab;
@@ -23,4 +24,6 @@ public struct TowerLevel
 
     public int cost;
     public int usingEnergy;
+
+    public Sprite preview;
 }

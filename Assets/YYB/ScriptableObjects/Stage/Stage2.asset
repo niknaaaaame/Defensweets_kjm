@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12322155eb17f6445b139c8ee3bd70de, type: 3}
+  m_Name: Stage2
+  m_EditorClassIdentifier: 
+  stageId: 2
+  initialSugar: 500
+  initialCrystal: 150
+  gateHp: 5
+  waves:
+  - {fileID: 11400000, guid: d3d5c39e0b7927b49b26de4f92c12d86, type: 2}
+  - {fileID: 11400000, guid: c40d169084da9c84e997a2b1f65f6220, type: 2}
+  - {fileID: 11400000, guid: 7425643f2618a8c4fbc1eb59a1a82b10, type: 2}
+  - {fileID: 11400000, guid: 25069c2d7c6d41b48b06c3ad86ee24d7, type: 2}
