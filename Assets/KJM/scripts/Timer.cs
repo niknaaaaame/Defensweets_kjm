@@ -94,7 +94,7 @@ public class Timer : MonoBehaviour   //타이머 코드 수정했습니다 -여영부-
             case GameState.Wave:
                 // 웨이브 상태에서는 남은 몬스터 수 표시
                 int remain = GameManager.Instance.AliveMonsterCount;
-                timerText.text = $"남은 몬스터 : {remain}";
+                timerText.text = $"{remain}";
                 break;
 
             case GameState.Result:
