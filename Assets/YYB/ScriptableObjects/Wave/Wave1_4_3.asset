@@ -16,16 +16,16 @@ MonoBehaviour:
   spawns:
   - monster: {fileID: 11400000, guid: 8f61f450e9b523f448f3d9961b6af6d7, type: 2}
     count: 15
-    interval: 0.7
-    startDelay: 0
+    interval: 1.2
+    startDelay: 3
   - monster: {fileID: 11400000, guid: 6d77fb3d1369fa9468ba3e814e8fdff5, type: 2}
     count: 5
-    interval: 0.7
+    interval: 1
     startDelay: 15
   - monster: {fileID: 11400000, guid: 912a2cbf07edd2f468eff79c17ff7e8d, type: 2}
     count: 5
-    interval: 0.7
-    startDelay: 10
+    interval: 3
+    startDelay: 0
   reward:
     sugar: 300
     crystalBonus: 20

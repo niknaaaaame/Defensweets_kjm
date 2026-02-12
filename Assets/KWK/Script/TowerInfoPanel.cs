@@ -100,8 +100,10 @@ public class TowerInfoPanel : MonoBehaviour
 
     public void OnCilckUpgrade()
     {
-        towerInterface.Upgrade();
-        upgradeAudio.Play();
+        if (towerInterface.Upgrade())
+        {
+            upgradeAudio.Play();
+        }
     }
 
     public void OnClickDestroy()

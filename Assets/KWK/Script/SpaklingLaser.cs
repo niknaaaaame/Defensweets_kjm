@@ -156,7 +156,7 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
         shootCoroutine = null;
     }
 
-    public void Upgrade()
+    public bool Upgrade()
     {
         switch (level)
         {
@@ -167,13 +167,13 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                     if (ResourceSystem.Instance.Sugar < sugarCost)
                     {
                         Debug.Log("Not enough sugar to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
                     level = 1;
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 1:
                 //ResourceSystem.Instance.TryUseSugar(towerData.levels[level].upgradeCostSugar); -¿©¿µºÎ-
@@ -185,7 +185,7 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                     {
 
                         Debug.Log("Not enough resources to upgrade.");
-                        return;
+                        return false;
                     }
 
                     ResourceSystem.Instance.TryUseSugar(sugarCost);
@@ -209,11 +209,13 @@ public class SpaklingLaser : MonoBehaviour, TowerInterface
                         spriteRenderer.sprite = front3;
                     }
                     TowerInfoPanel.Instance.ShowTowerInfo(this.gameObject, level);
-                    break;
+                    return true;
                 }
             case 2:
                 Debug.Log("Max Level Reached");
-                break;
+                return false;
+            default:
+                return false;
         }
     }
 
