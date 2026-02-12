@@ -17,7 +17,7 @@ MonoBehaviour:
   targetType: 0
   prefab: {fileID: 2493883949985171047, guid: 3598f848aa093e744b3ba58e7dcbd82a, type: 3}
   hp: 60
-  speed: 4
+  speed: 2
   rewardSugar: 4
   slowResist: 0
   splitsOnDeath: 0

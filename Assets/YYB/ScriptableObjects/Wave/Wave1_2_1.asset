@@ -16,7 +16,7 @@ MonoBehaviour:
   spawns:
   - monster: {fileID: 11400000, guid: 912a2cbf07edd2f468eff79c17ff7e8d, type: 2}
     count: 3
-    interval: 0.7
+    interval: 4
     startDelay: 0
   reward:
     sugar: 100

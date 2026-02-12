@@ -5,7 +5,7 @@ using UnityEngine;
 public interface TowerInterface
 {
     TowerSO GetTowerData();
-    void Upgrade();
+    bool Upgrade();
     void Destroy();
     void Heal(int amount);
     float GetEnergy();
